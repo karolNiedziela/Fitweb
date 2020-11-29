@@ -1,0 +1,30 @@
+.jumbotron {
+    background: white;
+    height: 100%;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+table th {
+    font-size: 1.3rem;
+}
+
+thead>tr>th {
+    cursor: pointer;
+}
+
+.pagination {
+    margin: auto;
+}
+
+@media (max-width: 767px) {
+    table th {
+        font-size: 1.1rem;
+    }
+    table td {
+        font-size: 0.9rem;
+    }
+}

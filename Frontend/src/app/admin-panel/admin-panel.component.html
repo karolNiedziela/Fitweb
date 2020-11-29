@@ -1,0 +1,34 @@
+<div class="box">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fas fa-home"> <a class=" list-group-item-action " [routerLink]="['/admin-panel/users'] ">All users</a></i>
+                </li>
+            </ul>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fas fa-home"> <a class=" list-group-item-action " [routerLink]="['/admin-panel/products'] ">All products</a></i>
+                </li>
+            </ul>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fas fa-home"> <a class=" list-group-item-action " [routerLink]="['/admin-panel/exercises'] ">All exercises</a></i>
+                </li>
+            </ul>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fas fa-home"> <a class=" list-group-item-action " [routerLink]="['/admin-panel/user-products'] ">User products</a></i>
+                </li>
+            </ul>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <i class="fas fa-home"> <a class=" list-group-item-action " [routerLink]="['/admin-panel/user-exercises'] ">User exercises</a></i>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

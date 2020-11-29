@@ -1,0 +1,23 @@
+<div class="box">
+    <h1 class="text-center">Users and their products</h1>
+    <br>
+
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Here" [(ngModel)]="term">
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <th>User id</th>
+            <th>Product id</th>
+            <th>Product name</th>
+        </thead>
+        <tr *ngFor="let userExercises of userExerciseService.list | filter:term | paginate: { itemsPerPage: 10, currentPage: p }; ">
+            <td>{{userExercises.userId}}</td>
+            <td>{{userExercises?.exercise.id}}</td>
+            <td>{{userExercises.exercise.name}}</td>
+        </tr>
+    </table>
+    <div class="pagination ">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+</div>

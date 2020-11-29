@@ -1,0 +1,39 @@
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#home">Fitweb</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home">Home </a>
+                </li>
+                <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link" [routerLink]="['/bmr-calculator']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">BMR calculator</a>
+                </li>
+                <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link" [routerLink]="['/products']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Products</a>
+                </li>
+                <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link" [routerLink]="['/exercises']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Exercises</a>
+                </li>
+                <li class="nav-item" *ngIf="userLogged == 0" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link" *ngIf="userLogged == 0" [routerLink]="['/user/login']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Sign in</a>
+                </li>
+                <li class="nav-item dropdown" *ngIf="userLogged == 1" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link dropdown-toggle" role="button" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" [routerLink]="['/account/account-detail']">Account</a>
+                        <a class="dropdown-item" [routerLink]="['/account/account-products']">Your Products</a>
+                        <a class="dropdown-item" [routerLink]="['/account/account-exercises']">Your Exercises</a>
+                        <a class="dropdown-item" [routerLink]="['/account/calories']">Today's Calories</a>
+                    </div>
+                </li>
+                <li class="nav-item" *ngIf="userLogged == 1" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    <a class="nav-link" *ngIf="userLogged == 1" (click)="onLogout()">Log out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

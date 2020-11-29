@@ -1,0 +1,17 @@
+.box {
+    margin-top: 2rem;
+    background: white;
+    height: 100%;
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+td,
+i {
+    cursor: pointer;
+}

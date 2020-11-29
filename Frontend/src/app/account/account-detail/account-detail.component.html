@@ -1,0 +1,62 @@
+<div class="account" *ngIf="user">
+    <h1 class="text-left">Information about account</h1>
+    <h2 class="profile text-left">Profile</h2>
+    <div class="row">
+        <div class="col value">Username</div>
+        <div class="col">{{user.username}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col value">Email</div>
+        <div class="col">{{user.email}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col value">Account created at</div>
+        <div class="col">{{user.createdAt}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col"><a class="btn btn-outline-dark btn-lg" [routerLink]="['/account/edit-profile']">Edit profile</a></div>
+        <div class="col"><a class="btn btn-outline-dark btn-lg" [routerLink]="['/account/edit-password']">Change Password</a></div>
+    </div>
+
+    <h2 class="profile text-left">Your diet goals</h2>
+    <div class="row">
+        <div class="col value">Calories per day</div>
+        <div class="col">{{dietgoal?.totalCalories}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col value">Proteins per day</div>
+        <div class="col">{{dietgoal?.proteins}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col value">Carbohydrates per day</div>
+        <div class="col">{{dietgoal?.carbohydrates}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col value">Fats per day</div>
+        <div class="col">{{dietgoal?.fats}}</div>
+    </div>
+    <div class="row">
+        <hr class="w-75">
+    </div>
+    <div class="row">
+        <div class="col"><a class="btn btn-outline-dark btn-lg" [routerLink]="['/account/dietgoal']">Set goals</a></div>
+    </div>
+</div>

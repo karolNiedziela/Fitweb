@@ -1,0 +1,28 @@
+<div class="box">
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Here" [(ngModel)]="term">
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created at</th>
+            <th>Delete</th>
+        </thead>
+        <tr *ngFor="let user of userService.users | filter:term | paginate: { itemsPerPage: 5, currentPage: p }; ">
+            <td>{{user?.id}}</td>
+            <td>{{user?.username}}</td>
+            <td>{{user?.email}}</td>
+            <td>{{user?.role}}</td>
+            <td>{{user?.createdAt}}</td>
+            <td>
+                <i class="far fa-trash-alt fa-lg text-danger" (click)="onDelete(user.id)"></i>
+            </td>
+        </tr>
+    </table>
+    <div class="pagination ">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+</div>

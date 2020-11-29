@@ -1,0 +1,60 @@
+.select {
+    opacity: 0;
+    width: 200px;
+    height: 15px;
+}
+
+.btn {
+    position: relative;
+    right: -90%;
+    background: green;
+    border-radius: 1.5rem;
+    border: none;
+    padding: .6rem 3rem;
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    background-color: rgb(42, 206, 99);
+}
+
+button[type=submit].btn {
+    border-radius: 20px;
+    color: #fff;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+button[type=submit].btn:hover {
+    transform: scale(1.1, 1.1);
+    -webkit-transform: scale(1.1, 1.1);
+    -moz-transform: scale(1.1, 1.1);
+}
+
+@media (max-width: 767px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+    .btn {
+        position: relative;
+        right: -70%;
+        background: green;
+        border-radius: 1.5rem;
+        border: none;
+        padding: .6rem 1.5rem;
+        margin-left: 0.5rem;
+        font-size: 1rem;
+        background-color: rgb(42, 206, 99);
+    }
+    button[type=submit].btn {
+        border-radius: 20px;
+        color: #fff;
+        letter-spacing: 0.2rem;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+    button[type=submit].btn:hover {
+        transform: scale(1.1rem, 1.1rem);
+        -webkit-transform: scale(1.1rem, 1.1rem);
+        -moz-transform: scale(1.1rem, 1.1rem);
+    }
+}

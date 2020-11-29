@@ -1,0 +1,9 @@
+h1 {
+    padding-top: 2rem;
+}
+
+@media (max-width: 767px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+}

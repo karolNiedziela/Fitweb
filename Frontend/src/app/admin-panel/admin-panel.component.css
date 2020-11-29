@@ -1,0 +1,41 @@
+.box {
+    min-height: 100%;
+    min-width: 100%;
+}
+
+.row {
+    height: 100%;
+}
+
+i {
+    font-size: 1.2rem;
+}
+
+.fas {
+    padding-right: 1rem;
+    color: black;
+}
+
+.fas:hover {
+    color: #1ebba3;
+}
+
+li.list-group-item {
+    background: rgba(0, 0, 0, 0) !important;
+    border: none;
+}
+
+ul.list-group .list-group-item {
+    margin-top: 1rem;
+}
+
+a.list-group-item-action {
+    color: black;
+    background: none;
+    font-weight: normal;
+    padding-left: 0.5rem;
+}
+
+a.list-group-item-action:hover {
+    color: #1ebba3;
+}

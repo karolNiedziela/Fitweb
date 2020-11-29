@@ -1,0 +1,30 @@
+.table {
+    display: inline-table;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+
+table th {
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+table th,
+table td {
+    width: 100px;
+}
+
+table td {
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+    table th {
+        font-size: 9px;
+        font-weight: 1000;
+    }
+    table td {
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+}

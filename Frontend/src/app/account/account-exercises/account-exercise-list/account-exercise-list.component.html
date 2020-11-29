@@ -1,0 +1,34 @@
+<div class="row">
+    <div class="col-xs" *ngFor="let day of dayService.days" (click)="filter(day.name)" [ngClass]="{ 'selected': day.name == selectedItem }">
+        <div class="day"><span class="underline">{{day.name}}</span></div>
+    </div>
+    <div class="col-xs">
+        <div class="day" name="all" (click)="filter('all')" [ngClass]="{ 'selected': 'all' == selectedItem }"><span class="underline">All</span>
+        </div>
+    </div>
+</div>
+<table class="table table-hover ">
+    <thead>
+        <th>Part of body</th>
+        <th>Name</th>
+        <th>Number of sets</th>
+        <th>Number of reps</th>
+        <th>Weight</th>
+        <th>Training day</th>
+        <th>Delete</th>
+    </thead>
+    <tr *ngFor="let data of userExerciseService.formData?.exercises | filter: term | paginate: { itemsPerPage: 5, currentPage: p };">
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.exercise.partOfBody}}</td>
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.exercise.name}}</td>
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.numberOfSets}}</td>
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.numberOfReps}}</td>
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.weight}}</td>
+        <td [routerLink]="[ '/account/edit-exercise', {id: data.id, exerciseId: data.exercise.id, name: data.exercise.name, numberOfSets: data.numberOfSets, numberOfReps: data.numberOfReps, weight: data.weight}] ">{{data.day}}</td>
+        <td>
+            <i class="far fa-trash-alt fa-lg text-danger " (click)="onDelete(data.id) "></i>
+        </td>
+    </tr>
+</table>
+<div class="pagination ">
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+</div>

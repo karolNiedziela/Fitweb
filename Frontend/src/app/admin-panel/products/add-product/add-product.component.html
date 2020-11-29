@@ -1,0 +1,30 @@
+<h1>Add product</h1>
+<form [formGroup]="productService.formModel" autocomplete="off" (submit)="onSubmit()">
+    <div class="form-group required">
+        <label class="control-label">Name</label>
+        <input class="form-control" formControlName="Name">
+    </div>
+    <div class="form-group required">
+        <label class="control-label">Calories</label>
+        <input class="form-control" formControlName="Calories">
+    </div>
+    <div class="form-group required">
+        <label class="control-label">Proteins</label>
+        <input class="form-control" formControlName="Proteins">
+    </div>
+    <div class="form-group required">
+        <label class="control-label">Carbohydrates</label>
+        <input class="form-control" formControlName="Carbohydrates">
+    </div>
+    <div class="form-group required">
+        <label class="control-label">Fats</label>
+        <input class="form-control" formControlName="Fats">
+        <label class="text-danger" *ngIf="productService.formModel.get('Fats').touched && productService.formModel.get('Fats').errors?.required">This
+            field is mandatory</label>
+        <label class="text-danger" *ngIf="productService.formModel.get('Fats').touched && productService.formModel.get('Fats').errors?.email">Invalid
+              email address.</label>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-lg" [disabled]="!productService.formModel.valid"><i class="fas fa-plus"></i>Add</button>
+    </div>
+</form>

@@ -1,4 +1,4 @@
-﻿using Backend.Core.Domain;
+﻿using Backend.Core.Entities;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Repositories
 {
-    public class ExerciseRepository : IExerciseRepository, ISqlRepository
+    public class ExerciseRepository : IExerciseRepository
     {
         private readonly FitwebContext _context;
 
@@ -19,13 +19,13 @@ namespace Backend.Infrastructure.Repositories
         }
 
         public async Task<Exercise> GetAsync(int id)
-            => await _context.Exercises.SingleOrDefaultAsync(x => x.Id == id);
+            => await _context.Exercises.Include(e => e.PartOfBody).SingleOrDefaultAsync(e => e.Id == id);
 
         public async Task<Exercise> GetAsync(string name)
-            => await _context.Exercises.SingleOrDefaultAsync(x => x.Name == name);
+            => await _context.Exercises.Include(e => e.PartOfBody).SingleOrDefaultAsync(e => e.Name == name);
 
         public async Task<IEnumerable<Exercise>> GetAllAsync()
-            => await _context.Exercises.ToListAsync();
+            => await _context.Exercises.Include(e => e.PartOfBody).ToListAsync();
 
         public async Task AddAsync(Exercise exercise)
         {

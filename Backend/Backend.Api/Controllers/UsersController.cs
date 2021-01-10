@@ -1,76 +1,52 @@
-﻿using Backend.Infrastructure.Commands;
-using Backend.Infrastructure.Commands.Users;
-using Backend.Infrastructure.EF;
-using Backend.Infrastructure.Extensions;
+﻿using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class UsersController : ApiControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IMemoryCache _cache;
 
-        public UsersController(IUserService userService, IMemoryCache cache,
-            ICommandDispatcher commandDispatcher)
+        public UsersController(ICommandDispatcher commandDispatcher, IUserService userService)
             : base(commandDispatcher)
         {
             _userService = userService;
-            _cache = cache;
         }
 
-        [HttpGet("{username}")]
-        //GET : /api/users/{username}
-        public async Task<IActionResult> Get(string username)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            var user = await _userService.GetAsync(username);
+            var user = await _userService.GetAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return Json(user);
+            return Ok(user);
         }
 
         [HttpGet]
         //GET : /api/users
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             var users = await _userService.GetAllAsync();
 
-            return Json(users);
+            return Ok(users);
         }
 
         [HttpPost]
-        [Route("register")]
-        //POST : /api/users/register
-        public async Task<IActionResult> Register([FromBody] CreateUser command)
+        //POST : /api/users
+        public async Task<IActionResult> Post([FromBody]CreateUser command)
         {
             await DispatchAsync(command);
 
-            return Ok(new { code = "succeeded" });
-        }
-
-        [HttpPost]
-        [Route("login")]
-        //POST : /api/users/login
-        public async Task<IActionResult> Login([FromBody] Login command)
-        {
-            command.TokenId = Guid.NewGuid();
-            await DispatchAsync(command);
-            var jwt = _cache.GetJwt(command.TokenId);
-
-            return Json(jwt);
-
+            return CreatedAtAction(nameof(Get), new { id = command.Id }, command );
         }
 
         //DELETE : /api/users/{id}

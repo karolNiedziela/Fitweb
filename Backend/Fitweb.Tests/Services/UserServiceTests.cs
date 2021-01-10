@@ -62,7 +62,7 @@ namespace Fitweb.Tests.Services
             await UserService.GetAsync("user1");
             var role = new Role("User");
 
-            var user = new User("user1", "user1@email.com", "secret", "salt", role);
+            var user = new User("user1", "user1@email.com", "secret", "salt");
 
             UserRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(user);
 

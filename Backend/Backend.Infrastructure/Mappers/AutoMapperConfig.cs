@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Backend.Core.Domain;
+using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
 using System;
 using System.Collections.Generic;
@@ -14,41 +14,44 @@ namespace Backend.Infrastructure.Mappers
             => new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<User, UserDto>()
-                   .ForMember(dest => dest.Role, opt => opt.MapFrom(x => x.Role.Name))
-                   .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(x => x.CreatedAt.ToShortDateString()));
-                cfg.CreateMap<User, UserDetailsDto>()
-                   .ForMember(dest => dest.Role, opt => opt.MapFrom(x => x.Role.Name))
-                   .ForMember(dest => dest.Products, opt => opt.MapFrom(x => x.Products
-                   .Select(y => new UserProduct
-                   {
-                       Id = y.Id,
-                       Product = y.Product,
-                       Weight = y.Weight,
-                       Calories = y.Calories,
-                       Proteins = y.Proteins,
-                       Carbohydrates = y.Carbohydrates,
-                       Fats = y.Fats,                
-                       AddedAt = y.AddedAt
-                   }).ToList()))
-                   .ForMember(dest => dest.Exercises, opt => opt.MapFrom(x => x.Exercises
-                   .Select(y => new UserExercise
-                   {
-                       Id = y.Id,
-                       Exercise = y.Exercise,
-                       Weight = y.Weight,
-                       NumberOfSets = y.NumberOfSets,
-                       NumberOfReps = y.NumberOfReps,
-                       Day = y.Day
-                   }).ToList()));
+                   .ForMember(dest => dest.Role, opt => opt.MapFrom(u => u.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault()));
+                cfg.CreateMap<Athlete, AthleteDto>()
+                   .ForMember(dest => dest.Products, opt => opt.MapFrom(a => a.AthleteProducts.Select(
+                     ap => new AthleteProduct
+                     {
+                         Product = new Product
+                         {
+                             Id = ap.Product.Id,                          
+                             Name = ap.Product.Name,
+                             Calories = ap.Product.Calories,
+                             Proteins = ap.Product.Proteins,
+                             Carbohydrates = ap.Product.Carbohydrates,
+                             Fats = ap.Product.Fats
+                         },
+                         Weight = ap.Weight
+                     }).ToList()))
+                   .ForMember(dest => dest.Exercises, opt => opt.MapFrom(x => x.AthleteExercises.Select(
+                    ae => new AthleteExercise
+                    {
+                         Exercise = new Exercise
+                         {
+                             Id = ae.Exercise.Id,
+                             PartOfBody = ae.Exercise.PartOfBody,
+                             Name = ae.Exercise.Name
+                         },
+                         Weight = ae.Weight,
+                         NumberOfSets = ae.NumberOfSets,
+                         NumberOfReps = ae.NumberOfReps,
+                         Day = ae.Day
+                    }).ToList()));
                 cfg.CreateMap<Product, ProductDto>();
-                cfg.CreateMap<UserProduct, UserProductDto>()
-                    .ForMember(dest => dest.AddedAt, opt => opt.MapFrom(x => x.AddedAt.ToShortDateString()));
-                cfg.CreateMap<UserProduct, UserProductDetailsDto>();
-                cfg.CreateMap<Exercise, ExerciseDto>();                 
-                cfg.CreateMap<UserExercise, UserExerciseDto>()
-                   .ForMember(dest => dest.Day, opt => opt.MapFrom(x => x.Day.Name))
-                   .ForMember(dest => dest.AddedAt, opt => opt.MapFrom(x => x.AddedAt.ToShortDateString()));
-                cfg.CreateMap<DietGoals, DietGoalsDto>();
+                cfg.CreateMap<AthleteProduct, AthleteProductDto>();
+                cfg.CreateMap<Exercise, ExerciseDto>()
+                   .ForMember(dest => dest.PartOfBody, opt => opt.MapFrom(e => e.PartOfBody.Name));
+                cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()
+                   .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
+                cfg.CreateMap<Product, ProductDetailsDto>()
+                   .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name));
             })
             .CreateMapper();
     }

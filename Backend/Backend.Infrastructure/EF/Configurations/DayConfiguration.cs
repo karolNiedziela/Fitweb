@@ -1,4 +1,4 @@
-﻿using Backend.Core.Domain;
+﻿using Backend.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -12,14 +12,20 @@ namespace Backend.Infrastructure.EF.Configurations
     {
         public void Configure(EntityTypeBuilder<Day> builder)
         {
-            builder.Property(x => x.Id).HasConversion<int>();
+            builder.HasKey(d => d.Id);
+
+            builder.Property(d => d.Name)
+                   .HasConversion(
+                    d => d.ToString(),
+                    d => (DayId)Enum.Parse(typeof(DayId), d));
+
             builder.HasData(
-                Enum.GetValues(typeof(Days))
-                .Cast<Days>()
-                .Select(x => new Day()
+                Enum.GetValues(typeof(DayId))
+                .Cast<DayId>()
+                .Select(d => new Day()
                 {
-                    Id = x,
-                    Name = x.ToString()
+                    Id = (int)d,
+                    Name = d
                 })
             );
         }

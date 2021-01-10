@@ -1,15 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using Autofac;
 using Backend.Api.Framework;
-using Backend.Core.Domain;
 using Backend.Infrastructure.EF;
 using Backend.Infrastructure.IoC;
 using Backend.Infrastructure.Services;
@@ -17,45 +7,52 @@ using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Text;
 
 namespace Backend
 {
     public class Startup
     {
-       public Startup (IConfiguration configuration) 
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            this.Configuration = builder.Build();
         }
 
+
         public IConfiguration Configuration { get; }
-        public IContainer ApplicationContainer { get; private set; }
+        public ILifetimeScope AutofacContainer { get; private set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
+            services.AddControllers(options =>
+            {
+                options.SuppressAsyncSuffixInActionNames = false;
+            })
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;                 
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 });
+
+            services.AddRouting(options => options.LowercaseUrls = true);
 
 
             services.AddMemoryCache();
 
             // database 
-            services.AddEntityFrameworkSqlServer()
-                 .AddEntityFrameworkInMemoryDatabase()
-                 .AddDbContext<FitwebContext>();
+            services.AddDbContext<FitwebContext>();
           
             // jwt
             services.AddAuthentication(x =>
@@ -67,20 +64,22 @@ namespace Backend
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt:key"])),
+                    ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["jwt:issuer"],
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidAudience = Configuration["jwt:issuer"],
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero                 
                 };
             });
 
-            services.AddSwaggerGen(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Fitweb API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fitweb API", Version = "v1" });
             });
 
             services.AddCors();
@@ -97,6 +96,8 @@ namespace Backend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fitweb API v1"));
             }
 
             app.UseMyExceptionHandler();
@@ -105,11 +106,6 @@ namespace Backend
             app.UseStaticFiles();
             app.UseDefaultFiles();
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(options =>
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Fitweb API v1")
-            );
 
             app.UseRouting();
 
@@ -118,7 +114,6 @@ namespace Backend
                .AllowAnyMethod()
                .AllowAnyOrigin());
 
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -132,12 +127,6 @@ namespace Backend
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", context =>
-                {
-                    context.Response.Redirect("/swagger/");
-                    return Task.CompletedTask;
-                });
-
                 endpoints.MapControllers();
             });
         }

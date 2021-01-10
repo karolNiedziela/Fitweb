@@ -290,3 +290,9 @@ C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.dll
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.pdb
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.genruntimeconfig.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.csprojAssemblyReference.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.AssemblyInfoInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.AssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.csproj.CoreCompileInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Fitweb.Tests\obj\Debug\netcoreapp3.1\Fitweb.Tests.pdb

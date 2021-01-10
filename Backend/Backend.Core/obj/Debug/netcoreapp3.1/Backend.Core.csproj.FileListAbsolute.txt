@@ -25,3 +25,12 @@ C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.csproj.CoreCompileInputs.cache
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.dll
 C:\Users\niedz\Documents\GitHub\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\netcoreapp3.1\Backend.Core.deps.json
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\netcoreapp3.1\Backend.Core.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\netcoreapp3.1\Backend.Core.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.AssemblyInfoInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.AssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.csproj.CoreCompileInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\netcoreapp3.1\Backend.Core.csprojAssemblyReference.cache

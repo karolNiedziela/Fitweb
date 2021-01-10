@@ -1,0 +1,72 @@
+Name,Calories,Proteins,Fats,Carbohydrates,Category,Id
+Banana,95,1,0.3,23.5,Fruits,1
+Peach,46,1,0.2,11.9,Fruits,2
+Pineapple,54,0.4,0.2,13.6,Fruits,3
+Avocado,160,2.0,15.3,7.4,Fruits,4
+Apple,46,0.4,0.4,12.1,Fruits,5
+Apricot,47,0.9,0.2,11.9,Fruits,6
+Pear,54,0.6,0.2,14.4,Fruits,7
+Strawberry,28,0.7,0.4,7.2,Fruits,8
+Raspberry,29,1.3,0.3,12.0,Fruits,9
+Mango,67,1.3,0.3,12.0,Fruits,10
+Orange,44,0.9,0.2,11.3,Fruits,11
+Chicken breast without skin,99,21.5,1.3,0,Meat,12
+Turkey breast without skin,84,19.2,0.7,0,Meat,13
+Beef sirloin,113,20.1,3.5,0,Meat,14
+Beef roast,152,21.5,7.3,0,Meat,15
+Pork neck,267,17,23,1,Meat,16
+Pork chop,174,21.5,10,0,Meat,17
+Veal shoulder,106,19.9,2.8,0,Meat,18
+Veal leg,108,19.9,3.1,0,Meat,19
+Pork ribs,321,15.2,29.3,0,Meat,20
+Chicken liver,136,19.1,6.3,0.6,Meat,21
+Potatoes,77,1.9,0.1,18.3,Vegetables,22
+Cucumber,13,0.7,0.1,2.9,Vegetables,23
+Tomatoes,15,0.9,0.2,3.6,Vegetables,24
+Carrot,27,1,0.2,8.7,Vegetables,25
+Green peas,75,6.7,0.4,17,Vegetables,26
+Lettuce,14,1.4,0.2,2.9,Vegetables,27
+White cabbage,29,1.7,0.2,7.4,Vegetables,28
+Red Cabbage,27,1.9,0.2,6.7,Vegetables,29
+Red pepper,28,1.3,0.5,6.6,Vegetables,30
+Sweet potatoes,86,1.6,0.1,20,Vegetables,31
+Brie,329,19.8,28,0.2,Dairy_and_eggs,32
+Camembert,291,21.4,23,0.1,Dairy_and_eggs,33
+Edam,313,26.1,23.4,0.1,Dairy_and_eggs,34
+Ementaler,380,28.8,29.7,0.1,Dairy_and_eggs,35
+Gouda,316,27.9,22.9,0.1,Dairy_and_eggs,36
+Mascarpone,394,3.5,40.0,5.1,Dairy_and_eggs,37
+Mozzarella,254,24,16,3.6,Dairy_and_eggs,38
+Parmesan,452,41.5,32,0.1,Dairy_and_eggs,39
+Goat cheese,388,21.4,33.9,0,Dairy_and_eggs,40
+Feta cheese,215,17,16,1,Dairy_and_eggs,41
+Fat quark,175,17.7,10.1,3.5,Dairy_and_eggs,42
+Lean quark,99,19.8,0.5,3.5,Dairy_and_eggs,43
+Chicken egg,139,12.5,9.7,0.6,Dairy_and_eggs,44
+Raw salmon ,201,19.9,13.6,0.0,Fish_and_seafood,45
+Tuna in oil,190,27.1,9.0,0.0,Fish_and_seafood,46
+Tuna in its own sauce,96,21.4,1.2,0.0,Fish_and_seafood,47
+Cod fillet without skin,70,16.5,0.3,0.0,Fish_and_seafood,48
+Raw pollock,73,16.6,0.6,0.0,Fish_and_seafood,49
+Tiger shrimp,92,22,0.0,1.0,Fish_and_seafood,50
+Raw carp,110,18,4.2,0.0,Fish_and_seafood,51
+Wheat bread,257,8.5,1.4,54.3,Bread,52
+Whole grain rye bread,225,6.8,1.8,53.8,Bread,53
+Wholemeal rye bread,213,5.9,1.7,51.2,Bread,54
+Wheat roll,271,7,1,58,Bread,55
+Wholemeal roll,270,9,2.8,57,Bread,56
+Toasted bread,258,9,2.8,50,Bread,57
+Water,0,0,0,0,Drinks,58
+Tea without sugar,0,0,0,0,Drinks,59
+Coffee without sugar,2,0.2,0,0.3,Drinks,60
+Coca-cola,37,0,0,10,Drinks,61
+Fanta,42,0,0,10,Drinks,62
+Sprite,40,0,0,10,Drinks,63
+Pepsi,37,0,0,10,Drinks,64
+Mirinda,58,0,0,12,Drinks,65
+7Up,44,0,0,11,Drinks,66
+Mountain Dew ,47,0,0,12,Drinks,67
+Monster,47,0,0,12,Drinks,68
+Apple juice,42,0.1,0.1,10,Drinks,69
+Orange juice,43,0.6,0.1,9.9,Drinks,70
+Carrot juice,43,0.4,0.1,11.3,Drinks,71

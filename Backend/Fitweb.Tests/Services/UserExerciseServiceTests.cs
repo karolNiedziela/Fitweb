@@ -41,7 +41,7 @@ namespace Fitweb.Tests.Services
             var user = new User("user1", "user1@email.com", "secret", "salt", role);
             var exercise = new Exercise("chest", "benchpress");
 
-            var userExercise = new UserExercise(user, exercise, 100, 4, 12, day);
+            var userExercise = new AthleteExercise(user, exercise, 100, 4, 12, day);
 
             _userExerciseRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>())).ReturnsAsync(userExercise);
             _userExerciseRepositoryMock.Verify(x => x.GetAsync(It.IsAny<int>()), Times.Once);
@@ -55,11 +55,11 @@ namespace Fitweb.Tests.Services
             var user = new User("user1", "user1@email.com", "secret", "salt", role);
             var exercise = new Exercise("chest", "benchpress");
 
-            var userExercise = new UserExercise(user, exercise, 100, 4, 12, day);
+            var userExercise = new AthleteExercise(user, exercise, 100, 4, 12, day);
             _userExerciseRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>())).ReturnsAsync(userExercise);
 
             await _userExerciseService.DeleteAsync(1);
-            _userExerciseRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<UserExercise>()), Times.Once);
+            _userExerciseRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<AthleteExercise>()), Times.Once);
         }
     }
 }

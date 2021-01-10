@@ -11,12 +11,10 @@ namespace Backend.Infrastructure.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = typeof(RepositoryModule)
-                .GetTypeInfo()
-                .Assembly;
+            var assembly = Assembly.GetExecutingAssembly();
 
             builder.RegisterAssemblyTypes(assembly)
-                   .Where(x => x.IsAssignableTo<IRepository>())
+                   .Where(t => t.Name.EndsWith("Repository"))
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
         }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QmetkAGtIOdh1ZmohRXTfnsnrxAiPgEzqC6YwSbR1pi+IaJ4qrJEVfbxiQONdPgRmnqvWlFsd9IK3/4GggAuKw==",
+  "dgSpecHash": "+Fsb5Tz2Ecvmb1QreDQFOPskEKr3bgjL3MBcAz+vZIlST8tzs8G9rzJayST5cwPxC9Gd4XvUUBtgeliyOQvJ9Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Fitweb.Tests\\Fitweb.Tests.csproj",
+  "projectFilePath": "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Fitweb.Tests\\Fitweb.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\niedz\\.nuget\\packages\\autofac\\5.2.0\\autofac.5.2.0.nupkg.sha512",
     "C:\\Users\\niedz\\.nuget\\packages\\automapper\\10.0.0\\automapper.10.0.0.nupkg.sha512",

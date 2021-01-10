@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Backend.Infrastructure.Commands;
-using Backend.Infrastructure.Commands.Exercises;
+using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,60 +22,52 @@ namespace Backend.Api.Controllers
             _exerciseService = exerciseService;
         }
 
-        [HttpGet("{name}")]
-        //GET : /api/exercises/name
-        public async Task<IActionResult> Get(string name)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            var exercise = await _exerciseService.GetAsync(name);
-            if (exercise == null)
+            var exercise = await _exerciseService.GetAsync(id);
+            if (exercise is null)
             {
                 return NotFound();
             }
 
-            return Json(exercise);
+            return Ok(exercise);
         }
 
         [HttpGet]
-        //GET : /api/exercises
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             var exercises = await _exerciseService.GetAllAsync();
-            if (exercises == null)
-            {
-                return NotFound();
-            }
 
-            return Json(exercises);
+            return Ok(exercises);
         }
 
-        //PUT : /api/exercises
-        [HttpPut]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Put(UpdateExercise command)
-        {
-            await DispatchAsync(command);
-
-            return NoContent();
-        }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        //POST : /api/exercises
-        public async Task<IActionResult> Post(AddExercise command)
+      //  [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Post([FromBody]AddExercise command)
         {
             await DispatchAsync(command);
 
-            return Created($"/api/exercises/{command.Name}", null);
+            return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
         }
 
-        //DELETE : /api/exercises/{id}
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+     //   [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _exerciseService.DeleteAsync(id);
 
             return NoContent();
+        }
+
+        [HttpPut]
+    //  [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Put([FromBody]UpdateExercise command)
+        {
+            await DispatchAsync(command);
+
+            return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
         }
     }
 }

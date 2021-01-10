@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj": {}
+    "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj": {}
   },
   "projects": {
-    "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj": {
+    "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj",
+        "projectUniqueName": "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj",
         "projectName": "Backend.Core",
-        "projectPath": "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj",
+        "projectPath": "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Backend.Core\\Backend.Core.csproj",
         "packagesPath": "C:\\Users\\niedz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\niedz\\Documents\\GitHub\\Fitweb\\Backend\\Backend.Core\\obj\\",
+        "outputPath": "C:\\Users\\niedz\\Desktop\\C#\\Fitweb\\Backend\\Backend.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
@@ -26,10 +26,12 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.emzi0767.com/api/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -41,6 +43,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -56,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

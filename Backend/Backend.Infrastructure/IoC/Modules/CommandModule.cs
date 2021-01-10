@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using Backend.Infrastructure.Commands;
+using Backend.Infrastructure.CommandHandler.Commands;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,9 +11,7 @@ namespace Backend.Infrastructure.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = typeof(CommandModule)
-                .GetTypeInfo()
-                .Assembly;
+            var assembly = Assembly.GetExecutingAssembly();
 
             builder.RegisterAssemblyTypes(assembly)
                    .AsClosedTypesOf(typeof(ICommandHandler<>))

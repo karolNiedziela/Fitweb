@@ -1,4 +1,4 @@
-﻿using Backend.Infrastructure.Commands;
+﻿using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.EF;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,23 +12,21 @@ namespace Backend.Api.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class DaysController : ApiControllerBase
+    public class DaysController : Controller
     {
         private readonly FitwebContext _context;
 
-        public DaysController(ICommandDispatcher commandDispatcher, FitwebContext context) 
-            : base(commandDispatcher)
+        public DaysController(FitwebContext context) 
         {
             _context = context;
         }
 
-        //GET : /api/days
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var days = await _context.Days.ToListAsync();
 
-            return Json(days);
+            return Ok(days);
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Backend.Core.Domain;
+﻿using Backend.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,22 @@ namespace Backend.Infrastructure.EF.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.Property(x => x.Id).HasConversion<int>();
+            builder.HasKey(r => r.Id);
+
+            builder.Property(r => r.Name)
+                   .HasConversion(new EnumToStringConverter<RoleId>());
+                    /*r => r.ToString(),
+                    r => (RoleId)Enum.Parse(typeof(RoleId), r));*/
+
             builder.HasData(
-                Enum.GetValues(typeof(Roles))
-                .Cast<Roles>()
-                .Select(x => new Role()
-                {
-                    Id = x,
-                    Name = x.ToString()
-                })
-            );
+                Enum.GetValues(typeof(RoleId))
+                    .Cast<RoleId>()
+                    .Select(r => new Role()
+                    {
+                        Id = (int)r,
+                        Name = r
+                    }));
+                        
         }
     }
 }

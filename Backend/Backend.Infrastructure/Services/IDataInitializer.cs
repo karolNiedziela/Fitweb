@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
 {
-    public interface IDataInitializer : IService
+    public interface IDataInitializer
     {
         Task SeedAsync();
     }

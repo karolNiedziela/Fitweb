@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -29,6 +30,9 @@ namespace Backend.Infrastructure.Repositories
         public async Task<IEnumerable<User>> GetAllAsync()
             => await _context.Users.Include(x => x.UserRoles).ThenInclude(ur => ur.Role).ToListAsync();
 
+        public async Task<bool> AnyAsync(Expression<Func<User, bool>> expression)
+            => await _context.Users.AnyAsync(expression);
+
         public async Task AddAsync(User user)
         {
             await _context.Users.AddAsync(user);
@@ -45,12 +49,6 @@ namespace Backend.Infrastructure.Repositories
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<bool> CheckUsernameIfUsed(string username)
-            => await _context.Users.AnyAsync(u => u.Username == username);
-
-        public async Task<bool> CheckEmailIfUsed(string email)
-            => await _context.Users.AnyAsync(u => u.Email == email);
+        }    
     }
 }

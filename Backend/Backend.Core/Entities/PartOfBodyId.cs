@@ -8,7 +8,6 @@ namespace Backend.Core.Entities
     {
         Chest = 1,
         Legs,
-        Calves,
         Biceps,
         Triceps,
         Shoulders,

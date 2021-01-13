@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
-
     public class ApiControllerBase : Controller
     {
         private readonly ICommandDispatcher _commandDispatcher;

@@ -1,10 +1,5 @@
-﻿using Backend.Core.Entities;
-using Backend.Core.Repositories;
-using Backend.Infrastructure.EF;
-using System;
-using System.Collections.Generic;
+﻿using Backend.Infrastructure.EF;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -13,20 +8,27 @@ namespace Backend.Infrastructure.Services
     {
         private readonly IProductInitializer _productInitializer;
         private readonly FitwebContext _context;
+        private readonly IExerciseInitializer _exerciseInitializer;
 
-        public DataInitializer(IProductInitializer productInitializer, FitwebContext context)
+        public DataInitializer(IProductInitializer productInitializer, IExerciseInitializer exerciseInitializer, 
+            FitwebContext context)
         {
-            _productInitializer = productInitializer;
             _context = context;
+            _productInitializer = productInitializer;
+            _exerciseInitializer = exerciseInitializer;
         }
 
         public async Task SeedAsync()
         {
-            if (_context.Products.Any())
+            if (!_context.Products.Any())
             {
-                return;
+                await _productInitializer.LoadFromCsv();
             }
-            await _productInitializer.LoadFromCsv();
+
+            if (!_context.Exercises.Any())
+            {
+                await _exerciseInitializer.LoadFromCsv();
+            }
         }
     }
 }

@@ -283,36 +283,31 @@ namespace Backend.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            Name = "Calves"
-                        },
-                        new
-                        {
-                            Id = 4,
                             Name = "Biceps"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Name = "Triceps"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             Name = "Shoulders"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 6,
                             Name = "Abdominals"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 7,
                             Name = "Back"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 8,
                             Name = "Forearm"
                         });
                 });

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
+using Backend.Infrastructure.Helpers;
+using Backend.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -37,11 +37,26 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<Exercise, ExerciseDto>(exercise);
         }
 
-        public async Task<IEnumerable<ExerciseDto>> GetAllAsync()
+        public async Task<PagedList<ExerciseDto>> GetAllAsync(PaginationQuery paginationQuery)
         {
-            var exercises = await _exerciseRepository.GetAllAsync();
+            var exercises = await _exerciseRepository.GetAllAsync(paginationQuery);
 
-            return _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises);
+            var exercisesDto = _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises).ToList();
+
+            return new PagedList<ExerciseDto>(exercisesDto, exercises.TotalCount, exercises.CurrentPage, exercises.PageSize);
+        }
+
+        public async Task<PagedList<ExerciseDto>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null)
+        {
+            if (partOfBody is not null && PartOfBody.GetPart(partOfBody) is null)
+            {
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"{partOfBody} does not exist.");
+            }
+            var exercises = await _exerciseRepository.SearchAsync(paginationQuery, name, partOfBody);
+
+            var exercisesDto = _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises).ToList();
+
+            return new PagedList<ExerciseDto>(exercisesDto, exercises.TotalCount, exercises.CurrentPage, exercises.PageSize);
         }
 
         public async Task<int> AddAsync(string name, string partOfBody)
@@ -53,7 +68,7 @@ namespace Backend.Infrastructure.Services
                     $"Exercise with name: '{name}' already exists.");
             }
 
-            exercise = new Exercise(name, GetPart(partOfBody));
+            exercise = new Exercise(name, PartOfBody.GetPart(partOfBody));
 
             await _exerciseRepository.AddAsync(exercise);
 
@@ -81,18 +96,12 @@ namespace Backend.Infrastructure.Services
             }
 
             exercise.SetName(name);
-            exercise.PartOfBody.Id = GetPart(partOfBody).Id;
+            exercise.PartOfBody.Id = PartOfBody.GetPart(partOfBody).Id;
 
             await _exerciseRepository.UpdateAsync(exercise);
         }
 
-        private static PartOfBody GetPart(string partOfBody)
-            => Enum.GetValues(typeof(PartOfBodyId))
-                   .Cast<PartOfBodyId>()
-                   .Select(pob => new PartOfBody
-                   {
-                       Id = (int)pob,
-                       Name = pob
-                   }).SingleOrDefault(pob => pob.Name.ToString() == partOfBody);
+
+
     }
 }

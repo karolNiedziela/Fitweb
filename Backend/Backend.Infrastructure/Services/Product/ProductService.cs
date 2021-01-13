@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
-using Microsoft.AspNetCore.Http;
+using Backend.Infrastructure.Helpers;
+using Backend.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -37,11 +36,27 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<Product, ProductDetailsDto>(product);
         }
 
-        public async Task<IEnumerable<ProductDetailsDto>> GetAllAsync()
+        public async Task<PagedList<ProductDetailsDto>> GetAllAsync(PaginationQuery paginationQuery)
         {
-            var products = await _productRepository.GetAllAsync();
+            var products =  await _productRepository.GetAllAsync(paginationQuery);
 
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDetailsDto>>(products.OrderBy(p => p.Name));
+            var productsDTO = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDetailsDto>>(products).ToList();
+
+            return new PagedList<ProductDetailsDto>(productsDTO, products.TotalCount, products.CurrentPage, products.PageSize);
+        }
+
+        public async Task<PagedList<ProductDetailsDto>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null)
+        {
+            if (category is not null && CategoryOfProduct.GetCategory(category) is null)
+            {
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"{category} does not exist.");
+            }
+
+            var products = await _productRepository.SearchAsync(paginationQuery, name, category);
+
+            var productsDto = _mapper.Map<IEnumerable<ProductDetailsDto>>(products).ToList();
+
+            return new PagedList<ProductDetailsDto>(productsDto, products.TotalCount, products.CurrentPage, products.PageSize);
         }
 
         public async Task<int> AddAsync(string name, double calories, double proteins,
@@ -54,7 +69,7 @@ namespace Backend.Infrastructure.Services
                     $"Product with name: '{name}' already exists.");
             }
 
-            product = new Product(name, calories, proteins, carbohydrates, fats, (GetCategory(categoryName)));
+            product = new Product(name, calories, proteins, carbohydrates, fats, CategoryOfProduct.GetCategory(categoryName));
 
             await _productRepository.AddAsync(product);
 
@@ -100,18 +115,9 @@ namespace Backend.Infrastructure.Services
             product.SetProteins(proteins);
             product.SetCarbohydrates(carbohydrates);
             product.SetFats(fats);
-            product.CategoryOfProduct.Id = GetCategory(categoryName).Id;
+            product.CategoryOfProduct.Id = CategoryOfProduct.GetCategory(categoryName).Id;
 
             await _productRepository.UpdateAsync(product);
         }
-
-        private static CategoryOfProduct GetCategory(string categoryOfProductName)
-            => Enum.GetValues(typeof(CategoryOfProductId))
-                            .Cast<CategoryOfProductId>()
-                            .Select(cop => new CategoryOfProduct()
-                            {
-                                Id = (int)cop,
-                                Name = cop
-                            }).SingleOrDefault(cop => cop.Name.ToString() == categoryOfProductName);
     }
 }

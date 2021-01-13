@@ -51,7 +51,7 @@ namespace Backend.Infrastructure.Mappers
                 cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()
                    .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
                 cfg.CreateMap<Product, ProductDetailsDto>()
-                   .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name));
+                   .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name.ToString().Replace("_", " ")));
             })
             .CreateMapper();
     }

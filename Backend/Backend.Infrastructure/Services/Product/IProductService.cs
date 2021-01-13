@@ -1,8 +1,7 @@
-﻿using Backend.Core.Entities;
+﻿
 using Backend.Infrastructure.DTO;
-using System;
+using Backend.Infrastructure.Helpers;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -13,7 +12,9 @@ namespace Backend.Infrastructure.Services
 
         Task<ProductDetailsDto> GetAsync(string name);
 
-        Task<IEnumerable<ProductDetailsDto>> GetAllAsync();
+        Task<PagedList<ProductDetailsDto>> GetAllAsync(PaginationQuery paginationQuery);
+
+        Task<PagedList<ProductDetailsDto>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null);
 
         Task<int> AddAsync(string name, double calories, double proteins,
             double carbohydrates, double fats, string categoryName);

@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+
     [Authorize(Roles = "User")]
     public class AccountController : ApiControllerBase
     {

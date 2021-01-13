@@ -1,10 +1,11 @@
 ﻿using Backend.Core.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Core.Repositories
+namespace Backend.Infrastructure.Repositories
 {
     public interface IUserRepository
     {
@@ -20,8 +21,6 @@ namespace Backend.Core.Repositories
 
         Task UpdateAsync(User user);
 
-        Task<bool> CheckUsernameIfUsed(string username);
-
-        Task<bool> CheckEmailIfUsed(string email);
+        Task<bool> AnyAsync(Expression<Func<User, bool>> expression);
     }
 }

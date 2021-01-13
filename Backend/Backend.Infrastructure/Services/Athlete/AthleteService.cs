@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
-using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -42,28 +40,50 @@ namespace Backend.Infrastructure.Services
 
         public async Task<AthleteDto> GetProductsAsync(int userId)
         {
-            var athlete = await _athleteRepository.GetProductsAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteProducts)
+                                                    .ThenInclude(ap => ap.Product)
+                                                        .ThenInclude(p => p.CategoryOfProduct)
+                                                  .SingleOrDefaultAsync();
 
             return _mapper.Map<AthleteDto>(athlete);
         }
          
         public async Task<AthleteDto> GetProductAsync(int userId, int productId)
         {
-            var athlete = await _athleteRepository.GetProductAsync(userId, productId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteProducts
+                                                    .Where(ap => ap.ProductId == productId))
+                                                    .ThenInclude(ap => ap.Product)
+                                                        .ThenInclude(p => p.CategoryOfProduct)
+                                                  .SingleOrDefaultAsync();
 
             return _mapper.Map<AthleteDto>(athlete);
         }
 
         public async Task<AthleteDto> GetExercisesAsync(int userId)
         {
-            var athlete = await _athleteRepository.GetExercisesAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Day)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Exercise)
+                                                        .ThenInclude(e => e.PartOfBody)
+                                                  .SingleOrDefaultAsync();
 
             return _mapper.Map<AthleteDto>(athlete);
         }
 
         public async Task<AthleteDto> GetExerciseAsync(int userId, int exerciseId)
         {
-            var athlete = await _athleteRepository.GetExerciseAsync(userId, exerciseId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteExercises
+                                                    .Where(ae => ae.ExerciseId == exerciseId))
+                                                    .ThenInclude(ae => ae.Day)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Exercise)
+                                                        .ThenInclude(e => e.PartOfBody)
+                                                  .SingleOrDefaultAsync();
 
             return _mapper.Map<AthleteDto>(athlete);
         }

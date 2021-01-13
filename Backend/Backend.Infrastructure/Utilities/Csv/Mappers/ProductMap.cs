@@ -17,13 +17,13 @@ namespace Backend.Infrastructure.Utilities.Csv
             Map(p => p.Proteins).Name("Proteins");
             Map(p => p.Carbohydrates).Name("Carbohydrates");
             Map(p => p.Fats).Name("Fats");
-            Map(p => p.CategoryOfProduct).Name("Category").ConvertUsing(row => Enum.GetValues(typeof(CategoryOfProductId))
+            Map(p => p.CategoryOfProductId).Name("Category").ConvertUsing(row => Enum.GetValues(typeof(CategoryOfProductId))
                            .Cast<CategoryOfProductId>()
                            .Select(cop => new CategoryOfProduct()
                            {
                                Id = (int)cop,
                                Name = cop
-                           }).SingleOrDefault(cop => cop.Name.ToString() == row.GetField("Category")));
+                           }).SingleOrDefault(cop => cop.Name.ToString() == row.GetField("Category")).Id);
 
             Map(p => p.Id).Ignore();
             Map(p => p.DateCreated).Ignore();

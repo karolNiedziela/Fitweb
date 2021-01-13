@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using Backend.Core.Entities;
-using Backend.Core.Repositories;
+﻿using Backend.Core.Entities;
 using Backend.Infrastructure.Exceptions;
-using System;
-using System.Collections.Generic;
+using Backend.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -23,11 +20,16 @@ namespace Backend.Infrastructure.Services
 
         public async Task AddAsync(int userId, int productId, double weight)
         {
-            var athlete = await _athleteRepository.GetProductsAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteProducts)
+                                                    .ThenInclude(ap => ap.Product)
+                                                        .ThenInclude(p => p.CategoryOfProduct)
+                                                  .SingleOrDefaultAsync();
             if (athlete == null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
             }
+
             var product = await _productRepository.GetAsync(productId);
             if (product == null)
             {
@@ -46,7 +48,11 @@ namespace Backend.Infrastructure.Services
 
         public async Task DeleteAsync(int userId, int productId)
         {
-            var athlete = await _athleteRepository.GetProductsAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteProducts)
+                                                    .ThenInclude(ap => ap.Product)
+                                                        .ThenInclude(p => p.CategoryOfProduct)
+                                                  .SingleOrDefaultAsync();
             if (athlete is null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with userId: {userId} was not found.");

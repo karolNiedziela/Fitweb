@@ -1,29 +1,26 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
 {
     public class UserService : IUserService
     {
-        private readonly IAdminService _adminService;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPasswordHandler _passwordService;
         private readonly IAthleteRepository _athleteRepository;
 
-        public UserService(IAdminService adminService, IUserRepository userRepository, IMapper mapper, 
+        public UserService(IUserRepository userRepository, IMapper mapper, 
             IPasswordHandler passwordService, IAthleteRepository athleteRepository)
         {
-            _adminService = adminService;
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordService = passwordService;
@@ -53,11 +50,11 @@ namespace Backend.Infrastructure.Services
 
         public async Task<int> RegisterAsync(string username, string email, string password, string roleName = "User")
         {
-            if( await _userRepository.CheckUsernameIfUsed(username))
+            if( await _userRepository.AnyAsync(u => u.Username == username))
             {
                 throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{username}' already exists.");
             }
-            if (await _userRepository.CheckEmailIfUsed(email))
+            if (await _userRepository.AnyAsync(u => u.Email == email))
             {
                 throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{email}' already exists.");
             }
@@ -66,20 +63,17 @@ namespace Backend.Infrastructure.Services
 
             var user = new User(username, email, hash);
 
-            if (!await _adminService.CheckIfAdminExists())
-            {
-                roleName = "Admin";
-            }
+            roleName = await _userRepository.CheckIfAdminExists(roleName);
 
             user.UserRoles.Add(new UserRole
             {
                 User = user,
-                RoleId = GetRoleId(roleName)
+                RoleId = Role.GetRole(roleName)
             });
 
             await _userRepository.AddAsync(user);
 
-            await CheckIfIsAthlete(user, roleName);
+            await _athleteRepository.CheckIfAthleteAsync(user, roleName);
 
             return user.Id;
         }
@@ -102,31 +96,9 @@ namespace Backend.Infrastructure.Services
         public async Task DeleteAsync(int userId)
         {
             var user = await _userRepository.GetOrFailAsync(userId);
-
+            
             await _userRepository.RemoveAsync(user);
         }
-
-        private static int GetRoleId(string roleName)
-        {
-            var roles = Enum.GetValues(typeof(RoleId))
-                            .Cast<RoleId>()
-                            .Select(r => new Role()
-                            {
-                                Id = (int)r,
-                                Name = r
-                            }).SingleOrDefault(r => r.Name.ToString() == roleName);
-
-            return roles.Id;
-        }
-
-        private async Task CheckIfIsAthlete(User user, string roleName)
-        {
-            var athlete = await _athleteRepository.GetAsync(user.Id);
-            if (athlete is null && roleName != "Admin")
-            {
-                athlete = new Athlete(user);
-                await _athleteRepository.AddAsync(athlete);
-            }
-        }
+    
     }
 }

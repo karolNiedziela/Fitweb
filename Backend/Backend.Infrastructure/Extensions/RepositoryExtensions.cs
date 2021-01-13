@@ -1,10 +1,8 @@
 ﻿using Backend.Core.Entities;
-using Backend.Core.Repositories;
-using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Backend.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Extensions
@@ -31,6 +29,26 @@ namespace Backend.Infrastructure.Extensions
             }
 
             return athlete;
+        }
+
+        public static async Task CheckIfAthleteAsync(this IAthleteRepository repository, User user, string roleName)
+        {
+            var athlete = await repository.GetAsync(user.Id);
+            if (athlete is null && roleName != "Admin")
+            {
+                athlete = new Athlete(user);
+                await repository.AddAsync(athlete);
+            }
+        }
+
+        public static async Task<string> CheckIfAdminExists(this IUserRepository repository, string roleName)
+        {
+            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name.ToString() == "Admin")))
+            {
+                return roleName = "Admin";
+            }
+
+            return roleName;
         }
     }
 }

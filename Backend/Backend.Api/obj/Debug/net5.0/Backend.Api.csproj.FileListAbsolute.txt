@@ -1,3 +1,8 @@
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfoInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csproj.CoreCompileInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\appsettings.json
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Api.exe
@@ -88,12 +93,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.In
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Infrastructure.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Core.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csprojAssemblyReference.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfoInputs.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfo.cs
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csproj.CoreCompileInputs.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\staticwebassets\Backend.Api.StaticWebAssets.Manifest.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\staticwebassets\Backend.Api.StaticWebAssets.xml
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\scopedcss\bundle\Backend.Api.styles.css

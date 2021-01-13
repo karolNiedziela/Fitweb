@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Core.Repositories
+namespace Backend.Infrastructure.Repositories
 {
     public interface IAthleteRepository 
     {
@@ -13,13 +14,7 @@ namespace Backend.Core.Repositories
 
         Task<IEnumerable<Athlete>> GetAllAsync();
 
-        Task<Athlete> GetProductsAsync(int userId);
-
-        Task<Athlete> GetProductAsync(int userId, int productId);
-
-        Task<Athlete> GetExercisesAsync(int userId);
-
-        Task<Athlete> GetExerciseAsync(int userId, int exerciseId);
+        IQueryable<Athlete> FindByCondition(Expression<Func<Athlete, bool>> expression);
 
         Task AddAsync(Athlete athlete);
 

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,9 @@ namespace Backend.Infrastructure.Repositories
 
         public async Task<IEnumerable<Athlete>> GetAllAsync()
          => await _context.Athletes.ToListAsync();
+
+        public IQueryable<Athlete> FindByCondition(Expression<Func<Athlete, bool>> expression)
+            => _context.Athletes.Where(expression).AsNoTracking();
 
         public async Task<Athlete> GetProductsAsync(int userId)
             => await _context.Athletes.Include(a => a.AthleteProducts)
@@ -68,6 +72,7 @@ namespace Backend.Infrastructure.Repositories
             _context.Athletes.Update(athlete);
             await _context.SaveChangesAsync();
         }
+
 
     }
 }

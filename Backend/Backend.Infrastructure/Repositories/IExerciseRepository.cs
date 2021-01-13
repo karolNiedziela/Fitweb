@@ -1,10 +1,11 @@
 ﻿using Backend.Core.Entities;
+using Backend.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Core.Repositories
+namespace Backend.Infrastructure.Repositories
 {
     public interface IExerciseRepository
     {
@@ -12,9 +13,13 @@ namespace Backend.Core.Repositories
 
         Task<Exercise> GetAsync(string name);
 
-        Task<IEnumerable<Exercise>> GetAllAsync();
+        Task<PagedList<Exercise>> GetAllAsync(PaginationQuery paginationQuery);
+
+        Task<PagedList<Exercise>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null);
 
         Task AddAsync(Exercise exercise);
+
+        Task AddRangeAsync(List<Exercise> exercises);
 
         Task DeleteAsync(Exercise exercise);
 

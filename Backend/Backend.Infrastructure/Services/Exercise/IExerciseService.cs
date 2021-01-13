@@ -1,4 +1,5 @@
 ﻿using Backend.Infrastructure.DTO;
+using Backend.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,9 @@ namespace Backend.Infrastructure.Services
 
         Task<ExerciseDto> GetAsync(string name);
 
-        Task<IEnumerable<ExerciseDto>> GetAllAsync();
+        Task<PagedList<ExerciseDto>> GetAllAsync(PaginationQuery paginationQuery);
+
+        Task<PagedList<ExerciseDto>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null);
 
         Task<int> AddAsync(string name, string partOfBody);
 

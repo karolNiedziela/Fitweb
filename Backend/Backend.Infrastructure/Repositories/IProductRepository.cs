@@ -1,10 +1,11 @@
 ﻿using Backend.Core.Entities;
+using Backend.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Core.Repositories
+namespace Backend.Infrastructure.Repositories
 {
     public interface IProductRepository
     {
@@ -12,7 +13,9 @@ namespace Backend.Core.Repositories
 
         Task<Product> GetAsync(string name);
 
-        Task<IEnumerable<Product>> GetAllAsync();
+        Task<PagedList<Product>> GetAllAsync(PaginationQuery paginationQuery);
+
+        Task<PagedList<Product>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null);
 
         Task AddAsync(Product product);
 

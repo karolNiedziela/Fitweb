@@ -1994,7 +1994,7 @@
       },
       "Backend.Core/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETCoreApp,Version=v5.0",
         "compile": {
           "bin/placeholder/Backend.Core.dll": {}
         },
@@ -2004,7 +2004,7 @@
       },
       "Backend.Infrastructure/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
           "AutoMapper": "10.1.1",
           "Autofac": "6.1.0",

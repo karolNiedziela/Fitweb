@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Backend.Core.Repositories;
+using Backend.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

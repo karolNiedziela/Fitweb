@@ -1,6 +1,6 @@
 ﻿using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.EF;
+using Backend.Infrastructure.Helpers;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,8 +26,29 @@ namespace Backend.Infrastructure.Repositories
         public async Task<Product> GetAsync(string name)
             => await _context.Products.Include(p => p.CategoryOfProduct).SingleOrDefaultAsync(x => x.Name == name);
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
-            => await _context.Products.Include(p => p.CategoryOfProduct).ToListAsync();
+        public async Task<PagedList<Product>> GetAllAsync(PaginationQuery paginationQuery)
+        {
+            return await PagedList<Product>.ToPagedList(_context.Products
+                    .Include(p => p.CategoryOfProduct)
+                    .OrderBy(p => p.Name),
+                paginationQuery.PageNumber,
+                paginationQuery.PageSize);
+        }
+
+        public async Task<PagedList<Product>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null)
+        {
+            IQueryable<Product> query = _context.Products.Include(p => p.CategoryOfProduct)
+                                                         .Where(p => p.Name.Contains(name));
+
+            if (category is not null)
+            {
+                query = query.Where(p => p.CategoryOfProduct.Name == CategoryOfProduct.GetCategory(category).Name);
+            }
+
+            return await PagedList<Product>.ToPagedList(query.OrderBy(x => x.Name),
+                                   paginationQuery.PageNumber,
+                                   paginationQuery.PageSize);
+        }
 
         public async Task AddAsync(Product product)
         {
@@ -37,9 +58,8 @@ namespace Backend.Infrastructure.Repositories
 
         public async Task AddRangeAsync(List<Product> products)
         {
-            /*await _context.Products.AddRangeAsync(products);
-            await _context.SaveChangesAsync();*/
-            await _context.BulkInsertAsync(products);
+            await _context.Products.AddRangeAsync(products);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Product product)

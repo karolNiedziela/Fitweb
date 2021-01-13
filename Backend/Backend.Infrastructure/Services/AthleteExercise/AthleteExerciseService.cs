@@ -1,10 +1,9 @@
 ﻿using Backend.Core.Entities;
-using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
+using Backend.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services
@@ -22,7 +21,13 @@ namespace Backend.Infrastructure.Services
 
         public async Task AddAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = await _athleteRepository.GetExercisesAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Day)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Exercise)
+                                                        .ThenInclude(e => e.PartOfBody)
+                                                  .SingleOrDefaultAsync();
             if (athlete is null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
@@ -47,7 +52,13 @@ namespace Backend.Infrastructure.Services
 
         public async Task DeleteAsync(int userId, int exerciseId)
         {
-            var athlete = await _athleteRepository.GetExercisesAsync(userId);
+            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Day)
+                                                  .Include(a => a.AthleteExercises)
+                                                    .ThenInclude(ae => ae.Exercise)
+                                                        .ThenInclude(e => e.PartOfBody)
+                                                  .SingleOrDefaultAsync();
             if (athlete is null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with userId: {userId} was not found.");

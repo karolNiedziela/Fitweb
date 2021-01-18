@@ -18,13 +18,13 @@ namespace Backend.Core.Entities
 
         }
 
-        public static int GetRole(string roleName)
+        public static Role GetRole(string roleName)
             =>  Enum.GetValues(typeof(RoleId))
                             .Cast<RoleId>()
                             .Select(r => new Role()
                             {
                                 Id = (int)r,
                                 Name = r
-                            }).SingleOrDefault(r => r.Name.ToString() == roleName).Id;
+                            }).SingleOrDefault(r => r.Name.ToString() == roleName);
     }
 }

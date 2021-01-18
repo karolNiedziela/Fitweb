@@ -4,6 +4,7 @@ using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +16,13 @@ namespace Backend.Infrastructure.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IPasswordHandler _passwordService;
-        private readonly IAthleteRepository _athleteRepository;
+        private readonly IPasswordHandler _passwordHandler;
 
-        public UserService(IUserRepository userRepository, IMapper mapper, 
-            IPasswordHandler passwordService, IAthleteRepository athleteRepository)
+        public UserService(IMapper mapper, IPasswordHandler passwordHandler, IUserRepository userRepository)
         {
-            _userRepository = userRepository;
             _mapper = mapper;
-            _passwordService = passwordService;
-            _athleteRepository = athleteRepository;
+            _passwordHandler = passwordHandler;
+            _userRepository = userRepository;
         }
 
         public async Task<UserDto> GetAsync(int id)
@@ -48,7 +46,7 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<int> RegisterAsync(string username, string email, string password, string roleName = "User")
+        public async Task<int> RegisterAsync(string username, string email, string password = null, string roleName = "User")
         {
             if( await _userRepository.AnyAsync(u => u.Username == username))
             {
@@ -59,22 +57,18 @@ namespace Backend.Infrastructure.Services
                 throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{email}' already exists.");
             }
 
-            var hash = _passwordService.Hash(password);
+            var hash = _passwordHandler.Hash(password);
 
             var user = new User(username, email, hash);
-
-            roleName = await _userRepository.CheckIfAdminExists(roleName);
 
             user.UserRoles.Add(new UserRole
             {
                 User = user,
-                RoleId = Role.GetRole(roleName)
+                RoleId = Role.GetRole(roleName).Id
             });
 
             await _userRepository.AddAsync(user);
-
-            await _athleteRepository.CheckIfAthleteAsync(user, roleName);
-
+           
             return user.Id;
         }
 
@@ -86,19 +80,30 @@ namespace Backend.Infrastructure.Services
                 throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
             }
 
-            var isPasswordValid = _passwordService.IsValid(user.Password, password);
+            var isPasswordValid = _passwordHandler.IsValid(user.Password, password);
             if (!isPasswordValid)
             {
                 throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
-            }      
+            }
         }
 
         public async Task DeleteAsync(int userId)
         {
             var user = await _userRepository.GetOrFailAsync(userId);
             
-            await _userRepository.RemoveAsync(user);
+            await _userRepository.DeleteAsync(user);
         }
-    
+
+        public async Task UpdateAsync(int id, string username, string email, string password)
+        {
+            var user = await _userRepository.GetOrFailAsync(id);
+
+            user.SetUsername(username);
+            user.SetEmail(email);
+            var hash = _passwordHandler.Hash(password);
+            user.SetPassword(hash);
+
+            await _userRepository.UpdateAsync(user);
+        }
     }
 }

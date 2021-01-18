@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandHandler.Handlers
 
         public async Task HandleAsync(UpdateProduct command)
         {
-           await _productService.UpdateAsync(command.Id, command.Name, command.Calories, command.Proteins, 
+           await _productService.UpdateAsync(command.ProductId, command.Name, command.Calories, command.Proteins, 
                 command.Carbohydrates, command.Fats, command.CategoryName);
         }
     }

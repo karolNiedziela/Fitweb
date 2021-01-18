@@ -19,7 +19,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new Exception("Empty refresh token.");
+                throw new DomainException(ErrorCodes.EmptyRefreshToken, "Empty refresh token.");
             }
 
             UserId = userId;

@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog;
+using NLog.Web;
 using System;
 using System.Text;
 
@@ -26,7 +28,7 @@ namespace Backend
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            this.Configuration = builder.Build();
+            Configuration = builder.Build();
         }
 
 
@@ -48,12 +50,11 @@ namespace Backend
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
-
             services.AddMemoryCache();
 
             // database 
             services.AddDbContext<FitwebContext>();
-          
+
             // jwt
             services.AddAuthentication(x =>
             {
@@ -73,9 +74,16 @@ namespace Backend
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero                 
+                    ClockSkew = TimeSpan.Zero
                 };
             });
+/*          .AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["facebookAuthSettings:appId"];
+                facebookOptions.AppSecret = Configuration["facebookAuthSettings:appSecret"];
+            });*/
+
+            services.AddHttpClient();
 
             services.AddSwaggerGen(c =>
             {
@@ -106,7 +114,6 @@ namespace Backend
             app.UseStaticFiles();
             app.UseDefaultFiles();
 
-
             app.UseRouting();
 
             app.UseCors(builder => builder.WithOrigins(Configuration["general:clientURL"].ToString())
@@ -123,7 +130,6 @@ namespace Backend
                 var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
                 dataInitializer.SeedAsync();
             }
-
 
             app.UseEndpoints(endpoints =>
             {

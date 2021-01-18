@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandHandler.Handlers
 
         public async Task HandleAsync(UpdateExercise command)
         {
-           await _exerciseService.UpdateAsync(command.Id, command.Name, command.PartOfBody);
+           await _exerciseService.UpdateAsync(command.ExerciseId, command.Name, command.PartOfBody);
         }
     }
 }

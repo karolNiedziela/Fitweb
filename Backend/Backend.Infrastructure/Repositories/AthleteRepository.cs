@@ -72,7 +72,5 @@ namespace Backend.Infrastructure.Repositories
             _context.Athletes.Update(athlete);
             await _context.SaveChangesAsync();
         }
-
-
     }
 }

@@ -1,8 +1,4 @@
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfoInputs.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfo.cs
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csproj.CoreCompileInputs.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\nlog.config
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\appsettings.json
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Api.exe
@@ -18,6 +14,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\AutoMapper
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\CsvHelper.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\EFCore.BulkExtensions.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Humanizer.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.Facebook.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
@@ -46,6 +43,9 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.OpenApi.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Newtonsoft.Json.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\NLog.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\NLog.Extensions.Logging.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\NLog.Web.AspNetCore.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\SQLitePCLRaw.nativelibrary.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\SQLitePCLRaw.core.dll
@@ -55,6 +55,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Swashbuckl
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.Configuration.ConfigurationManager.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.Data.SqlClient.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.IO.Pipelines.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\System.Runtime.Caching.dll
@@ -93,7 +94,12 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.In
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Infrastructure.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Backend.Core.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csprojAssemblyReference.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfoInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.AssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.csproj.CoreCompileInputs.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\staticwebassets\Backend.Api.StaticWebAssets.Manifest.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\staticwebassets\Backend.Api.StaticWebAssets.xml
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\scopedcss\bundle\Backend.Api.styles.css

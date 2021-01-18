@@ -4,6 +4,7 @@ using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,15 @@ namespace Backend.Infrastructure.Services
         private readonly IAthleteRepository _athleteRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<AthleteService> _logger;
 
-        public AthleteService(IAthleteRepository athleteRepository, IUserRepository userRepository, IMapper mapper)
+        public AthleteService(IAthleteRepository athleteRepository, IUserRepository userRepository, IMapper mapper,
+            ILogger<AthleteService> logger)
         {
             _athleteRepository = athleteRepository;
             _userRepository = userRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<AthleteDto> GetAsync(int userId)
@@ -104,6 +108,8 @@ namespace Backend.Infrastructure.Services
         public async Task DeleteAsync(int userId)
         {
             var athlete = await _athleteRepository.GetOrFailAsync(userId);
+
+            _logger.LogInformation($"Athlete with user id: {userId} was removed.");
 
             await _athleteRepository.DeleteAsync(athlete);
         }

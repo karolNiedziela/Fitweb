@@ -1,8 +1,10 @@
 ﻿using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Helpers;
 using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -13,11 +15,14 @@ namespace Backend.Api.Controllers
     public class ProductsController : ApiControllerBase
     {
         private readonly IProductService _productService;
+        private readonly ILoggerManager _logger;
 
-        public ProductsController(ICommandDispatcher commandDispatcher, IProductService productService)
+        public ProductsController(ICommandDispatcher commandDispatcher, IProductService productService,
+            ILoggerManager logger)
             : base(commandDispatcher)
         {
             _productService = productService;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -87,33 +92,39 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
-      //  [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         //POST : /api/products
-        public async Task<IActionResult> Post([FromBody] AddProduct command)
+        public async Task<IActionResult> Post([FromBody]AddProduct command)
         {
             await DispatchAsync(command);
+
+            _logger.LogInfo($"Product with name: {command.Name} added.");
 
             return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Authorize(Roles = "Admin")]
         //DELETE : /api/products/{id}
         public async Task<IActionResult> Delete([FromBody] DeleteProduct command)
         {
             await DispatchAsync(command);
 
+            _logger.LogInfo($"Product with id: {command.ProductId} removed.");
+
             return NoContent();
         }
 
         //PUT: /api/products
         [HttpPut]
-    //    [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put([FromBody] UpdateProduct command)
         {
             await DispatchAsync(command);
 
-            return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
+            _logger.LogInfo($"Product with id: {command.ProductId} updated.");
+
+            return CreatedAtAction(nameof(Get), new { id = command.ProductId }, command);
         }       
     }
 }

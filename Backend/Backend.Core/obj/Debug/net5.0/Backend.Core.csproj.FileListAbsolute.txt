@@ -2,6 +2,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\net5.0\Backend.C
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\net5.0\Backend.Core.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\net5.0\ref\Backend.Core.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\bin\Debug\net5.0\Backend.Core.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.csprojAssemblyReference.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.AssemblyInfoInputs.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.AssemblyInfo.cs

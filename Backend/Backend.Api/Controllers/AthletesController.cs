@@ -1,6 +1,8 @@
 ﻿using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +15,13 @@ namespace Backend.Api.Controllers
     public class AthletesController : ApiControllerBase
     {
         private readonly IAthleteService _athleteService;
+        private readonly ILoggerManager _logger;
 
-        public AthletesController(ICommandDispatcher commandDispatcher, IAthleteService athleteService) : base(commandDispatcher)
+        public AthletesController(ICommandDispatcher commandDispatcher, IAthleteService athleteService,
+            ILoggerManager logger) : base(commandDispatcher)
         {
             _athleteService = athleteService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -92,6 +97,8 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
+            _logger.LogInfo($"Athlete with user id {command.UserId} added.");
+
             return CreatedAtAction(nameof(Get), new { userId = command.UserId }, command);
         
         }
@@ -100,6 +107,8 @@ namespace Backend.Api.Controllers
         public async Task<IActionResult> Delete(int userId)
         {
             await _athleteService.DeleteAsync(userId);
+
+            _logger.LogInfo($"Athlete with user id {userId} removed.");
 
             return NoContent();
         }

@@ -1,5 +1,7 @@
 ﻿using Backend.Infrastructure.Exceptions;
+using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,13 +14,15 @@ namespace Backend.Api.Framework
     public class MyExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILoggerManager _logger;
 
-        public MyExceptionHandlerMiddleware(RequestDelegate next)
+        public MyExceptionHandlerMiddleware(RequestDelegate next, ILoggerManager logger)
         {
             _next = next;
+            _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try 
             {
@@ -26,6 +30,7 @@ namespace Backend.Api.Framework
             }
             catch(Exception exception)
             {
+                _logger.LogError($"Something went wrong {exception}.");
                 await HandleExceptionAsync(context, exception);
             }
         }
@@ -33,28 +38,30 @@ namespace Backend.Api.Framework
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var errorCode = "error";
-            var statusCode = HttpStatusCode.BadRequest;
+            var statusCode = (int)HttpStatusCode.BadRequest;
             var exceptionType = exception.GetType();
             switch (exception)
             {
                 case Exception e when exceptionType == typeof(UnauthorizedAccessException):
-                    statusCode = HttpStatusCode.Unauthorized;
+                    statusCode = (int)HttpStatusCode.Unauthorized;
                     break;
 
                 case ServiceException e when exceptionType == typeof(ServiceException):
-                    statusCode = HttpStatusCode.BadRequest;
+                    statusCode = (int)HttpStatusCode.BadRequest;
                     errorCode = e.Code;
                     break;
+
                 default:
-                    statusCode = HttpStatusCode.InternalServerError;
+                    statusCode = (int)HttpStatusCode.InternalServerError;
                     break;
             }
 
-            var response = new { code = errorCode, message = exception.Message };
-            var payload = JsonConvert.SerializeObject(response);
+
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
-
+            var response = new { statusCode = statusCode, errorCode = errorCode, message = exception.Message };
+            var payload = JsonConvert.SerializeObject(response);
+            
             return context.Response.WriteAsync(payload);
         }
     }

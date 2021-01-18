@@ -81,20 +81,8 @@ namespace Backend.Infrastructure.Services
             var product = await _productRepository.GetAsync(id);
             if (product == null)
             {
-                throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
+                throw new ServiceException(ErrorCodes.ObjectNotFound,
                     $"Product with id: '{id}' was not found.");
-            }
-
-            await _productRepository.DeleteAsync(product);
-        }
-
-        public async Task DeleteAsync(string name)
-        {
-            var product = await _productRepository.GetAsync(name);
-            if (product == null)
-            {
-                throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
-                    $"Product with name: '{name}' was not found.");
             }
 
             await _productRepository.DeleteAsync(product);

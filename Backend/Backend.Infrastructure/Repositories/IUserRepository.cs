@@ -17,7 +17,7 @@ namespace Backend.Infrastructure.Repositories
 
         Task AddAsync(User user);
 
-        Task RemoveAsync(User user);
+        Task DeleteAsync(User user);
 
         Task UpdateAsync(User user);
 

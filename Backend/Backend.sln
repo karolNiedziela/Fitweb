@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Core", "Backend.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Api", "Backend.Api\Backend.Api.csproj", "{E560DFB8-1697-481E-A2E1-CC66E870C2BD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitweb.Tests.Unit", "Fitweb.Tests.Unit\Fitweb.Tests.Unit.csproj", "{96316974-2C20-440F-823C-93B46D5DFA8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E560DFB8-1697-481E-A2E1-CC66E870C2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E560DFB8-1697-481E-A2E1-CC66E870C2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E560DFB8-1697-481E-A2E1-CC66E870C2BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96316974-2C20-440F-823C-93B46D5DFA8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96316974-2C20-440F-823C-93B46D5DFA8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96316974-2C20-440F-823C-93B46D5DFA8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96316974-2C20-440F-823C-93B46D5DFA8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

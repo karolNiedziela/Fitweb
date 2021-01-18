@@ -17,7 +17,7 @@ namespace Backend.Infrastructure.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("Backend.Core.Entities.Athlete", b =>
                 {
@@ -428,8 +428,10 @@ namespace Backend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<bool>("IsExternalLoginProvider")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Username")

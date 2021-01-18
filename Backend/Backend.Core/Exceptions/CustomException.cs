@@ -25,7 +25,7 @@ namespace Backend.Core.Exceptions
         }
 
         public CustomException(string code, string message, params object[] args)
-            : this(null, string.Empty, message, args)
+            : this(null, code, message, args)
         {
 
         }

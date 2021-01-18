@@ -8,11 +8,11 @@ namespace Backend.Core.Factories
 {
     public class RefreshTokenFactory : IRefreshTokenFactory
     {
-        private readonly IRngService _rng;
+        private readonly IRng _rng;
 
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public RefreshTokenFactory(IRngService rng, IDateTimeProvider dateTimeProvider)
+        public RefreshTokenFactory(IRng rng, IDateTimeProvider dateTimeProvider)
         {
             _rng = rng;
             _dateTimeProvider = dateTimeProvider;

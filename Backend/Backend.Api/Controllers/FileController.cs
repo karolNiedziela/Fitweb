@@ -1,8 +1,10 @@
 ﻿using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Services.File;
+using Backend.Infrastructure.Services.Logger;
 using Backend.Infrastructure.Utilities.Csv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +18,13 @@ namespace Backend.Api.Controllers
     public class FileController : ApiControllerBase
     {
         private readonly IFileService _fileService;
+        private readonly ILoggerManager _logger;
 
-        public FileController(ICommandDispatcher commandDispatcher, IFileService fileService) 
+        public FileController(ICommandDispatcher commandDispatcher, IFileService fileService, ILoggerManager logger) 
             : base(commandDispatcher)
         {
             _fileService = fileService;
+            _logger = logger;
         }
 
         
@@ -36,6 +40,8 @@ namespace Backend.Api.Controllers
             var filePath = _fileService.CreateFilePath(file);
 
             await _fileService.CreateFile(file, filePath);
+
+            _logger.LogInfo($"File with filename: {file.FileName} created in {filePath}.");
 
             return Ok();
         }

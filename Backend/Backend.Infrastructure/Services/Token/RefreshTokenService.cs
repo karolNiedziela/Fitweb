@@ -47,7 +47,6 @@ namespace Backend.Infrastructure.Services
             jwt.RefreshToken = newRefreshToken.Token;
 
             return jwt;
-
         }
 
         public async Task RevokeAsync(string refreshToken)

@@ -13,5 +13,6 @@ namespace Backend.Infrastructure.CommandHandler.Commands
         public string Email { get; set; }
 
         public string Password { get; set; }
+
     }
 }

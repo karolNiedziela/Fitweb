@@ -17,6 +17,7 @@ namespace Backend.Infrastructure.EF
             _settings = settings;
         }
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (_settings.InMemory)

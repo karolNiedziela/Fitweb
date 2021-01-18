@@ -6,6 +6,6 @@ namespace Backend.Infrastructure.CommandHandler.Commands
 {
     public class DeleteUser : ICommand
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
     }
 }

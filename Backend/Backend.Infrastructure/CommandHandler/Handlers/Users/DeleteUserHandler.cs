@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandHandler.Handlers
 
         public async Task HandleAsync(DeleteUser command)
         {
-            await _userService.DeleteAsync(command.UserId);
+            await _userService.DeleteAsync(command.Id);
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Autofac;
 using Backend.Core.Factories;
+using Backend.Core.Services;
 using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Services.External;
+using Backend.Infrastructure.Services.Logger;
 using Backend.Infrastructure.Utilities.Csv;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -21,10 +24,13 @@ namespace Backend.Infrastructure.IoC.Modules
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
-            builder.RegisterAssemblyTypes(assembly)
-                   .Where(t => t.Name.EndsWith("Provider"))
-                   .AsImplementedInterfaces()
-                   .InstancePerLifetimeScope();
+            builder.RegisterType<DateTimeProvider>()
+                   .As<IDateTimeProvider>()
+                   .SingleInstance();
+
+            builder.RegisterType<Rng>()
+                   .As<IRng>()
+                   .SingleInstance();
 
             builder.RegisterType<RefreshTokenFactory>()
                    .As<IRefreshTokenFactory>()
@@ -42,15 +48,22 @@ namespace Backend.Infrastructure.IoC.Modules
                    .As<IPasswordHasher<IPasswordHandler>>()
                    .SingleInstance();
 
+            builder.RegisterType<LoggerManager>()
+                   .As<ILoggerManager>()
+                   .SingleInstance();
+
             builder.RegisterAssemblyTypes(assembly)
                    .Where(t => t.Name.EndsWith("Initializer"))
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
-
             builder.RegisterGeneric(typeof(CsvLoader<,>))
                    .As(typeof(ICsvLoader<,>))
                    .InstancePerLifetimeScope();
+
+            builder.RegisterType<FacebookAuthService>()
+                   .As<IFacebookAuthService>()
+                   .SingleInstance();
         }
     }
 }

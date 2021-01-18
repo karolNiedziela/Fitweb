@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Backend.Infrastructure.CommandHandler.Commands;
 using Backend.Infrastructure.Helpers;
 using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Backend.Api.Controllers
@@ -17,11 +19,14 @@ namespace Backend.Api.Controllers
     public class ExercisesController : ApiControllerBase
     {
         private readonly IExerciseService _exerciseService;
+        private readonly ILoggerManager _logger;
 
-        public ExercisesController(ICommandDispatcher commandDispatcher, IExerciseService exerciseService) 
+        public ExercisesController(ICommandDispatcher commandDispatcher, IExerciseService exerciseService,
+            ILoggerManager logger) 
             : base(commandDispatcher)
         {
             _exerciseService = exerciseService;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -95,14 +100,18 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
+            _logger.LogInfo($"Exercise with name: {command.Name} added.");
+
             return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
         }
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromBody]DeleteExercise command)
         {
-            await _exerciseService.DeleteAsync(id);
+            await _exerciseService.DeleteAsync(command.ExerciseId);
+
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} removed.");
 
             return NoContent();
         }
@@ -113,7 +122,9 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} updated.");
+
+            return CreatedAtAction(nameof(Get), new { id = command.ExerciseId }, command);
         }
     }
 }

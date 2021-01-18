@@ -41,14 +41,14 @@ namespace Backend.Infrastructure.Extensions
             }
         }
 
-        public static async Task<string> CheckIfAdminExists(this IUserRepository repository, string roleName)
+        public static async Task<string> CheckIfAdminExists(this IUserRepository repository)
         {
-            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name.ToString() == "Admin")))
+            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == Role.GetRole("Admin").Name)))
             {
-                return roleName = "Admin";
+                return "User";
             }
 
-            return roleName;
+            return "Admin";
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Backend.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveAsync(User user)
+        public async Task DeleteAsync(User user)
         {
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

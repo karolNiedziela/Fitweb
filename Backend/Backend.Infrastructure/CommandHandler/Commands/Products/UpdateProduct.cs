@@ -6,7 +6,7 @@ namespace Backend.Infrastructure.CommandHandler.Commands
 {
     public class UpdateProduct : ICommand
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
 
         public string Name { get; set; }
 

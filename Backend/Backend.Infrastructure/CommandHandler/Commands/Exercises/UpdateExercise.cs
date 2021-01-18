@@ -6,7 +6,7 @@ namespace Backend.Infrastructure.CommandHandler.Commands
 {
     public class UpdateExercise : ICommand
     {
-        public int Id { get; set; }
+        public int ExerciseId { get; set; }
 
         public string Name { get; set; }
 

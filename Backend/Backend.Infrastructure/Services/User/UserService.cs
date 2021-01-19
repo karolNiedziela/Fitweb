@@ -3,7 +3,7 @@ using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
-using Backend.Infrastructure.Repositories;
+using Backend.Core.Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<int> RegisterAsync(string username, string email, string password = null, string roleName = "User")
+        public async Task<int> RegisterAsync(string username, string email, string password, string roleName = "User")
         {
             if( await _userRepository.AnyAsync(u => u.Username == username))
             {

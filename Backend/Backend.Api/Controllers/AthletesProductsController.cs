@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,14 @@ namespace Backend.Api.Controllers
     {
         private readonly ILoggerManager _logger;
 
-        public AthletesProductsController(ICommandDispatcher commandDispatcher, ILoggerManager logger)
-            : base(commandDispatcher)
+        public AthletesProductsController(IDispatcher dispatcher, ILoggerManager logger)
+            : base(dispatcher)
         {
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddAthleteProduct command)
+        public async Task<IActionResult> Post([FromBody]AddAthleteProduct command)
         {
             await DispatchAsync(command);
 

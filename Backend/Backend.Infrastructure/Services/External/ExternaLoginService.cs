@@ -1,6 +1,6 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Repositories;
+using Backend.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

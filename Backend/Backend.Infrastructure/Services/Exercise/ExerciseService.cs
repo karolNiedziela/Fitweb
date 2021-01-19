@@ -2,12 +2,13 @@
 using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Helpers;
+using Backend.Core.Helpers;
 using Backend.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Core.Repositories;
 
 namespace Backend.Infrastructure.Services
 {

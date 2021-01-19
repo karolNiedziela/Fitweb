@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Backend.Infrastructure.CommandHandler.Commands;
-using Backend.Infrastructure.Helpers;
+using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +22,9 @@ namespace Backend.Api.Controllers
         private readonly IExerciseService _exerciseService;
         private readonly ILoggerManager _logger;
 
-        public ExercisesController(ICommandDispatcher commandDispatcher, IExerciseService exerciseService,
+        public ExercisesController(IDispatcher dispatcher, IExerciseService exerciseService,
             ILoggerManager logger) 
-            : base(commandDispatcher)
+            : base(dispatcher)
         {
             _exerciseService = exerciseService;
             _logger = logger;
@@ -54,9 +55,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]PaginationQuery paginationQuery)
+        public async Task<IActionResult> GetAll([FromQuery]GetExercises query)
         {
-            var exercises = await _exerciseService.GetAllAsync(paginationQuery);
+            var exercises = await _dispatcher.QueryAsync(query);
 
             var metadata = new
             {
@@ -74,9 +75,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] PaginationQuery paginationQuery, string name, string partOfBody)
+        public async Task<IActionResult> Search([FromQuery]SearchExercises query)
         {
-            var results = await _exerciseService.SearchAsync(paginationQuery, name, partOfBody);
+            var results = await _dispatcher.QueryAsync(query);
 
             var metadata = new
             {

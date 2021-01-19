@@ -1,7 +1,7 @@
 ﻿using Backend.Core.Entities;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.EF;
-using Backend.Infrastructure.Helpers;
+using Backend.Core.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

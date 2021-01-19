@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
+using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Helpers;
+using Backend.Core.Helpers;
 using Backend.Infrastructure.Mappers;
-using Backend.Infrastructure.Repositories;
+using Backend.Core.Repositories;
 using Backend.Infrastructure.Services;
 using NSubstitute;
 using Shouldly;
@@ -14,21 +15,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Backend.Infrastructure.Repositories;
 
 namespace Fitweb.Tests.Unit.Services
 {
-    public class ProductServiceTests
+    public class ProductServiceTests : IClassFixture<FitwebSeedDataFixture>
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         private readonly IProductService _sut;
+        FitwebSeedDataFixture _fixture;
 
-        public ProductServiceTests()
+        public ProductServiceTests(FitwebSeedDataFixture fixture)
         {
+            _fixture = fixture;
             _productRepository = Substitute.For<IProductRepository>();
             _mapper = Substitute.For<IMapper>();
             _mapper = AutoMapperConfig.Initialize();
-            _sut = new ProductService(_productRepository, _mapper);
+            _sut = Substitute.For<ProductService>(_productRepository, _mapper);
         }
 
         [Fact]
@@ -72,7 +76,7 @@ namespace Fitweb.Tests.Unit.Services
             var products = new List<Product>
             {
                 new Product { Id = 1 },
-                new Product { Id = 1 }
+                new Product { Id = 2 }
             };
 
             var pageList = Substitute.For<PagedList<Product>>(products, 10, 10, 10);
@@ -102,9 +106,34 @@ namespace Fitweb.Tests.Unit.Services
         }
 
         [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenProductNameIsNotUnique()
+        {
+            var productRepository = Substitute.For<ProductRepository>(_fixture.FitwebContext);
+            var productService = Substitute.For<ProductService>(productRepository, _mapper);
+
+            var exception = await Record.ExceptionAsync(() => productService.AddAsync("product2", 500, 25, 70, 5, "Meat"));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(ServiceException), $"Product with name: 'product2' already exists.");
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldDeleteProduct_IfProductExists()
+        {
+            var productRepository = Substitute.For<ProductRepository>(_fixture.FitwebContext);
+            var productService = Substitute.For<ProductService>(productRepository, _mapper);
+
+            await productService.DeleteAsync(1);
+
+            var product = await productRepository.GetAsync(1);
+            product.ShouldBeNull();
+        }
+
+        [Fact]
         public async Task DeleteAsync_ShouldThrowException_WhenProductDoesNotExist()
         {
-            var exception = await Record.ExceptionAsync(() =>  _sut.DeleteAsync(1));
+            var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(1));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));

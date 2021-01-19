@@ -2,9 +2,9 @@
 using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Helpers;
+using Backend.Core.Helpers;
 using Backend.Infrastructure.Mappers;
-using Backend.Infrastructure.Repositories;
+using Backend.Core.Repositories;
 using Backend.Infrastructure.Services;
 using NSubstitute;
 using Shouldly;
@@ -14,17 +14,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Backend.Infrastructure.Repositories;
 
 namespace Fitweb.Tests.Unit.Services
 {
-    public class ExerciseServiceTests
+    public class ExerciseServiceTests : IClassFixture<FitwebSeedDataFixture>
     {
         private readonly IExerciseRepository _exerciseRepository;
         private readonly IMapper _mapper;
         private readonly IExerciseService _sut;
+        private readonly FitwebSeedDataFixture _fixture;
 
-        public ExerciseServiceTests()
+        public ExerciseServiceTests(FitwebSeedDataFixture fixture)
         {
+            _fixture = fixture;
             _exerciseRepository = Substitute.For<IExerciseRepository>();
             _mapper = Substitute.For<IMapper>();
             _mapper = AutoMapperConfig.Initialize();
@@ -86,6 +89,31 @@ namespace Fitweb.Tests.Unit.Services
             await _sut.AddAsync("chest push", "Chest");
 
             await _exerciseRepository.Received(1).AddAsync(Arg.Any<Exercise>());
+        }
+
+        [Fact] 
+        public async Task AddAsync_ShouldThrowException_WhenExerciseNameIsNotUnique()
+        {
+            var exerciseRepository = Substitute.For<ExerciseRepository>(_fixture.FitwebContext);
+            var exerciseService = Substitute.For<ExerciseService>(exerciseRepository, _mapper);
+
+            var exception = await Record.ExceptionAsync(() =>  exerciseService.AddAsync("exercise1", "Chest"));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(ServiceException), $"Exercise with name: 'exercise1' already exists.");
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldDeleteExercise_WhenExerciseExists()
+        {
+            var exerciseRepository = Substitute.For<ExerciseRepository>(_fixture.FitwebContext);
+            var exerciseService = Substitute.For<ExerciseService>(exerciseRepository, _mapper);
+
+            await exerciseService.DeleteAsync(2);
+
+            var exercise = await exerciseRepository.GetAsync(2);
+            exercise.ShouldBeNull();
         }
 
         [Fact]

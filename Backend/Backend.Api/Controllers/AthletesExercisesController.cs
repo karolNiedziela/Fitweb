@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,8 @@ namespace Backend.Api.Controllers
     {
         private readonly ILoggerManager _logger;
 
-        public AthletesExercisesController(ICommandDispatcher commandDispatcher, ILoggerManager logger) 
-            : base(commandDispatcher)
+        public AthletesExercisesController(IDispatcher dispatcher, ILoggerManager logger) 
+            : base(dispatcher)
         {
             _logger = logger;
         }
@@ -34,7 +35,7 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteAthleteExercise command)
+        public async Task<IActionResult> Delete([FromBody]DeleteAthleteExercise command)
         {
             await DispatchAsync(command);
 

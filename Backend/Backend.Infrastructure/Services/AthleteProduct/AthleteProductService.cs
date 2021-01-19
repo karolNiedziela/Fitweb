@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;

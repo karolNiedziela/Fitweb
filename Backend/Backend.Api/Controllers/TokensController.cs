@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +16,8 @@ namespace Backend.Api.Controllers
     {
         private readonly IRefreshTokenService _refreshTokenService;
 
-        public TokensController(ICommandDispatcher commandDispatcher, IRefreshTokenService refreshTokenService) 
-            : base(commandDispatcher)
+        public TokensController(IDispatcher dispatcher, IRefreshTokenService refreshTokenService) 
+            : base(dispatcher)
         {
             _refreshTokenService = refreshTokenService;
         }

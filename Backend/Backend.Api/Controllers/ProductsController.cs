@@ -1,5 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
-using Backend.Infrastructure.Helpers;
+﻿using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Backend.Infrastructure.CommandQueryHandler.Queries;
 
 namespace Backend.Api.Controllers
 {
@@ -17,19 +18,19 @@ namespace Backend.Api.Controllers
         private readonly IProductService _productService;
         private readonly ILoggerManager _logger;
 
-        public ProductsController(ICommandDispatcher commandDispatcher, IProductService productService,
+        public ProductsController(IDispatcher dispatcher, IProductService productService,
             ILoggerManager logger)
-            : base(commandDispatcher)
+            : base(dispatcher)
         {
             _productService = productService;
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         //GET : /api/products/id
         public async Task<IActionResult> Get(int id)
         {
-            var product = await _productService.GetAsync(id);
+            var product = await _dispatcher.QueryAsync(new GetProduct(id));
             if (product is null)
             {
                 return NotFound();
@@ -38,7 +39,7 @@ namespace Backend.Api.Controllers
             return Ok(product);
         }
 
-        [HttpGet("{name}")]
+        /*[HttpGet("{name}")]
         public async Task<IActionResult> Get(string name)
         {
             var product = await _productService.GetAsync(name);
@@ -48,13 +49,13 @@ namespace Backend.Api.Controllers
             }
 
             return Ok(product);
-        }
+        }*/
 
         [HttpGet]
         //GET : /api/products
-        public async Task<IActionResult> GetAll([FromQuery]PaginationQuery paginationQuery)
+        public async Task<IActionResult> GetAll([FromQuery]GetProducts query)
         {
-            var products = await _productService.GetAllAsync(paginationQuery);
+            var products = await _dispatcher.QueryAsync(query);
 
             var metadata = new
             {
@@ -72,9 +73,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery]PaginationQuery paginationQuery, string name, string category = null)
+        public async Task<IActionResult> Search([FromQuery]SearchProducts query)
         {
-            var results = await _productService.SearchAsync(paginationQuery, name, category);
+            var results = await _dispatcher.QueryAsync(query);
 
             var metadata = new
             {

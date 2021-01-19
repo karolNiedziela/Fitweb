@@ -1,4 +1,4 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.Services.File;
 using Backend.Infrastructure.Services.Logger;
 using Backend.Infrastructure.Utilities.Csv;
@@ -20,8 +20,8 @@ namespace Backend.Api.Controllers
         private readonly IFileService _fileService;
         private readonly ILoggerManager _logger;
 
-        public FileController(ICommandDispatcher commandDispatcher, IFileService fileService, ILoggerManager logger) 
-            : base(commandDispatcher)
+        public FileController(IDispatcher dispatcher, IFileService fileService, ILoggerManager logger) 
+            : base(dispatcher)
         {
             _fileService = fileService;
             _logger = logger;

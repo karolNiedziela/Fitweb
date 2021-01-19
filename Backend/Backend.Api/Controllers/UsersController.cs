@@ -1,5 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
-using Backend.Infrastructure.CommandHandler.Commands.Users;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +17,8 @@ namespace Backend.Api.Controllers
         private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
 
-        public UsersController(ICommandDispatcher commandDispatcher, IUserService userService, ILoggerManager logger)
-            : base(commandDispatcher)
+        public UsersController(IDispatcher dispatcher, IUserService userService, ILoggerManager logger)
+            : base(dispatcher)
         {
             _userService = userService;
             _logger = logger;

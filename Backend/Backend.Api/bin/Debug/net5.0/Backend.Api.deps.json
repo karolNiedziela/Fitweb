@@ -1840,6 +1840,9 @@
         }
       },
       "Backend.Core/1.0.0": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "5.0.2"
+        },
         "runtime": {
           "Backend.Core.dll": {}
         },

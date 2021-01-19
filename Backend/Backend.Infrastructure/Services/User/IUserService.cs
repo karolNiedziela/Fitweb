@@ -13,7 +13,7 @@ namespace Backend.Infrastructure.Services
 
         Task<IEnumerable<UserDto>> GetAllAsync();
 
-        Task<int> RegisterAsync(string username, string email, string password = null, string roleName = "User");
+        Task<int> RegisterAsync(string username, string email, string password, string roleName = "User");
 
         Task LoginAsync(string username, string password);
 

@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +18,8 @@ namespace Backend.Api.Controllers
         private readonly IAthleteService _athleteService;
         private readonly ILoggerManager _logger;
 
-        public AthletesController(ICommandDispatcher commandDispatcher, IAthleteService athleteService,
-            ILoggerManager logger) : base(commandDispatcher)
+        public AthletesController(IDispatcher dispatcher, IAthleteService athleteService,
+            ILoggerManager logger) : base(dispatcher)
         {
             _athleteService = athleteService;
             _logger = logger;

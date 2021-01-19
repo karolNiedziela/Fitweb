@@ -1,79 +1,36 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
-using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Mappers;
 using Backend.Infrastructure.Repositories;
 using Backend.Infrastructure.Services;
-using Backend.Infrastructure.Services.Logger;
-using Backend.Infrastructure.Settings;
-using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Fitweb.Tests.Unit.Services
 {
-    public class UserServiceTests
-    {
+    public class UserServiceTests : IClassFixture<FitwebSeedDataFixture>
+    { 
         private readonly IUserRepository _userRepository;
         private readonly IUserService _sut; // system under testing
         private readonly IMapper _mapper;
         private readonly IPasswordHandler _passwordHandler;
-        private readonly FitwebContext _context;
+        FitwebSeedDataFixture _fixture;
 
-        public UserServiceTests()
+        public UserServiceTests(FitwebSeedDataFixture fixture)
         {
-             var context = new FitwebContextInMemory();
-            _context = context._context;
-
+            _fixture = fixture;
             _userRepository = Substitute.For<IUserRepository>();
             _mapper = Substitute.For<IMapper>();
             _passwordHandler = Substitute.For<IPasswordHandler>();
             _mapper = AutoMapperConfig.Initialize();
             _sut = new UserService(_mapper, _passwordHandler, _userRepository);      
-
-        }
-
-        [Fact]
-        public async Task GetAllAsync_ShouldReturnIEnumerableUsers()
-        {
-            _context.Add(new User
-            {
-                Id = 1,
-                Username = "user1",
-                Email = "user1@email.com",
-                Password = "secret",
-                DateCreated = DateTime.UtcNow,
-                DateUpdated = DateTime.UtcNow,
-                IsExternalLoginProvider = false,
-                UserRoles = null
-            });
-            _context.Add(new User
-            {
-                Id = 2,
-                Username = "user2",
-                Email = "user2@email.com",
-                Password = "secret",
-                DateCreated = DateTime.UtcNow,
-                DateUpdated = DateTime.UtcNow,
-                IsExternalLoginProvider = false,
-                UserRoles = null
-            });
-
-            _context.SaveChanges();
-
-            var userRepository = new UserRepository(_context);
-            var users = await userRepository.GetAllAsync();
-
-            users.Count().ShouldBe(2);
         }
 
 
@@ -178,18 +135,35 @@ namespace Fitweb.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task RegisterAsync_ShouldInvokeAnyAsync()
+        public async Task RegisterAsync_ShouldThrowException_WhenUserNameIsNotUnique()
         {
-            // Arrange
-            var user = new User("karol", "karol@email.com", "testSecret");
+            var userRepository = Substitute.For<UserRepository>(_fixture.FitwebContext);
 
-            _userRepository.GetAsync("karol").Returns(user);
+            var userService = Substitute.For<UserService>(_mapper, _passwordHandler, userRepository);
+
+            var exception = await Record.ExceptionAsync(() =>  
+                userService.RegisterAsync("user2", "karol@email.com", "secret"));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(ServiceException), $"User with 'user2' already exists.");
+        }
+
+        [Fact]
+        public async Task RegisterAsync_ShouldThrowException_WhenEmailIsNotUnique()
+        {   
+            // Arrange
+            var userRepository = Substitute.For<UserRepository>(_fixture.FitwebContext);
+            var userService = Substitute.For<UserService>(_mapper, _passwordHandler, userRepository);
 
             // Act
-            await _sut.RegisterAsync("karol", "karol@email.com", "testSecret");
+            var exception = await Record.ExceptionAsync(() =>
+                userService.RegisterAsync("user5", "user1@email.com", "secret"));
 
             // Assert
-            await _userRepository.Received(2).AnyAsync(Arg.Any<Expression<Func<User, bool>>>());
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(ServiceException), $"User with 'user1@email.com' already exists.");
         }
 
         [Fact]
@@ -208,6 +182,21 @@ namespace Fitweb.Tests.Unit.Services
         }
 
         [Fact]
+        public async Task DeleteAsync_ShouldDeleteUser_WhenUserExists()
+        {
+            // Arrange
+            var userRepository = Substitute.For<UserRepository>(_fixture.FitwebContext);
+            var userService = Substitute.For<UserService>(_mapper, _passwordHandler, userRepository);
+
+            // Act
+            await userService.DeleteAsync(1);
+
+            // Assert
+            var user = await userRepository.GetAsync(1);
+            user.ShouldBeNull();
+        }
+
+        [Fact]
         public async Task DeleteAsync_ShouldThrowException_WhenUserDoesNotExist()
         {
             // Arrange
@@ -222,7 +211,7 @@ namespace Fitweb.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task UpdateAstync_ShouldThrowException_WhenUserDoestNotExist()
+        public async Task UpdateAsync_ShouldThrowException_WhenUserDoestNotExist()
         {
             // Arrange
 

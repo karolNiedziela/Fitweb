@@ -1,5 +1,6 @@
 ﻿using Autofac;
-using Backend.Infrastructure.CommandHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -13,13 +14,20 @@ namespace Backend.Infrastructure.IoC.Modules
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            builder.RegisterAssemblyTypes(assembly)
+            builder.RegisterAssemblyTypes(typeof(ICommand).Assembly)
                    .AsClosedTypesOf(typeof(ICommandHandler<>))
+                   .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
-            builder.RegisterType<CommandDispatcher>()
-                    .As<ICommandDispatcher>()
+            builder.RegisterAssemblyTypes(assembly)
+                   .AsClosedTypesOf(typeof(IQueryHandler<,>))
+                   .AsImplementedInterfaces()
+                   .InstancePerLifetimeScope();
+
+            builder.RegisterType<Dispatcher>()
+                    .As<IDispatcher>()
                     .InstancePerLifetimeScope();
+
         }
     }
 }

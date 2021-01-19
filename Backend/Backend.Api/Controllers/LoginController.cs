@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +16,7 @@ namespace Backend.Api.Controllers
     {
         private readonly IMemoryCache _cache;
 
-        public LoginController(ICommandDispatcher commandDispatcher, IMemoryCache cache) : base(commandDispatcher)
+        public LoginController(IDispatcher dispatcher, IMemoryCache cache) : base(dispatcher)
         {
             _cache = cache;
         }

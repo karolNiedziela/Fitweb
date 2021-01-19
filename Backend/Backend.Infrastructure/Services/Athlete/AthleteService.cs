@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Extensions;
-using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;

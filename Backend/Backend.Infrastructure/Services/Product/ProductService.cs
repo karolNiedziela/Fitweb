@@ -2,8 +2,8 @@
 using Backend.Core.Entities;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Helpers;
-using Backend.Infrastructure.Repositories;
+using Backend.Core.Helpers;
+using Backend.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

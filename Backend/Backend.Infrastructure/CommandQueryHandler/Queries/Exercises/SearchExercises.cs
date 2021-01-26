@@ -14,6 +14,8 @@ namespace Backend.Infrastructure.CommandQueryHandler.Queries
 
         public string PartOfBody { get; set; } = null;
 
-        public PaginationQuery PaginationQuery { get; set; }
+        public int PageNumber { get; set; }
+
+        public int PageSize { get; set; }
     }
 }

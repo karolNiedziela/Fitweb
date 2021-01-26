@@ -9,7 +9,7 @@ namespace Backend.Infrastructure.Services.Logger
 {
     public class LoggerManager : ILoggerManager
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         public LoggerManager()
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace Backend.Api.Framework
     {
         public static IApplicationBuilder UseMyExceptionHandler(this IApplicationBuilder builder)
             => builder.UseMiddleware(typeof(MyExceptionHandlerMiddleware));
+
     }
 }

@@ -63,7 +63,7 @@ namespace Backend.Infrastructure.Services
             double carbohydrates, double fats, string categoryName)
         {
             var product = await _productRepository.GetAsync(name);
-            if (product != null)
+            if (product is not null)
             {
                 throw new ServiceException(Exceptions.ErrorCodes.ObjectAlreadyAdded,
                     $"Product with name: '{name}' already exists.");
@@ -79,7 +79,7 @@ namespace Backend.Infrastructure.Services
         public async Task DeleteAsync(int id)
         {
             var product = await _productRepository.GetAsync(id);
-            if (product == null)
+            if (product is null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound,
                     $"Product with id: '{id}' was not found.");
@@ -96,6 +96,14 @@ namespace Backend.Infrastructure.Services
             {
                 throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
                     $"Product with name: '{name}' was not found.");
+            }
+
+            if (await _productRepository.AnyAsync(p => p.Name == name))
+            {
+                if (product.Name != name)
+                {
+                    throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with '{name}' already exists.");
+                }
             }
 
             product.SetName(name);

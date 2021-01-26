@@ -15,6 +15,11 @@ namespace Backend.Core.Entities
 
         public bool Revoked => RevokedAt.HasValue;
 
+        public RefreshToken()
+        {
+
+        }
+
         public RefreshToken(int userId, string token, DateTime dateCreated, DateTime? revokedAt = null)
         {
             if (string.IsNullOrWhiteSpace(token))

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Infrastructure.Auth;
 
 namespace Backend.Infrastructure.Services
 {
@@ -48,7 +49,7 @@ namespace Backend.Infrastructure.Services
 
         public async Task<int> RegisterAsync(string username, string email, string password, string roleName = "User")
         {
-            if( await _userRepository.AnyAsync(u => u.Username == username))
+            if (await _userRepository.AnyAsync(u => u.Username == username))
             {
                 throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{username}' already exists.");
             }
@@ -97,6 +98,23 @@ namespace Backend.Infrastructure.Services
         public async Task UpdateAsync(int id, string username, string email, string password)
         {
             var user = await _userRepository.GetOrFailAsync(id);
+            var result = _userRepository.AnyAsync(u => u.Username == username);
+
+            if (await _userRepository.AnyAsync(u => u.Username == username))
+            {
+                if (user.Username != username)
+                {
+                    throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{username}' already exists.");
+                }
+                
+            }
+            if (await _userRepository.AnyAsync(u => u.Email == email))
+            {
+                if (user.Email != email)
+                {
+                    throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{email}' already exists.");
+                }            
+            }
 
             user.SetUsername(username);
             user.SetEmail(email);

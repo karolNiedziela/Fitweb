@@ -1,6 +1,7 @@
 using Autofac;
 using Backend.Api.Framework;
 using Backend.Infrastructure.EF;
+using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.IoC;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Settings;
@@ -42,48 +43,21 @@ namespace Backend
             {
                 options.SuppressAsyncSuffixInActionNames = false;
             })
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;                 
-                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;                 
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 });
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
-            services.AddMemoryCache();
+            services.AddInfrastructure();
 
-            // database 
-            services.AddDbContext<FitwebContext>();
-
-            // jwt
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["jwt:key"])),
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["jwt:issuer"],
-                    ValidAudience = Configuration["jwt:issuer"],
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
 /*          .AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = Configuration["facebookAuthSettings:appId"];
                 facebookOptions.AppSecret = Configuration["facebookAuthSettings:appSecret"];
             });*/
-
-            services.AddHttpClient();
 
             services.AddSwaggerGen(c =>
             {

@@ -2,6 +2,7 @@
 using Backend.Core.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,5 +25,7 @@ namespace Backend.Core.Repositories
         Task DeleteAsync(Product product);
 
         Task UpdateAsync(Product product);
+
+        Task<bool> AnyAsync(Expression<Func<Product, bool>> expression);
     }
 }

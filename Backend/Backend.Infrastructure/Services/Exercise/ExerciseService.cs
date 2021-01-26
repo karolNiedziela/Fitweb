@@ -63,7 +63,7 @@ namespace Backend.Infrastructure.Services
         public async Task<int> AddAsync(string name, string partOfBody)
         {
             var exercise = await _exerciseRepository.GetAsync(name);
-            if (exercise != null)
+            if (exercise is not null)
             {
                 throw new ServiceException(ErrorCodes.ObjectAlreadyAdded,
                     $"Exercise with name: '{name}' already exists.");
@@ -94,6 +94,14 @@ namespace Backend.Infrastructure.Services
             {
                 throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
                     $"Exercise with name: '{name}' was not found.");
+            }
+
+            if (await _exerciseRepository.AnyAsync(p => p.Name == name))
+            {
+                if (exercise.Name != name)
+                {
+                    throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Exercise with '{name}' already exists.");
+                }
             }
 
             exercise.SetName(name);

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -71,6 +72,7 @@ namespace Backend.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-
+        public async Task<bool> AnyAsync(Expression<Func<Exercise, bool>> expression)
+            => await _context.Exercises.AnyAsync(expression);
     }
 }

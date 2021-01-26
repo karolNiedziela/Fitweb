@@ -1,13 +1,9 @@
 ﻿using Backend.Core.Factories;
 using Backend.Core.Repositories;
 using Backend.Core.Services;
+using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
-using Backend.Infrastructure.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services

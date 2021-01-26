@@ -10,6 +10,8 @@ namespace Backend.Infrastructure.CommandQueryHandler.Queries
 {
     public class GetExercises : IQuery<PagedList<ExerciseDto>>
     {
-        public PaginationQuery PaginationQuery { get; set; }
+        public int PageNumber { get; set; }
+
+        public int PageSize { get; set; }
     }
 }

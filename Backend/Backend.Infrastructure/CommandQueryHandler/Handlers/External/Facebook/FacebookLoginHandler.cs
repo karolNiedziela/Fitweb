@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Factories;
 using Backend.Core.Repositories;
+using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Services;

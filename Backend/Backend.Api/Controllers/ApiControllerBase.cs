@@ -11,7 +11,7 @@ namespace Backend.Api.Controllers
 {
     public class ApiControllerBase : Controller
     {
-        protected readonly IDispatcher _dispatcher;
+        private readonly IDispatcher _dispatcher;
 
         protected int UserId => HttpContext.User.Identity is ClaimsIdentity identity ?
             Int32.Parse(identity.FindFirst("sub").Value) : Int32.Parse(null);
@@ -27,7 +27,7 @@ namespace Backend.Api.Controllers
             await _dispatcher.DispatchAsync(command);
         }
 
-        protected async Task<T> QueryAsync<T>(T query) where T : IQuery<T>
+        protected async Task<T> QueryAsync<T>(IQuery<T> query)
         {
             return await _dispatcher.QueryAsync(query);
         }

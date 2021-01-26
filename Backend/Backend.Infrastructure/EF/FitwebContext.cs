@@ -22,7 +22,7 @@ namespace Backend.Infrastructure.EF
         {
             if (_settings.InMemory)
             {
-                optionsBuilder.UseInMemoryDatabase("InMemory");
+                optionsBuilder.UseInMemoryDatabase($"Database{Guid.NewGuid()}");
                 return;
             }
 

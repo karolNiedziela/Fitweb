@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Backend.Core.Repositories;
+using System.Linq.Expressions;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -74,5 +75,8 @@ namespace Backend.Infrastructure.Repositories
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<Product, bool>> expression)
+            => await _context.Products.AnyAsync(expression);
     }
 }

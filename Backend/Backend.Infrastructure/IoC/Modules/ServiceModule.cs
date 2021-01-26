@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Backend.Core.Factories;
 using Backend.Core.Services;
+using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.External;
 using Backend.Infrastructure.Services.Logger;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Exercises;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
@@ -30,10 +31,10 @@ namespace Backend.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var exercise = await _exerciseService.GetAsync(id);
+            var exercise = await QueryAsync(new GetExercise(id));
             if (exercise is null)
             {
                 return NotFound();
@@ -57,7 +58,7 @@ namespace Backend.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery]GetExercises query)
         {
-            var exercises = await _dispatcher.QueryAsync(query);
+            var exercises = await QueryAsync(query);
 
             var metadata = new
             {
@@ -77,7 +78,7 @@ namespace Backend.Api.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery]SearchExercises query)
         {
-            var results = await _dispatcher.QueryAsync(query);
+            var results = await QueryAsync(query);
 
             var metadata = new
             {

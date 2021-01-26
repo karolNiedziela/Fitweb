@@ -30,7 +30,7 @@ namespace Backend.Api.Controllers
         //GET : /api/products/id
         public async Task<IActionResult> Get(int id)
         {
-            var product = await _dispatcher.QueryAsync(new GetProduct(id));
+            var product = await QueryAsync(new GetProduct(id));
             if (product is null)
             {
                 return NotFound();
@@ -39,7 +39,7 @@ namespace Backend.Api.Controllers
             return Ok(product);
         }
 
-        /*[HttpGet("{name}")]
+        [HttpGet("{name}")]
         public async Task<IActionResult> Get(string name)
         {
             var product = await _productService.GetAsync(name);
@@ -49,13 +49,13 @@ namespace Backend.Api.Controllers
             }
 
             return Ok(product);
-        }*/
+        }
 
         [HttpGet]
         //GET : /api/products
         public async Task<IActionResult> GetAll([FromQuery]GetProducts query)
         {
-            var products = await _dispatcher.QueryAsync(query);
+            var products = await QueryAsync(query);
 
             var metadata = new
             {
@@ -75,7 +75,7 @@ namespace Backend.Api.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery]SearchProducts query)
         {
-            var results = await _dispatcher.QueryAsync(query);
+            var results = await QueryAsync(query);
 
             var metadata = new
             {

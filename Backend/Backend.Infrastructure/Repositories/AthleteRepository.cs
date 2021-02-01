@@ -24,36 +24,10 @@ namespace Backend.Infrastructure.Repositories
             => await _context.Athletes.SingleOrDefaultAsync(a => a.UserId == userId);
 
         public async Task<IEnumerable<Athlete>> GetAllAsync()
-         => await _context.Athletes.ToListAsync();
+         => await _context.Athletes.AsNoTracking().ToListAsync();
 
         public IQueryable<Athlete> FindByCondition(Expression<Func<Athlete, bool>> expression)
-            => _context.Athletes.Where(expression).AsNoTracking();
-
-        public async Task<Athlete> GetProductsAsync(int userId)
-            => await _context.Athletes.Include(a => a.AthleteProducts)
-                                        .ThenInclude(ap => ap.Product)
-                                       .SingleOrDefaultAsync(a => a.UserId == userId);
-
-        public async Task<Athlete> GetProductAsync(int userId, int productId)
-          => await _context.Athletes.Where(a => a.UserId == userId)
-                           .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
-                            .ThenInclude(ap => ap.Product)
-                           .SingleOrDefaultAsync();
-
-        public async Task<Athlete> GetExercisesAsync(int userId)
-            => await _context.Athletes.Include(a => a.AthleteExercises)
-                                        .ThenInclude(ae => ae.Exercise)
-                                      .Include(a => a.AthleteExercises)
-                                        .ThenInclude(ae => ae.Day)
-                                      .SingleOrDefaultAsync(a => a.UserId == userId);
-
-        public async Task<Athlete> GetExerciseAsync(int userId, int exerciseId)
-           => await _context.Athletes.Where(a => a.UserId == userId)
-                            .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId))
-                                .ThenInclude(ae => ae.Exercise)
-                            .Include(a => a.AthleteExercises)
-                                .ThenInclude(ae => ae.Day)
-                            .SingleOrDefaultAsync();
+            => _context.Athletes.AsNoTracking().Where(expression);
 
         public async Task AddAsync(Athlete athlete)
         {

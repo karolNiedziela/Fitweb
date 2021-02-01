@@ -12,12 +12,12 @@ namespace Backend.Core.Entities
 
 #nullable enable
         public string? Password { get; set; }
-
+#nullable disable
         public bool IsExternalLoginProvider { get; set; }
 
-        public  ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
-        
+
         public User()
         {
 

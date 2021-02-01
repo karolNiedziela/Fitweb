@@ -45,6 +45,7 @@ namespace Backend
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseIISIntegration()
                     .UseStartup<Startup>();
+                    
                 })
                 .UseNLog();
     }

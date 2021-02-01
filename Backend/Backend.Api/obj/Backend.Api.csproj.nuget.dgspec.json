@@ -83,6 +83,10 @@
               "target": "Package",
               "version": "[5.0.2, )"
             },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
               "version": "[5.0.1, )"
@@ -293,6 +297,10 @@
               "version": "[5.0.2, )"
             },
             "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
               "target": "Package",
               "version": "[5.0.0, )"
             },

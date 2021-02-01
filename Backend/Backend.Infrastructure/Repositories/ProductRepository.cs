@@ -32,6 +32,7 @@ namespace Backend.Infrastructure.Repositories
         {
             return await PagedList<Product>.ToPagedList(_context.Products
                     .Include(p => p.CategoryOfProduct)
+                    .AsNoTracking()
                     .OrderBy(p => p.Name),
                 paginationQuery.PageNumber,
                 paginationQuery.PageSize);
@@ -40,6 +41,7 @@ namespace Backend.Infrastructure.Repositories
         public async Task<PagedList<Product>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null)
         {
             IQueryable<Product> query = _context.Products.Include(p => p.CategoryOfProduct)
+                                                         .AsNoTracking()
                                                          .Where(p => p.Name.Contains(name));
 
             if (category is not null)

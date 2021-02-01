@@ -37,10 +37,10 @@ namespace Backend.Infrastructure.Services
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id: {productId} was not found.");
             }
 
-            if (athlete.AthleteProducts.Any(ap => ap.ProductId == productId))
+/*            if (athlete.AthleteProducts.Any(ap => ap.ProductId == productId))
             {
                 throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with id: {productId} already added today");
-            }
+            }*/
 
             athlete.AthleteProducts.Add(AthleteProduct.Create(athlete, product, weight));
 

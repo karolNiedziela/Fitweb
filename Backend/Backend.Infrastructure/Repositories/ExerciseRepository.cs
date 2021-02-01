@@ -30,13 +30,16 @@ namespace Backend.Infrastructure.Repositories
         public async Task<PagedList<Exercise>> GetAllAsync(PaginationQuery paginationQuery)
             => await PagedList<Exercise>.ToPagedList(_context.Exercises
                     .Include(e => e.PartOfBody)
+                    .AsNoTracking()
                     .OrderBy(e => e.Name),
                     paginationQuery.PageNumber,
                     paginationQuery.PageSize);
 
         public async Task<PagedList<Exercise>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null)
         {
-            IQueryable<Exercise> query = _context.Exercises.Include(e => e.PartOfBody).Where(e => e.Name.Contains(name));
+            IQueryable<Exercise> query = _context.Exercises.Include(e => e.PartOfBody)
+                                            .AsNoTracking()
+                                            .Where(e => e.Name.Contains(name));
 
             if (partOfBody is not null)
             {

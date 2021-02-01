@@ -28,6 +28,8 @@ namespace Backend
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddUserSecrets<JwtSettings>()
+                .AddUserSecrets<FacebookAuthSettings>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -52,12 +54,6 @@ namespace Backend
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.AddInfrastructure();
-
-/*          .AddFacebook(facebookOptions =>
-            {
-                facebookOptions.AppId = Configuration["facebookAuthSettings:appId"];
-                facebookOptions.AppSecret = Configuration["facebookAuthSettings:appSecret"];
-            });*/
 
             services.AddSwaggerGen(c =>
             {

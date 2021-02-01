@@ -35,8 +35,8 @@ namespace Backend.Infrastructure.Auth
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwt.Key)),
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwt.Issuer,
-                    ValidAudience = jwt.Issuer,
+                  //  ValidIssuer = jwt.Issuer,
+               //     ValidAudience = jwt.Issuer,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,

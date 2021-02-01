@@ -11,7 +11,7 @@ namespace Backend.Core.Entities
 
         public RoleId Name { get; set; }
 
-        public ICollection<UserRole> UserRoles { get; set; }
+        public List<UserRole> UserRoles { get; set; }
 
         public Role()
         {

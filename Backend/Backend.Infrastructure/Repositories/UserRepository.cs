@@ -28,7 +28,10 @@ namespace Backend.Infrastructure.Repositories
             .SingleOrDefaultAsync(u => u.Username == value || u.Email == value);
 
         public async Task<IEnumerable<User>> GetAllAsync()
-            => await _context.Users.Include(x => x.UserRoles).ThenInclude(ur => ur.Role).ToListAsync();
+            => await _context.Users.Include(x => x.UserRoles)
+                                        .ThenInclude(ur => ur.Role)
+                                   .AsNoTracking()
+                                   .ToListAsync();
 
         public async Task<bool> AnyAsync(Expression<Func<User, bool>> expression)
             => await _context.Users.AnyAsync(expression);

@@ -30,7 +30,7 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task LoginWithFacebookAsync_ShouldAddNewUser_IfUserDoesNotExistAndTokenIsValid()
         {
-            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCGTb0ptHiBkZC1nWnDSfczhh9VRZBmQXtsujogNHOnau8zyN3sqH9wPXOfedMUBalmzdUKIqxOATEGZBcLViXuMsYC9Jb7BYQ7vb9WURLWJ3qrqqmyUkxtzseMzRoZC4Xg7XZAEZCAtcUMt5VmXGSSlfJHK0HFnKaPOnJx7RAZDZD";
+            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCG";
 
             var facebookTokenValidationResult = new FacebookTokenValidationResult
             {
@@ -62,7 +62,7 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task LoginWithFacebookAsync_ShouldThrowException_WhenTokenIsNotValid()
         {
-            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCGTb0ptHiBkZC1nWnDSfczhh9VRZBmQXtsujogNHOnau8zyN3sqH9wPXOfedMUBalmzdUKIqxOATEGZBcLViXuMsYC9Jb7BYQ7vb9WURLWJ3qrqqmyUkxtzseMzRoZC4Xg7XZAEZCAtcUMt5VmXGSSlfJHK0HFnKaPOnJx7RAZDZD";
+            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCG";
 
             var facebookTokenValidationResult = new FacebookTokenValidationResult
             {
@@ -84,7 +84,7 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task LoginWithFacebookAsync_ShouldSignIn_WhenUserExists()
         {
-            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCGTb0ptHiBkZC1nWnDSfczhh9VRZBmQXtsujogNHOnau8zyN3sqH9wPXOfedMUBalmzdUKIqxOATEGZBcLViXuMsYC9Jb7BYQ7vb9WURLWJ3qrqqmyUkxtzseMzRoZC4Xg7XZAEZCAtcUMt5VmXGSSlfJHK0HFnKaPOnJx7RAZDZD";
+            var accessToken = "EAABw3KiLV1QBACrZCNuvHBaijiPEURQzAhVqZCG";
 
             var facebookTokenValidationResult = new FacebookTokenValidationResult
             {

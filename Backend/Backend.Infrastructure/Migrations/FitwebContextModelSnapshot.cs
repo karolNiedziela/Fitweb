@@ -15,16 +15,16 @@ namespace Backend.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Backend.Core.Entities.Athlete", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -50,6 +50,9 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -68,7 +71,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("AthleteId", "ExerciseId");
+                    b.HasKey("AthleteId", "ExerciseId", "Id");
 
                     b.HasIndex("DayId");
 
@@ -85,6 +88,9 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -94,7 +100,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("AthleteId", "ProductId");
+                    b.HasKey("AthleteId", "ProductId", "Id");
 
                     b.HasIndex("ProductId");
 
@@ -106,7 +112,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -179,7 +185,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -232,7 +238,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -259,7 +265,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -317,7 +323,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("Calories")
                         .HasColumnType("float");
@@ -356,7 +362,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -383,7 +389,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -416,7 +422,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");

@@ -26,7 +26,7 @@ namespace Backend.Infrastructure.Services.External
 
             if (!validatedTokenResult.FacebookTokenValidationData.IsValid)
             {
-                throw new ServiceException("Token_issue", "Invalid facebook token");
+                throw new ServiceException("Token_issue", "Invalid facebook token.");
             }
 
             var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);

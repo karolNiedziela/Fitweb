@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Backend.Core.Helpers
 {
+
     public class PaginationQuery
     {
         const int maxPageSize = 20;

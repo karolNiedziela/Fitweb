@@ -10,9 +10,8 @@ namespace Backend.Core.Entities
 
         public string Email { get; set; }
 
-#nullable enable
-        public string? Password { get; set; }
-#nullable disable
+        public string Password { get; set; }
+
         public bool IsExternalLoginProvider { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
@@ -46,7 +45,7 @@ namespace Backend.Core.Entities
             }
 
             Username = username;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetEmail(string email)
@@ -57,7 +56,7 @@ namespace Backend.Core.Entities
             }
 
             Email = email;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetPassword(string password)
@@ -66,7 +65,7 @@ namespace Backend.Core.Entities
                 return;
 
             Password = password;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
     }

@@ -28,7 +28,8 @@ namespace Backend.Infrastructure.Mappers
                              Carbohydrates = ap.Product.Carbohydrates,
                              Fats = ap.Product.Fats
                          },
-                         Weight = ap.Weight
+                         Weight = ap.Weight,
+                         DateCreated = ap.DateCreated
                      }).ToList()))
                    .ForMember(dest => dest.Exercises, opt => opt.MapFrom(x => x.AthleteExercises.Select(
                     ae => new AthleteExercise
@@ -42,10 +43,11 @@ namespace Backend.Infrastructure.Mappers
                          Weight = ae.Weight,
                          NumberOfSets = ae.NumberOfSets,
                          NumberOfReps = ae.NumberOfReps,
-                         Day = ae.Day
+                         Day = ae.Day,
                     }).ToList()));
                 cfg.CreateMap<Product, ProductDto>();
-                cfg.CreateMap<AthleteProduct, AthleteProductDto>();
+                cfg.CreateMap<AthleteProduct, AthleteProductDto>().ForMember(dest => dest.DateCreated, opt => opt.MapFrom(ap => ap.DateCreated.ToShortDateString()))
+                .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(ap => ap.DateUpdated.ToShortDateString()));
                 cfg.CreateMap<Exercise, ExerciseDto>()
                    .ForMember(dest => dest.PartOfBody, opt => opt.MapFrom(e => e.PartOfBody.Name));
                 cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()

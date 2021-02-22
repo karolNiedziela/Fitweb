@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Products;
 
 namespace Backend.Api.Controllers
 {
@@ -15,14 +16,11 @@ namespace Backend.Api.Controllers
     [ApiController]
     public class ProductsController : ApiControllerBase
     {
-        private readonly IProductService _productService;
         private readonly ILoggerManager _logger;
 
-        public ProductsController(IDispatcher dispatcher, IProductService productService,
-            ILoggerManager logger)
+        public ProductsController(IDispatcher dispatcher, ILoggerManager logger)
             : base(dispatcher)
         {
-            _productService = productService;
             _logger = logger;
         }
 
@@ -42,7 +40,7 @@ namespace Backend.Api.Controllers
         [HttpGet("{name}")]
         public async Task<IActionResult> Get(string name)
         {
-            var product = await _productService.GetAsync(name);
+            var product = await QueryAsync(new GetProductByName(name));
             if (product is null)
             {
                 return NotFound();
@@ -93,7 +91,7 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+       // [Authorize(Roles ="Admin")]
         //POST : /api/products
         public async Task<IActionResult> Post([FromBody]AddProduct command)
         {

@@ -35,27 +35,31 @@ namespace Backend.Tests.Unit.Services
             _sut = new ExerciseService(_exerciseRepository, _mapper);
         }
 
-        [Fact]
-        public async Task GetAsyncById_ShouldReturnExerciseDto()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GetAsyncById_ShouldReturnExerciseDto(int id)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == 1);
-            _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
+            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == id);
+            _exerciseRepository.GetAsync(id).Returns(exercise);
 
-            var dto = await _sut.GetAsync(exercise.Id);
+            var dto = await _sut.GetAsync(id);
 
             dto.ShouldNotBeNull();
             dto.Id.ShouldBe(exercise.Id);
             dto.ShouldBeOfType(typeof(ExerciseDto));
-            await _exerciseRepository.Received(1).GetAsync(exercise.Id);
+            await _exerciseRepository.Received(1).GetAsync(id);
         }
 
-        [Fact]
-        public async Task GetAsyncByName_ShouldReturnExerciseDto()
+        [Theory]
+        [InlineData("exercise1")]
+        [InlineData("exercise2")]
+        public async Task GetAsyncByName_ShouldReturnExerciseDto(string name)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == "exercise1");
-            _exerciseRepository.GetAsync(exercise.Name).Returns(exercise);
+            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == name);
+            _exerciseRepository.GetAsync(name).Returns(exercise);
 
-            var dto = await _sut.GetAsync(exercise.Name);
+            var dto = await _sut.GetAsync(name);
 
             dto.ShouldNotBeNull();
             dto.Name.ShouldBe(exercise.Name);
@@ -87,17 +91,19 @@ namespace Backend.Tests.Unit.Services
             await _exerciseRepository.Received(1).AddAsync(Arg.Any<Exercise>());
         }
         
-        [Fact] 
-        public async Task AddAsync_ShouldThrowException_WhenExerciseExists()
+        [Theory]
+        [InlineData("exercise1")]
+        [InlineData("exercise2")]
+        public async Task AddAsync_ShouldThrowException_WhenExerciseExists(string name)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == "exercise2");
-            _exerciseRepository.GetAsync(exercise.Name).Returns(exercise);
+            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == name);
+            _exerciseRepository.GetAsync(name).Returns(exercise);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync("exercise2", "Chest"));
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, "Chest"));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), $"Exercise with name: 'exercise1' already exists.");
+            exception.Message.ShouldBe($"Exercise with name: '{name}' already exists.");
         }
         
         [Fact]

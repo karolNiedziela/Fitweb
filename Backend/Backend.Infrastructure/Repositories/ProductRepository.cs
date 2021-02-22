@@ -23,10 +23,10 @@ namespace Backend.Infrastructure.Repositories
         }
 
         public async Task<Product> GetAsync(int id)
-            => await _context.Products.Include(p => p.CategoryOfProduct).SingleOrDefaultAsync(x => x.Id == id);
+            => await _context.Products.Include(p => p.CategoryOfProduct).AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
 
         public async Task<Product> GetAsync(string name)
-            => await _context.Products.Include(p => p.CategoryOfProduct).SingleOrDefaultAsync(x => x.Name == name);
+            => await _context.Products.Include(p => p.CategoryOfProduct).AsNoTracking().SingleOrDefaultAsync(x => x.Name == name);
 
         public async Task<PagedList<Product>> GetAllAsync(PaginationQuery paginationQuery)
         {

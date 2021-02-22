@@ -17,7 +17,7 @@ namespace Backend.Api.Controllers
     {
         private readonly ILoggerManager _logger;
 
-        public AthletesExercisesController(IDispatcher dispatcher, ILoggerManager logger) 
+        public AthletesExercisesController(IDispatcher dispatcher, ILoggerManager logger)
             : base(dispatcher)
         {
             _logger = logger;
@@ -28,10 +28,10 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to user with id: {command.UserId}.");
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with id: {command.AthleteId}.");
 
             return CreatedAtAction("GetExercise", "Athletes",
-                new { userId = command.UserId, exerciseId = command.ExerciseId }, command);
+                new { athleteId = command.AthleteId, exerciseId = command.ExerciseId }, command);
         }
 
         [HttpDelete]
@@ -39,7 +39,7 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to user with id: {command.UserId}.");
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with id: {command.AthleteId}.");
 
             return NoContent();
         }

@@ -3,6 +3,7 @@ using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,50 +20,50 @@ namespace Backend.Infrastructure.Services
             _productRepository = productRepository;
         }
 
-        public async Task AddAsync(int userId, int productId, double weight)
+        public async Task AddAsync(int athleteId, int productId, double weight)
         {
-            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
-                                                  .Include(a => a.AthleteProducts)
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+                include: source => source.Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
                                                     .ThenInclude(ap => ap.Product)
-                                                        .ThenInclude(p => p.CategoryOfProduct)
-                                                  .SingleOrDefaultAsync();
-            if (athlete == null)
+                                                        .ThenInclude(p => p.CategoryOfProduct));
+
+            if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with id: {athleteId} was not found.");
+            }
+
+            if (athlete.AthleteProducts.Any(ap => ap.ProductId == productId && 
+                ap.DateUpdated.ToShortDateString() == DateTime.Today.ToShortDateString()))
+            {
+                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with id: {productId} already added today");
             }
 
             var product = await _productRepository.GetAsync(productId);
-            if (product == null)
+            if (product is null)
             {
                 throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id: {productId} was not found.");
             }
-
-/*            if (athlete.AthleteProducts.Any(ap => ap.ProductId == productId))
-            {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with id: {productId} already added today");
-            }*/
 
             athlete.AthleteProducts.Add(AthleteProduct.Create(athlete, product, weight));
 
             await _athleteRepository.UpdateAsync(athlete);
         }
 
-        public async Task DeleteAsync(int userId, int productId)
+        public async Task DeleteAsync(int athleteId, int productId)
         {
-            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
-                                                  .Include(a => a.AthleteProducts)
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+                include: source => source.Include(a => a.AthleteProducts)
                                                     .ThenInclude(ap => ap.Product)
-                                                        .ThenInclude(p => p.CategoryOfProduct)
-                                                  .SingleOrDefaultAsync();
+                                                        .ThenInclude(p => p.CategoryOfProduct));
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with userId: {userId} was not found.");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with id: {athleteId} was not found.");
             }
 
             var product = athlete.AthleteProducts.SingleOrDefault(ap => ap.ProductId == productId);
             if (product is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id {productId} for athlete with userId {userId} was not found");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id {productId} for athlete with id {athleteId} was not found.");
             }
 
             athlete.AthleteProducts.Remove(product);

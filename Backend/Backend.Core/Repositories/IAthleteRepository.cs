@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,12 @@ namespace Backend.Core.Repositories
 {
     public interface IAthleteRepository 
     {
-        Task<Athlete> GetAsync(int userId);
+        Task<Athlete> GetAsync(int id);
 
         Task<IEnumerable<Athlete>> GetAllAsync();
 
-        IQueryable<Athlete> FindByCondition(Expression<Func<Athlete, bool>> expression);
+        Task<Athlete> FindByCondition(Expression<Func<Athlete, bool>> condition,
+            Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>> include = null);
 
         Task AddAsync(Athlete athlete);
 

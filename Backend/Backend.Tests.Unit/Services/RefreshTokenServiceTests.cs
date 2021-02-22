@@ -89,7 +89,7 @@ namespace Backend.Tests.Unit.Services
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Invalid refresh token.");
+            exception.Message.ShouldBe("Invalid refresh token.");
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace Backend.Tests.Unit.Services
 
             var token = await _repository.GetAsync("randomTestToken2");
             token.Revoked.ShouldBeTrue();
-            await _repository.Received().UpdateAsync(Arg.Any<RefreshToken>());
+            await _repository.Received(1).UpdateAsync(Arg.Any<RefreshToken>());
         }
 
 
@@ -115,7 +115,7 @@ namespace Backend.Tests.Unit.Services
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Invalid refresh token.");
+            exception.Message.ShouldBe("Invalid refresh token.");
         }
     }
 }

@@ -20,24 +20,18 @@ namespace Backend.Infrastructure.Services
             _exerciseRepository = exerciseRepository;
         }
 
-        public async Task AddAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName)
+        public async Task AddAsync(int athleteId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
-                                                  .Include(a => a.AthleteExercises)
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+                include: source => source.Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
-                                                  .Include(a => a.AthleteExercises)
+                                                  .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId))
                                                     .ThenInclude(ae => ae.Exercise)
-                                                        .ThenInclude(e => e.PartOfBody)
-                                                  .SingleOrDefaultAsync();
+                                                        .ThenInclude(e => e.PartOfBody));
+
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
-            }
-
-            var exercise = await _exerciseRepository.GetAsync(exerciseId);
-            if (exercise is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id: {exerciseId} was not found.");
+                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with id: {athleteId} was not found.");
             }
 
             if (athlete.AthleteExercises.Any(ae => ae.ExerciseId == exerciseId && ae.DateUpdated.ToShortDateString() == DateTime.Today.ToShortDateString()))
@@ -45,30 +39,34 @@ namespace Backend.Infrastructure.Services
                 throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Exercise with id: {exerciseId} already added today.");
             }
 
-
-            athlete.AthleteExercises.Add(AthleteExercise.Create(athlete, exercise, weight, numberOfSets, numberOfReps, GetDay(dayName)));
+            var exercise = await _exerciseRepository.GetAsync(exerciseId);
+            if (exercise is null)
+            {
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id: {exerciseId} was not found.");
+            }
+      
+            athlete.AthleteExercises.Add(AthleteExercise.Create(athlete, exercise, weight, numberOfSets, numberOfReps, Day.GetDay(dayName)));
 
             await _athleteRepository.UpdateAsync(athlete);
         }
 
-        public async Task DeleteAsync(int userId, int exerciseId)
+        public async Task DeleteAsync(int athleteId, int exerciseId)
         {
-            var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId)
-                                                  .Include(a => a.AthleteExercises)
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+                include: source => source.Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                   .Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Exercise)
-                                                        .ThenInclude(e => e.PartOfBody)
-                                                  .SingleOrDefaultAsync();
+                                                        .ThenInclude(e => e.PartOfBody));
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with userId: {userId} was not found.");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with id: {athleteId} was not found.");
             }
 
             var exercise = athlete.AthleteExercises.SingleOrDefault(ae => ae.ExerciseId == exerciseId);
             if (exercise is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id {exerciseId} for athlete with userId {userId} was not found");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id {exerciseId} for athlete with id {athleteId} was not found");
             }
 
             athlete.AthleteExercises.Remove(exercise);
@@ -76,17 +74,5 @@ namespace Backend.Infrastructure.Services
             await _athleteRepository.UpdateAsync(athlete);
         }
 
-        private static Day GetDay(string dayName)
-        {
-            var days = Enum.GetValues(typeof(DayId))
-                           .Cast<DayId>()
-                           .Select(d => new Day()
-                           {
-                               Id = (int)d,
-                               Name = d
-                           });
-
-            return days.SingleOrDefault(r => r.Name.ToString() == dayName);
-        }
     }
 }

@@ -46,7 +46,7 @@ namespace Backend.Core.Entities
             }
 
             Name = name;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetCalories(double calories)
@@ -57,7 +57,7 @@ namespace Backend.Core.Entities
             }
 
             Calories = calories;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetProteins(double proteins)
@@ -68,7 +68,7 @@ namespace Backend.Core.Entities
             }
 
             Proteins = proteins;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetCarbohydrates(double carbohydrates)
@@ -79,7 +79,7 @@ namespace Backend.Core.Entities
             }
 
             Carbohydrates = carbohydrates;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetFats(double fats)
@@ -90,7 +90,7 @@ namespace Backend.Core.Entities
             }
 
             Fats = fats;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public static Product Create(string name, double calories, double proteins,

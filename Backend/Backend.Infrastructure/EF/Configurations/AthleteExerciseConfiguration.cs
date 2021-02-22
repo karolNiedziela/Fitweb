@@ -21,7 +21,7 @@ namespace Backend.Infrastructure.EF.Configurations
                    .WithMany(e => e.AthleteExercises)
                    .HasForeignKey(ae => ae.ExerciseId);
 
-            builder.Ignore(ue => ue.Id);
+            builder.Ignore(ae => ae.Id);
 
             builder.Property(ue => ue.Weight).IsRequired().HasColumnType("float");
             builder.Property(ue => ue.NumberOfSets).IsRequired().HasColumnType("int");

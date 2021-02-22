@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Backend.Core.Entities
 {
+    // Inspired by solution from https://github.com/spetz/workshops-asp/tree/master/src/Trill.Core 
+
     public class RefreshToken : BaseEntity
     {
         public int UserId { get; set; }

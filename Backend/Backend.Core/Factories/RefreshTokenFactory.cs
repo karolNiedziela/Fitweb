@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Backend.Core.Factories
 {
+
     public class RefreshTokenFactory : IRefreshTokenFactory
     {
         private readonly IRng _rng;

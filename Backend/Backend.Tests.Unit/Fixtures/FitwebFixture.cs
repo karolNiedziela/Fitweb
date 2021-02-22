@@ -17,12 +17,12 @@ namespace Backend.Tests.Unit.Fixtures
         public FitwebFixture()
         {
             var options = new DbContextOptionsBuilder<FitwebContext>().Options;
-            var sqlSettings = new SqlSettings();
-            sqlSettings.InMemory = true;
+            var sqlSettings = new SqlSettings
+            {
+                InMemory = true
+            };
 
             FitwebContext = new FitwebContext(options, sqlSettings);
-
-
 
             FitwebContext.Users.AddRange(new User
             {
@@ -61,8 +61,6 @@ namespace Backend.Tests.Unit.Fixtures
                 Name = RoleId.User
             });
 
-            var users = FitwebContext.Users.ToList();
-            var roles = FitwebContext.Roles.ToList();
 
              FitwebContext.UserRoles.AddRange(new UserRole
              {
@@ -108,6 +106,18 @@ namespace Backend.Tests.Unit.Fixtures
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 CategoryOfProductId = 1
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "product3",
+                Calories = 500,
+                Proteins = 25,
+                Carbohydrates = 70,
+                Fats = 5,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
+                CategoryOfProductId = 1
             });
 
             FitwebContext.PartOfBodies.Add(new PartOfBody
@@ -133,6 +143,108 @@ namespace Backend.Tests.Unit.Fixtures
                 DateUpdated = DateTime.UtcNow
             });
 
+            FitwebContext.Athletes.AddRange(new Athlete
+            {
+                Id = 1,
+                UserId = 1
+            },
+            new Athlete
+            {
+                Id = 2,
+                UserId = 2
+            });
+
+            FitwebContext.AthleteProducts.AddRange(
+                new AthleteProduct
+                {
+                   AthleteId = 1,
+                   ProductId = 1,
+                   Weight = 100
+                },
+                new AthleteProduct 
+                {
+                    AthleteId = 2,
+                    ProductId = 2,
+                    Weight = 200
+                },
+                new AthleteProduct
+                {
+                    AthleteId = 1,
+                    ProductId = 2,
+                    Weight = 300
+                }
+             );
+
+            FitwebContext.Days.AddRange(           
+                new Day
+                {
+                    Id = 1,
+                    Name = DayId.Monday
+                },
+                new Day
+                {
+                    Id = 2,
+                    Name = DayId.Tuesday
+                },
+                new Day
+                {
+                    Id = 3,
+                    Name = DayId.Wednesday
+                },
+                new Day
+                {
+                    Id = 4,
+                    Name = DayId.Thursday
+                },
+                new Day
+                {
+                    Id = 5,
+                    Name = DayId.Friday
+                },
+                new Day
+                {
+                    Id = 6,
+                    Name = DayId.Saturday
+                },
+                new Day
+                {
+                    Id = 7,
+                    Name = DayId.Saturday
+                }
+            );
+
+            FitwebContext.AthleteExercises.AddRange(
+                new AthleteExercise
+                {
+                    Id = 1,
+                    AthleteId = 1,
+                    ExerciseId = 1,
+                    Weight = 30,
+                    NumberOfSets = 3,
+                    NumberOfReps = 10,
+                    DayId = 1
+                },
+                new AthleteExercise
+                {
+                    Id = 2,
+                    AthleteId = 1,
+                    ExerciseId = 2,
+                    Weight = 150,
+                    NumberOfSets = 5,
+                    NumberOfReps = 5,
+                    DayId = 5
+                },
+                new AthleteExercise
+                {
+                    Id = 3,
+                    AthleteId = 2,
+                    ExerciseId = 1,
+                    Weight = 100,                   
+                    NumberOfSets = 4,
+                    NumberOfReps = 12,
+                    DayId = 6
+                }
+             );
 
             FitwebContext.RefreshTokens.AddRange(
                 new RefreshToken(3, "randomTestToken", DateTime.UtcNow),
@@ -147,6 +259,7 @@ namespace Backend.Tests.Unit.Fixtures
         public void Dispose()
         {
             FitwebContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

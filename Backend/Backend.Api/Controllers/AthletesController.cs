@@ -1,5 +1,7 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler.Commands.Athletes;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Athletes;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Mvc;
@@ -15,28 +17,26 @@ namespace Backend.Api.Controllers
     [ApiController]
     public class AthletesController : ApiControllerBase
     {
-        private readonly IAthleteService _athleteService;
         private readonly ILoggerManager _logger;
 
-        public AthletesController(IDispatcher dispatcher, IAthleteService athleteService,
-            ILoggerManager logger) : base(dispatcher)
+        public AthletesController(IDispatcher dispatcher, ILoggerManager logger) 
+            : base(dispatcher)
         {
-            _athleteService = athleteService;
             _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var athletes = await _athleteService.GetAllAsync();
+            var athletes = await QueryAsync(new GetAthletes());
 
             return Ok(athletes);
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(int userId)
+        [HttpGet("{athleteId}")]
+        public async Task<IActionResult> Get(int athleteId)
         {
-            var athlete = await _athleteService.GetAsync(userId);
+            var athlete = await QueryAsync(new GetAthlete(athleteId));
             if (athlete == null)
             {
                 return NotFound();
@@ -45,10 +45,10 @@ namespace Backend.Api.Controllers
             return Ok(athlete);
         }
 
-        [HttpGet("{userId}/products")]
-        public async Task<IActionResult> GetProducts(int userId)
+        [HttpGet("{athleteId}/products")]
+        public async Task<IActionResult> GetProducts(int athleteId, DateTime? date = null)
         {
-            var athlete = await _athleteService.GetProductsAsync(userId);
+            var athlete = await QueryAsync(new GetAthleteProducts(athleteId, date));
             if (athlete == null)
             {
                 return NotFound();
@@ -57,10 +57,10 @@ namespace Backend.Api.Controllers
             return Ok(athlete);
         }
 
-        [HttpGet("{userId}/products/{productId}")]
-        public async Task<IActionResult> GetProduct(int userId, int productId)
+        [HttpGet("{athleteId}/products/{productId}")]
+        public async Task<IActionResult> GetProduct(int athleteId, int productId)
         {
-            var athlete = await _athleteService.GetProductAsync(userId, productId);
+            var athlete = await QueryAsync(new GetAthleteProduct(athleteId, productId));
             if (athlete == null)
             {
                 return NotFound();
@@ -69,10 +69,10 @@ namespace Backend.Api.Controllers
             return Ok(athlete);
         }
 
-        [HttpGet("{userId}/exercises")]
-        public async Task<IActionResult> GetExercises(int userId)
+        [HttpGet("{athleteId}/exercises")]
+        public async Task<IActionResult> GetExercises(int athleteId, string dayName = "Monday")
         {
-            var athlete = await _athleteService.GetExercisesAsync(userId);
+            var athlete = await QueryAsync(new GetAthleteExercises(athleteId, dayName));
             if (athlete is null)
             {
                 return NotFound();
@@ -81,10 +81,10 @@ namespace Backend.Api.Controllers
             return Ok(athlete);
         }
 
-        [HttpGet("{userId}/exercises/{exerciseId}")]
-        public async Task<IActionResult> GetExercise(int userId, int exerciseId)
+        [HttpGet("{athleteId}/exercises/{exerciseId}")]
+        public async Task<IActionResult> GetExercise(int athleteId, int exerciseId)
         {
-            var athlete = await _athleteService.GetExerciseAsync(userId, exerciseId);
+            var athlete = await QueryAsync(new GetAthleteExercise(athleteId, exerciseId));
             if (athlete is null)
             {
                 return NotFound();
@@ -100,16 +100,16 @@ namespace Backend.Api.Controllers
 
             _logger.LogInfo($"Athlete with user id {command.UserId} added.");
 
-            return CreatedAtAction(nameof(Get), new { userId = command.UserId }, command);
+            return CreatedAtAction(nameof(Get), new { athleteId = command.AthleteId }, command);
         
         }
 
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(int userId)
+        [HttpDelete("{athleteId}")]
+        public async Task<IActionResult> Delete([FromBody]DeleteAthlete command)
         {
-            await _athleteService.DeleteAsync(userId);
+            await DispatchAsync(command);
 
-            _logger.LogInfo($"Athlete with user id {userId} removed.");
+            _logger.LogInfo($"Athlete with id {command.AthleteId} removed.");
 
             return NoContent();
         }

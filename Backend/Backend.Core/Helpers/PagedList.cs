@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Helpers
 {
+    // inspired by https://code-maze.com/paging-aspnet-core-webapi/
+
     public class PagedList<T> : List<T>
     {
         public int CurrentPage { get; private set; }

@@ -24,7 +24,7 @@ namespace Backend.Core.Entities
         public Exercise(string name, PartOfBody partOfBody)
         {
             SetName(name);
-            PartOfBodyId = partOfBody.Id;
+            PartOfBody = partOfBody;
         }
 
         public void SetName(string name)
@@ -35,7 +35,7 @@ namespace Backend.Core.Entities
             }
 
             Name = name;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public static Exercise Create(string name, PartOfBody partOfBody)

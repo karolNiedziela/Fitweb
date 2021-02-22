@@ -39,7 +39,7 @@ namespace Backend.Core.Entities
             }
 
             Weight = weight;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
        /* public void AdjustCalories(double weight, Product product)

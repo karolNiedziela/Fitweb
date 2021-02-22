@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services.External
 {
+    // inspired by https://www.youtube.com/watch?v=I2PChWTwmM8&t=1179s
+
     public class FacebookAuthService : IFacebookAuthService
     {
         private const string TokenValidationUrl = "https://graph.facebook.com/debug_token?input_token={0}&access_token={1}|{2}";
@@ -32,6 +34,7 @@ namespace Backend.Infrastructure.Services.External
             result.EnsureSuccessStatusCode();
 
             var responseAsString = await result.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<FacebookTokenValidationResult>(responseAsString);
         }
 

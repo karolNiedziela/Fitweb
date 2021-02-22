@@ -51,7 +51,7 @@ namespace Backend.Core.Entities
             }
 
             Weight = weight;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetNumberOfSets(int numberOfSets)
@@ -63,7 +63,7 @@ namespace Backend.Core.Entities
             }
 
             NumberOfSets = numberOfSets;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetNumberOfReps(int numberOfReps)
@@ -75,7 +75,7 @@ namespace Backend.Core.Entities
             }
 
             NumberOfReps = numberOfReps;
-            DateUpdated = DateTime.Now;
+            DateUpdated = DateTime.UtcNow;
         }
 
         public void SetDay(Day day)

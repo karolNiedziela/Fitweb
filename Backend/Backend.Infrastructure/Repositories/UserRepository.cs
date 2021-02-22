@@ -21,16 +21,15 @@ namespace Backend.Infrastructure.Repositories
         }
 
         public async Task<User> GetAsync(int id)
-            => await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).SingleOrDefaultAsync(x => x.Id == id);
+            => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role).SingleOrDefaultAsync(x => x.Id == id);
 
         public async Task<User> GetAsync(string value)
-            => await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .SingleOrDefaultAsync(u => u.Username == value || u.Email == value);
+            => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .SingleOrDefaultAsync(u => u.Username == value || u.Email == value);
 
         public async Task<IEnumerable<User>> GetAllAsync()
-            => await _context.Users.Include(x => x.UserRoles)
+            => await _context.Users.AsNoTracking().Include(x => x.UserRoles)
                                         .ThenInclude(ur => ur.Role)
-                                   .AsNoTracking()
                                    .ToListAsync();
 
         public async Task<bool> AnyAsync(Expression<Func<User, bool>> expression)

@@ -1,5 +1,6 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Users;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
@@ -14,21 +15,19 @@ namespace Backend.Api.Controllers
     [Route("api/[controller]")]
     public class UsersController : ApiControllerBase
     {
-        private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
 
-        public UsersController(IDispatcher dispatcher, IUserService userService, ILoggerManager logger)
+        public UsersController(IDispatcher dispatcher, ILoggerManager logger)
             : base(dispatcher)
         {
-            _userService = userService;
             _logger = logger;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var user = await _userService.GetAsync(id);
-            if (user == null)
+            var user = await QueryAsync(new GetUser(id));
+            if (user is null)
             {
                 return NotFound();
             }
@@ -40,7 +39,7 @@ namespace Backend.Api.Controllers
         //GET : /api/users
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userService.GetAllAsync();
+            var users = await QueryAsync(new GetUsers());
 
             return Ok(users);
         }
@@ -58,10 +57,10 @@ namespace Backend.Api.Controllers
 
         //DELETE : /api/users/{id}
         [HttpDelete]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete([FromBody] DeleteUser command)
         {
-            await _userService.DeleteAsync(command.Id);
+            await DispatchAsync(command);
 
             _logger.LogInfo($"User with user id: {command.Id} was removed.");
 

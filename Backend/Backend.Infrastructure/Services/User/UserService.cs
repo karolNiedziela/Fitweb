@@ -53,9 +53,10 @@ namespace Backend.Infrastructure.Services
             {
                 throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{username}' already exists.");
             }
+
             if (await _userRepository.AnyAsync(u => u.Email == email))
             {
-                throw new ServiceException(ErrorCodes.UsernameInUse, $"User with '{email}' already exists.");
+                throw new ServiceException(ErrorCodes.EmailInUse, $"User with '{email}' already exists.");
             }
 
             var hash = _passwordHandler.Hash(password);

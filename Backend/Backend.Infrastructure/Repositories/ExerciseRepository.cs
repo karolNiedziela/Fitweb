@@ -22,10 +22,10 @@ namespace Backend.Infrastructure.Repositories
         }
 
         public async Task<Exercise> GetAsync(int id)
-            => await _context.Exercises.Include(e => e.PartOfBody).SingleOrDefaultAsync(e => e.Id == id);
+            => await _context.Exercises.Include(e => e.PartOfBody).AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
 
         public async Task<Exercise> GetAsync(string name)
-            => await _context.Exercises.Include(e => e.PartOfBody).SingleOrDefaultAsync(e => e.Name == name);
+            => await _context.Exercises.Include(e => e.PartOfBody).AsNoTracking().SingleOrDefaultAsync(e => e.Name == name);
 
         public async Task<PagedList<Exercise>> GetAllAsync(PaginationQuery paginationQuery)
             => await PagedList<Exercise>.ToPagedList(_context.Exercises

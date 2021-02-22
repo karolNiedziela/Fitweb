@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Exercises;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
@@ -20,14 +15,11 @@ namespace Backend.Api.Controllers
     [ApiController]
     public class ExercisesController : ApiControllerBase
     {
-        private readonly IExerciseService _exerciseService;
         private readonly ILoggerManager _logger;
 
-        public ExercisesController(IDispatcher dispatcher, IExerciseService exerciseService,
-            ILoggerManager logger) 
+        public ExercisesController(IDispatcher dispatcher, ILoggerManager logger) 
             : base(dispatcher)
         {
-            _exerciseService = exerciseService;
             _logger = logger;
         }
 
@@ -46,7 +38,7 @@ namespace Backend.Api.Controllers
         [HttpGet("{name}")]
         public async Task<IActionResult> Get(string name)
         {
-            var exercise = await _exerciseService.GetAsync(name);
+            var exercise = await QueryAsync(new GetExerciseByName(name));
             if (exercise is null)
             {
                 return NotFound();
@@ -111,7 +103,7 @@ namespace Backend.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromBody]DeleteExercise command)
         {
-            await _exerciseService.DeleteAsync(command.ExerciseId);
+            await DispatchAsync(command);
 
             _logger.LogInfo($"Exercise with id: {command.ExerciseId} removed.");
 

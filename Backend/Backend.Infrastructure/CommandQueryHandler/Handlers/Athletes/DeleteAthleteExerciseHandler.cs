@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
 
         public async Task HandleAsync(DeleteAthleteExercise command)
         {
-            await _athleteExerciseService.DeleteAsync(command.UserId, command.ExerciseId);
+            await _athleteExerciseService.DeleteAsync(command.AthleteId, command.ExerciseId);
         }
     }
 }

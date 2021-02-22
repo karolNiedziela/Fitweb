@@ -6,6 +6,8 @@ namespace Backend.Infrastructure.DTO
 {
     public class AthleteDto
     {
+        public int Id { get; set; }
+
         public int UserId { get; set; }
 
         public List<AthleteProductDto> Products { get; set; }

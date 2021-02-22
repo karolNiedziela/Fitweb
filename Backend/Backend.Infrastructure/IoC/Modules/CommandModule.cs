@@ -19,7 +19,7 @@ namespace Backend.Infrastructure.IoC.Modules
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
-            builder.RegisterAssemblyTypes(assembly)
+            builder.RegisterAssemblyTypes(typeof(IQuery<>).Assembly)
                    .AsClosedTypesOf(typeof(IQueryHandler<,>))
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();

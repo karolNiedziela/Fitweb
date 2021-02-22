@@ -28,10 +28,10 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Product with id: {command.ProductId} added to user with id: {command.UserId}.");
+            _logger.LogInfo($"Product with id: {command.ProductId} added to athlete with id: {command.AthleteId}.");
 
             return CreatedAtAction("GetProduct", "Athletes",
-              new { userId = command.UserId, productId = command.ProductId }, command);
+              new { athleteId = command.AthleteId, productId = command.ProductId }, command);
         }
 
         [HttpDelete]
@@ -39,7 +39,7 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Product with id: {command.ProductId} removed from user with id: {command.UserId}.");
+            _logger.LogInfo($"Product with id: {command.ProductId} removed from athlete with id: {command.AthleteId}.");
 
             return NoContent();
         }

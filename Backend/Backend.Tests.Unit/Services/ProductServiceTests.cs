@@ -25,7 +25,7 @@ namespace Backend.Tests.Unit.Services
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         private readonly IProductService _sut;
-        FitwebFixture _fixture;
+        private readonly FitwebFixture _fixture;
 
         public ProductServiceTests(FitwebFixture fixture)
         {
@@ -36,15 +36,17 @@ namespace Backend.Tests.Unit.Services
             _sut = new ProductService(_productRepository, _mapper);
         }
 
-        [Fact]
-        public async Task GetAsyncById_ShouldReturnProductDetailsDto()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GetAsyncById_ShouldReturnProductDetailsDto(int id)
         {
             // Arrange
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == 1);
-            _productRepository.GetAsync(product.Id).Returns(product);
+            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == id);
+            _productRepository.GetAsync(id).Returns(product);
 
             // Act
-            var dto = await _sut.GetAsync(product.Id);
+            var dto = await _sut.GetAsync(id);
 
             // Assert
             dto.ShouldNotBeNull();
@@ -54,15 +56,17 @@ namespace Backend.Tests.Unit.Services
             await _productRepository.Received(1).GetAsync(product.Id);
         }
 
-        [Fact]
-        public async Task GetAsyncByName_ShouldReturnProductDetailsDto()
+        [Theory]
+        [InlineData("product1")]
+        [InlineData("product2")]
+        public async Task GetAsyncByName_ShouldReturnProductDetailsDto(string name)
         {
             // Arrange
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Name == "product1");
-            _productRepository.GetAsync(product.Name).Returns(product);
+            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Name == name);
+            _productRepository.GetAsync(name).Returns(product);
 
             // Act
-            var dto = await _sut.GetAsync(product.Name);
+            var dto = await _sut.GetAsync(name);
 
             // Assert
             dto.ShouldNotBeNull();
@@ -88,7 +92,7 @@ namespace Backend.Tests.Unit.Services
             // Assert
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(PagedList<ProductDetailsDto>));
-            dto.Count().ShouldBe(products.Count);
+            dto.Count.ShouldBe(products.Count);
         }
 
         [Fact]
@@ -104,18 +108,20 @@ namespace Backend.Tests.Unit.Services
         }
 
         
-        [Fact]
-        public async Task AddAsync_ShouldThrowException_WhenProductNameIsNotUnique()
+        [Theory]
+        [InlineData("product1")]
+        [InlineData("product2")]
+        public async Task AddAsync_ShouldThrowException_WhenProductNameIsNotUnique(string name)
         {
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == 1);
-            _productRepository.GetAsync(product.Name).Returns(product);
+            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Name == name);
+            _productRepository.GetAsync(name).Returns(product);
 
             var exception = await Record.ExceptionAsync(() => 
-                _sut.AddAsync(product.Name, 500, 25, 70, 5, "Meat"));
+                _sut.AddAsync(name, 500, 25, 70, 5, "Meat"));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), $"Product with name: 'product2' already exists.");
+            exception.Message.ShouldBe($"Product with name: '{name}' already exists.");
         }
 
         [Fact]

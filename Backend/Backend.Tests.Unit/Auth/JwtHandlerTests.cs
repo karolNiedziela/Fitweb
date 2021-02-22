@@ -16,7 +16,7 @@ namespace Backend.Tests.Unit.Auth
     public class JwtHandlerTests
     {
         private readonly JwtSettings _settings;
-        private readonly IJwtHandler _jwtHandler;
+        private readonly IJwtHandler _sut;
 
         public JwtHandlerTests()
         {
@@ -24,7 +24,7 @@ namespace Backend.Tests.Unit.Auth
             _settings.Key = "some_random_key_123";
             _settings.ExpiryMinutes = 10;
             _settings.Issuer = "https://localhost:5001/";
-            _jwtHandler = Substitute.For<JwtHandler>(_settings);
+            _sut = Substitute.For<JwtHandler>(_settings);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Backend.Tests.Unit.Auth
             var expires = now.AddMinutes(_settings.ExpiryMinutes);
 
             // Assert
-            var jwtDto = _jwtHandler.CreateToken(userId, username, role);
+            var jwtDto = _sut.CreateToken(userId, username, role);
 
             jwtDto.ShouldNotBeNull();
             jwtDto.UserId.ShouldBe(userId);

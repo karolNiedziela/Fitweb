@@ -1,5 +1,6 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.EF;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,7 +23,8 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetAll()
         {
             var days = await _context.Days.ToListAsync();
 

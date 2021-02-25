@@ -21,7 +21,8 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetAll()
         {
             var parts = await _context.PartOfBodies.ToListAsync();
 

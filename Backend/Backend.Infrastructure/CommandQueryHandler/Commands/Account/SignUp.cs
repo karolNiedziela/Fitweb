@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Commands
 {
-    public class CreateUser : ICommand
+    public class SignUp : ICommand
     {
         public int Id { get; set; }
 

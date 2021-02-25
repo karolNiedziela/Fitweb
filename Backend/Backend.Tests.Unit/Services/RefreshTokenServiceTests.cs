@@ -42,9 +42,10 @@ namespace Backend.Tests.Unit.Services
             _refreshTokenFactory = Substitute.For<RefreshTokenFactory>(_rng, _dateTimeProvider);
             _repository = Substitute.For<IRefreshTokenRepository>();
             _settings = Substitute.For<JwtSettings>();
-            _settings.Key = "some_random_key_123";
+            _settings.IssuerSigningKey = "some_random_key_123";
             _settings.ExpiryMinutes = 10;
-            _settings.Issuer = "https://localhost:5001/";
+            _settings.Issuer = "fitweb";
+            _settings.Algorithm = "HS256";
             _jwtHandler = Substitute.For<JwtHandler>(_settings);
             _userService = Substitute.For<IUserService>();
             _sut = new RefreshTokenService(_repository, _userService, _refreshTokenFactory, _dateTimeProvider, _jwtHandler);

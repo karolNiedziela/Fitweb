@@ -25,14 +25,15 @@ namespace Backend.Infrastructure.Auth
 
             var expires = now.AddMinutes(_settings.ExpiryMinutes);
 
-            var claims = new Claim[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, username),
+                new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToTimeStamp().ToString(), ClaimValueTypes.Integer64)
             };
+
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -40,8 +41,8 @@ namespace Backend.Infrastructure.Auth
                 Issuer = _settings.Issuer,
                 Expires = expires,
                 NotBefore = now,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key)),
-                SecurityAlgorithms.HmacSha256)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.IssuerSigningKey)),
+               _settings.Algorithm)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

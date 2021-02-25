@@ -24,7 +24,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]AddAthleteExercise command)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Post([FromBody]AddAthleteExercise command)
         {
             await DispatchAsync(command);
 
@@ -35,7 +37,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody]DeleteAthleteExercise command)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Delete([FromBody]DeleteAthleteExercise command)
         {
             await DispatchAsync(command);
 

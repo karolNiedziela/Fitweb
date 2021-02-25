@@ -38,8 +38,4 @@
     <ProjectReference Include="..\Backend.Core\Backend.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Password\" />
-  </ItemGroup>
-
 </Project>

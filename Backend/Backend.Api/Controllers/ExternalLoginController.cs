@@ -1,6 +1,8 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -24,7 +26,9 @@ namespace Backend.Api.Controllers
 
         [HttpPost]
         [Route("facebook")]
-        public async Task<IActionResult> Post([FromBody]FacebookLogin command)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<JwtDto>> Post([FromBody]FacebookLogin command)
         {
             command.TokenId = Guid.NewGuid();
             await DispatchAsync(command);

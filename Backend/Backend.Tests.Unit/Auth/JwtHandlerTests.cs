@@ -21,9 +21,10 @@ namespace Backend.Tests.Unit.Auth
         public JwtHandlerTests()
         {
             _settings = Substitute.For<JwtSettings>();
-            _settings.Key = "some_random_key_123";
-            _settings.ExpiryMinutes = 10;
-            _settings.Issuer = "https://localhost:5001/";
+            _settings.IssuerSigningKey = "some_random_key_123";
+            _settings.ExpiryMinutes = 20;
+            _settings.Issuer = "fitweb";
+            _settings.Algorithm = "HS256";
             _sut = Substitute.For<JwtHandler>(_settings);
         }
 

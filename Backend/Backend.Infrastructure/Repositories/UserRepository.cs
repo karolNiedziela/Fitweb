@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
+using Backend.Infrastructure.Exceptions;
+using System.Data.SqlClient;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -23,9 +25,13 @@ namespace Backend.Infrastructure.Repositories
         public async Task<User> GetAsync(int id)
             => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role).SingleOrDefaultAsync(x => x.Id == id);
 
-        public async Task<User> GetAsync(string value)
+        public async Task<User> GetByUsernameAsync(string username)
             => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-                .SingleOrDefaultAsync(u => u.Username == value || u.Email == value);
+                .SingleOrDefaultAsync(u => u.Username == username);
+
+        public async Task<User> GetByEmailAsync(string email)
+            => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .SingleOrDefaultAsync(u => u.Email == email);
 
         public async Task<IEnumerable<User>> GetAllAsync()
             => await _context.Users.AsNoTracking().Include(x => x.UserRoles)
@@ -52,6 +58,6 @@ namespace Backend.Infrastructure.Repositories
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-        }    
+        }
     }
 }

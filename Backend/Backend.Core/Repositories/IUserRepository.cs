@@ -11,7 +11,9 @@ namespace Backend.Core.Repositories
     {
         Task<User> GetAsync(int id);
 
-        Task<User> GetAsync(string value); 
+        Task<User> GetByUsernameAsync(string username);
+
+        Task<User> GetByEmailAsync(string email);
 
         Task<IEnumerable<User>> GetAllAsync();
 

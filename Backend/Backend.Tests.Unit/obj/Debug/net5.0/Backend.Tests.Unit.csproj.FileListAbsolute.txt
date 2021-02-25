@@ -1,9 +1,4 @@
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\CoverletSourceRootsMapping
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.csprojAssemblyReference.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.AssemblyInfoInputs.cache
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.AssemblyInfo.cs
-C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.csproj.CoreCompileInputs.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\testhost.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\EmptyFiles\archive\empty.7z
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\EmptyFiles\archive\empty.bz2
@@ -223,6 +218,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\run
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-arm\native\libe_sqlite3.so
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-arm64\native\libe_sqlite3.so
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-armel\native\libe_sqlite3.so
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-mips64\native\libe_sqlite3.so
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-musl-x64\native\libe_sqlite3.so
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-x64\native\libe_sqlite3.so
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\runtimes\linux-x86\native\libe_sqlite3.so
@@ -256,6 +252,11 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Bac
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Backend.Infrastructure.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Backend.Core.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Backend.Infrastructure.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.csprojAssemblyReference.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.AssemblyInfoInputs.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.AssemblyInfo.cs
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.csproj.CoreCompileInputs.cache
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.csproj.CopyComplete
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\ref\Backend.Tests.Unit.dll

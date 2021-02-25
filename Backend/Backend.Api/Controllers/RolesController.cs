@@ -1,4 +1,5 @@
 ﻿using Backend.Infrastructure.EF;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,7 +22,8 @@ namespace Backend.Api.Controllers
 
         //GET : /api/days
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetAll()
         {
             var roles = await _context.Roles.ToListAsync();
 

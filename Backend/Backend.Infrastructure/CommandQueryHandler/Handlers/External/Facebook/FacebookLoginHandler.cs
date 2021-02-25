@@ -38,7 +38,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
         public async Task HandleAsync(FacebookLogin command)
         {
             var email = await _externalLoginService.LoginWithFacebookAsync(command.AccessToken);
-            var user = await _userService.GetAsync(email);
+            var user = await _userService.GetByUsernameAsync(email);
             var jwt = _jwtHandler.CreateToken(user.Id, user.Username, user.Role);
             jwt.RefreshToken = await CreateRefreshTokenAsync(user.Id);
             _cache.SetJwt(command.TokenId, jwt);

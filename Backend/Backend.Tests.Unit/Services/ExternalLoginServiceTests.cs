@@ -99,7 +99,7 @@ namespace Backend.Tests.Unit.Services
                 Id = Guid.NewGuid().ToString(),
                 FirstName = "test",
                 LastName = "user",
-                Email = "testUser@email.com",
+                Email = "testuser@email.com",
 
             };
 
@@ -109,7 +109,7 @@ namespace Backend.Tests.Unit.Services
 
             var user = new User(facebookInfoResult.Email, facebookInfoResult.Email);
 
-            _userRepository.GetAsync(facebookInfoResult.Email).Returns(user);
+            _userRepository.GetByEmailAsync(facebookInfoResult.Email).Returns(user);
 
             var email = await _sut.LoginWithFacebookAsync(accessToken);
 

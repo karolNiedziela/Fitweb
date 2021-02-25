@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Backend.Api.Controllers
 {
@@ -23,12 +24,16 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost("use")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<JwtDto>> Use(string refreshToken)
             => await _refreshTokenService.UseAsync(refreshToken);
 
 
         [HttpPost("revoke")]
-        public async Task<IActionResult> Revoke(string refreshToken)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Revoke(string refreshToken)
         {
             await _refreshTokenService.RevokeAsync(refreshToken);
             return NoContent();

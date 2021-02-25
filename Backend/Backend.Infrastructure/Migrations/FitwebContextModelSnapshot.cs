@@ -50,9 +50,6 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -71,7 +68,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("AthleteId", "ExerciseId", "Id");
+                    b.HasKey("AthleteId", "ExerciseId");
 
                     b.HasIndex("DayId");
 
@@ -88,9 +85,6 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -100,7 +94,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("AthleteId", "ProductId", "Id");
+                    b.HasKey("AthleteId", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -445,6 +439,12 @@ namespace Backend.Infrastructure.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

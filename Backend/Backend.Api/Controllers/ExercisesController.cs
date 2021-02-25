@@ -2,11 +2,14 @@
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Exercises;
+using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
@@ -24,7 +27,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ExerciseDto>> Get(int id)
         {
             var exercise = await QueryAsync(new GetExercise(id));
             if (exercise is null)
@@ -36,7 +41,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("{name}")]
-        public async Task<IActionResult> Get(string name)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ExerciseDto>> Get(string name)
         {
             var exercise = await QueryAsync(new GetExerciseByName(name));
             if (exercise is null)
@@ -48,7 +55,8 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]GetExercises query)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ExerciseDto>>> GetAll([FromQuery]GetExercises query)
         {
             var exercises = await QueryAsync(query);
 
@@ -68,7 +76,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery]SearchExercises query)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<ExerciseDto>>> Search([FromQuery]SearchExercises query)
         {
             var results = await QueryAsync(query);
 
@@ -90,7 +100,10 @@ namespace Backend.Api.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Post([FromBody]AddExercise command)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Post([FromBody]AddExercise command)
         {
             await DispatchAsync(command);
 
@@ -101,7 +114,10 @@ namespace Backend.Api.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete([FromBody]DeleteExercise command)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Delete([FromBody]DeleteExercise command)
         {
             await DispatchAsync(command);
 
@@ -112,13 +128,16 @@ namespace Backend.Api.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Put([FromBody]UpdateExercise command)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Put([FromBody]UpdateExercise command)
         {
             await DispatchAsync(command);
 
             _logger.LogInfo($"Exercise with id: {command.ExerciseId} updated.");
 
-            return CreatedAtAction(nameof(Get), new { id = command.ExerciseId }, command);
+            return Ok();
         }
     }
 }

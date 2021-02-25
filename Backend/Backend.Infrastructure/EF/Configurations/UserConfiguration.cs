@@ -15,6 +15,9 @@ namespace Backend.Infrastructure.EF.Configurations
             builder.Property(u => u.Email).IsRequired().HasColumnType("nvarchar(255)");
             builder.Property(u => u.Password).IsRequired(false).HasColumnType("nvarchar(255)");
             builder.Property(u => u.IsExternalLoginProvider).IsRequired();
+
+            builder.HasIndex(u => u.Username).IsUnique();
+            builder.HasIndex(u => u.Email).IsUnique();
         }
     }
 }

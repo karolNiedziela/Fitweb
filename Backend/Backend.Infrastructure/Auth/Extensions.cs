@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.Extensions;
+﻿using Autofac;
+using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +12,7 @@ namespace Backend.Infrastructure.Auth
 {
     public static class Extensions
     {
-        public static void AddJwt(this IServiceCollection services)
+        public static IServiceCollection AddJwt(this IServiceCollection services)
         {
             IConfiguration configuration;
 
@@ -22,27 +23,48 @@ namespace Backend.Infrastructure.Auth
 
             var jwt = configuration.GetSettings<JwtSettings>();
 
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                RequireAudience = jwt.RequireAudience,
+                ValidIssuer = jwt.ValidIssuer,
+                ValidIssuers = jwt.ValidIssuers,
+                ValidateActor = jwt.ValidateActor,
+                ValidAudience = jwt.ValidAudience,
+                ValidAudiences = jwt.ValidAudiences,
+                ValidateAudience = jwt.ValidateAudience,
+                ValidateIssuer = jwt.ValidateIssuer,
+                ValidateLifetime = jwt.ValidateLifetime,
+                ValidateTokenReplay = jwt.ValidateTokenReplay,
+                ValidateIssuerSigningKey = jwt.ValidateIssuerSigningKey,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwt.IssuerSigningKey)),
+                SaveSigninToken = jwt.SaveSigninToken,
+                RequireExpirationTime = jwt.RequireExpirationTime,
+                RequireSignedTokens = jwt.RequireSignedTokens,
+                ClockSkew = TimeSpan.Zero
+            };
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
+            }).AddJwtBearer(opt =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                opt.Authority = jwt.Authority;
+                opt.Audience = jwt.Audience;
+                opt.MetadataAddress = jwt.MetadataAddress;
+                opt.SaveToken = jwt.SaveToken;
+                opt.RefreshOnIssuerKeyNotFound = jwt.RefreshOnIssuerKeyNotFound;
+                opt.RequireHttpsMetadata = jwt.RequireHttpsMetadata;
+                opt.IncludeErrorDetails = jwt.IncludeErrorDetails;
+                opt.TokenValidationParameters = tokenValidationParameters;
+                if (!string.IsNullOrWhiteSpace(jwt.Challenge))
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwt.Key)),
-                    ValidateIssuerSigningKey = true,
-                  //  ValidIssuer = jwt.Issuer,
-               //     ValidAudience = jwt.Issuer,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
+                    opt.Challenge = jwt.Challenge;
+                }
             });
+
+            return services;
         }
     }
 }

@@ -1,12 +1,15 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Users;
+using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
@@ -24,7 +27,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserDto>> Get(int id)
         {
             var user = await QueryAsync(new GetUser(id));
             if (user is null)
@@ -36,28 +41,21 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         //GET : /api/users
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
         {
             var users = await QueryAsync(new GetUsers());
 
             return Ok(users);
         }
 
-        [HttpPost]
-        //POST : /api/users
-        public async Task<IActionResult> Post([FromBody]CreateUser command)
-        {
-            await DispatchAsync(command);
-
-            _logger.LogInfo($"User with username {command.Username} and added.");
-
-            return CreatedAtAction(nameof(Get), new { id = command.Id }, command );
-        }
-
         //DELETE : /api/users/{id}
         [HttpDelete]
         [Authorize(Roles ="Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete([FromBody] DeleteUser command)
         {
             await DispatchAsync(command);
@@ -68,13 +66,15 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromBody]UpdateUser command)
         {
             await DispatchAsync(command);
 
             _logger.LogInfo($"User with user id: {command.Id} updated profile data.");
 
-            return CreatedAtAction(nameof(Get), new { id = command.Id }, command);
+            return Ok();
         }
     }
 }

@@ -13,9 +13,22 @@ namespace Backend.Api.Controllers
     {
         private readonly IDispatcher _dispatcher;
 
-        protected int UserId => HttpContext.User.Identity is ClaimsIdentity identity ?
-            Int32.Parse(identity.FindFirst("sub").Value) : Int32.Parse(null);
-            
+
+        private int? _userId;
+
+        protected int UserId
+        {
+            get
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    _userId = int.Parse(User.Identity.Name ?? null);
+                }
+
+                return Convert.ToInt32(_userId);
+            }
+        }
+
         protected ApiControllerBase(IDispatcher dispatcher)
         {
             _dispatcher = dispatcher;

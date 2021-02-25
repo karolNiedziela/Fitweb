@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Exceptions;
+using Backend.Core.Factories;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
@@ -8,6 +10,7 @@ using Backend.Infrastructure.Mappers;
 using Backend.Infrastructure.Repositories;
 using Backend.Infrastructure.Services;
 using Backend.Tests.Unit.Fixtures;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
 using System;
@@ -22,9 +25,12 @@ namespace Backend.Tests.Unit.Services
     public class UserServiceTests : IClassFixture<FitwebFixture>
     { 
         private readonly IUserRepository _userRepository;
-        private readonly IUserService _sut; // system under testing
         private readonly IMapper _mapper;
         private readonly IPasswordHandler _passwordHandler;
+        private readonly IRefreshTokenFactory _refreshTokenFactory;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly IJwtHandler _jwtHandler;
+        private readonly IUserService _sut; // system under testing
         private readonly FitwebFixture _fixture;
 
         public UserServiceTests(FitwebFixture fixture)
@@ -34,6 +40,9 @@ namespace Backend.Tests.Unit.Services
             _mapper = Substitute.For<IMapper>();
             _passwordHandler = Substitute.For<IPasswordHandler>();
             _mapper = AutoMapperConfig.Initialize();
+            _refreshTokenFactory = Substitute.For<IRefreshTokenFactory>();
+            _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
+            _jwtHandler = Substitute.For<IJwtHandler>();
             _sut = new UserService(_mapper, _passwordHandler, _userRepository);      
         }
 
@@ -63,14 +72,13 @@ namespace Backend.Tests.Unit.Services
         [Theory]
         [InlineData("user1")]
         [InlineData("user2")]
-        [InlineData("user3")]
         public async Task GetAsyncByUsername_ShouldReturnUserDto(string username)
         {
             var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Username == username);
-            _userRepository.GetAsync(username).Returns(user);
+            _userRepository.GetByUsernameAsync(username).Returns(user);
 
             // Act
-            var dto = await _sut.GetAsync(user.Username);
+            var dto = await _sut.GetByUsernameAsync(user.Username);
 
             // Assert
             dto.ShouldNotBeNull();
@@ -79,7 +87,7 @@ namespace Backend.Tests.Unit.Services
             dto.Username.ShouldBe(user.Username);
             dto.Email.ShouldBe(user.Email);
             dto.Role.ShouldBe(user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
-            await _userRepository.Received(1).GetAsync(user.Username);
+            await _userRepository.Received(1).GetByUsernameAsync(user.Username);
         }
 
         [Fact]
@@ -99,94 +107,8 @@ namespace Backend.Tests.Unit.Services
             dto.Count().ShouldBe(3);
 
             await _userRepository.Received(1).GetAllAsync();
-        }
-    
-        [Theory]
-        [InlineData("testUser", "test@email.com", "testSecret")]
-        public async Task RegisterAsync_ShouldAddNewUser(string username, string email, string password)
-        {
-            // Arrange 
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(false);
-
-            // Act
-            await _sut.RegisterAsync(username, email, password);
-
-            // Assert
-            await _userRepository.Received(1).AddAsync(Arg.Any<User>());
-        }
-
-        [Theory]
-        [InlineData("user1", "user1@email.com", "secret")]
-        [InlineData("user2", "user2@email.com", "secret")]
-        [InlineData("user3", "user3@email.com", "secret")]
-        public async Task RegisterAsync_ShouldThrowException_WhenUserNameIsNotUnique(string username, 
-            string email, string password)
-        {
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(true);
-
-            var exception = await Record.ExceptionAsync(() =>  
-                _sut.RegisterAsync(username, email, password));
-
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"User with '{username}' already exists.");
-            await _userRepository.Received(1).AnyAsync(Arg.Any<Expression<Func<User, bool>>>());
-        }
-
-
-        // TODO: Cant figure out the problem with linq expression
-        [Theory]
-        [InlineData("user1", "user1@email.com", "secret")]
-        [InlineData("user2", "user2@email.com", "secret")]
-        [InlineData("user3", "user3@email.com", "secret")]
-        public async Task RegisterAsync_ShouldThrowException_WhenEmailIsNotUnique(string username,
-            string email, string password)
-        {
-            // Arranges
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(true);
-
-            // Act
-            var exception = await Record.ExceptionAsync(() =>
-                _sut.RegisterAsync(username, email, password));
-
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            //exception.Message.ShouldBe($"User with 'user1@email.com' already exists.");
-        }
-
-        [Fact]
-        public async Task LoginAsync_ShouldThrowException_WhenUserDoesNotExist()
-        {
-            // Arrange
-
-            // Act
-            var exception = await Record.ExceptionAsync(() => _sut.LoginAsync("karol", "testSecret"));
-
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe("Invalid credentials");
-            exception.StackTrace.Length.Equals(2);
-        }
-
-        [Fact]
-        public async Task LoginAsync_ShouldThrowException_WhenPasswordIsNotValid()
-        {
-            // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
-            _userRepository.GetAsync(user.Id).Returns(user);
-            _passwordHandler.IsValid(Arg.Is(user.Password), Arg.Any<string>()).Returns(false);
-
-            // Act
-            var exception = await Record.ExceptionAsync(() => _sut.LoginAsync(user.Username, user.Password));
-
-            // Arrange
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe("Invalid credentials");
-        }
-
+        }  
+     
 
         [Theory]
         [InlineData(1)]
@@ -240,43 +162,42 @@ namespace Backend.Tests.Unit.Services
             await _userRepository.Received(1).UpdateAsync(Arg.Any<User>());
         }
 
-        [Fact]
-        public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButUsernameIsNotUnique()
-        {
-            // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 3);
-            _userRepository.GetAsync(3).Returns(user);
+        //[Fact]
+        //public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButUsernameIsNotUnique()
+        //{
+        //    // Arrange
+        //    var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 3);
+        //    _userRepository.GetAsync(3).Returns(user);
 
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(true);
 
-            // Act
-            var exception = await Record.ExceptionAsync(() =>  
-                _sut.UpdateAsync(3, "user1", "user1@email.com", "secret"));
+        //    // Act
+        //    var exception = await Record.ExceptionAsync(() =>  
+        //        _sut.UpdateAsync(3, "user1", "user1@email.com", "secret"));
 
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"User with 'user1' already exists.");
-        }
+        //    // Assert
+        //    exception.ShouldNotBeNull();
+        //    exception.ShouldBeOfType(typeof(ServiceException));
+        //    exception.Message.ShouldBe($"User with 'user1' already exists.");
+        //}
 
-        // TODO: Cant figure out the problem with linq expression
-        [Fact]
-        public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButEmailIsNotUnique()
-        {
-            // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
-            _userRepository.GetAsync(user.Id).Returns(user);
+        //// TODO: Cant figure out the problem with linq expression
+        //[Fact]
+        //public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButEmailIsNotUnique()
+        //{
+        //    // Arrange
+        //    var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
+        //    _userRepository.GetAsync(user.Id).Returns(user);
 
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).ReturnsForAnyArgs(true);
+        //    _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).ReturnsForAnyArgs(true);
 
-            // Act
-            var exception = await Record.ExceptionAsync(() => 
-                _sut.UpdateAsync(1, "user1", "user1@email.com", "secret"));
+        //    // Act
+        //    var exception = await Record.ExceptionAsync(() => 
+        //        _sut.UpdateAsync(1, "user1", "user1@email.com", "secret"));
 
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-        }
+        //    // Assert
+        //    exception.ShouldNotBeNull();
+        //    exception.ShouldBeOfType(typeof(ServiceException));
+        //}
 
         [Fact]
         public async Task UpdateAsync_ShouldThrowException_WhenUserDoesNotExist()

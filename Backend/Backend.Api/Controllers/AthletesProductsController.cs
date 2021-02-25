@@ -2,6 +2,7 @@
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +25,8 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody]AddAthleteProduct command)
         {
             await DispatchAsync(command);
@@ -35,6 +38,8 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromBody] DeleteAthleteProduct command)
         {
             await DispatchAsync(command);

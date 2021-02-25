@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Commands
 {
-    public class Login : ICommand
+    public class SigIn : ICommand
     {
         public Guid TokenId { get; set; }
 

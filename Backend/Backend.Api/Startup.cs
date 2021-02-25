@@ -43,7 +43,7 @@ namespace Backend
         {
             services.AddControllers(options =>
             {
-                options.SuppressAsyncSuffixInActionNames = false;
+                options.SuppressAsyncSuffixInActionNames = true;
             })
             .AddNewtonsoftJson(options =>
             {

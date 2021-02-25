@@ -30,13 +30,10 @@ namespace Backend.Api.Controllers
         
         [HttpPost]
         [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(IFormFile file)
         {
-            if (file is null)
-            {
-                return NotFound();
-            }
-
             var filePath = _fileService.CreateFilePath(file);
 
             await _fileService.CreateFile(file, filePath);

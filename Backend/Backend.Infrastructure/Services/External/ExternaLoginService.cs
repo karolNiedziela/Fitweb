@@ -31,7 +31,7 @@ namespace Backend.Infrastructure.Services.External
 
             var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);
 
-            var user = await _userRepository.GetAsync(userInfo.Email);
+            var user = await _userRepository.GetByEmailAsync(userInfo.Email);
             if (user is null)
             {
                 user = new User(userInfo.Email, userInfo.Email);

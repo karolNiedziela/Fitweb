@@ -35,7 +35,7 @@ namespace Backend.Infrastructure.Extensions
         public static async Task CheckIfAthleteAsync(this IAthleteRepository repository, User user, string roleName)
         {
             var athlete = await repository.GetAsync(user.Id);
-            if (athlete is null && roleName != "Admin")
+            if (athlete is null && roleName != RoleId.Admin.ToString())
             {
                 athlete = new Athlete(user);
                 await repository.AddAsync(athlete);
@@ -44,12 +44,12 @@ namespace Backend.Infrastructure.Extensions
 
         public static async Task<string> CheckIfAdminExists(this IUserRepository repository)
         {
-            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == Role.GetRole("Admin").Name)))
+            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == Role.GetRole(RoleId.Admin.ToString()).Name)))
             {
-                return "User";
+                return RoleId.User.ToString();
             }
 
-            return "Admin";
+            return RoleId.Admin.ToString();
         }
     }
 }

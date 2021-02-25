@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Products;
+using Microsoft.AspNetCore.Http;
+using Backend.Infrastructure.DTO;
+using System.Collections.Generic;
 
 namespace Backend.Api.Controllers
 {
@@ -25,8 +28,10 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         //GET : /api/products/id
-        public async Task<IActionResult> Get(int id)
+        public async Task<ActionResult<ProductDetailsDto>> Get(int id)
         {
             var product = await QueryAsync(new GetProduct(id));
             if (product is null)
@@ -38,7 +43,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("{name}")]
-        public async Task<IActionResult> Get(string name)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProductDetailsDto>> Get(string name)
         {
             var product = await QueryAsync(new GetProductByName(name));
             if (product is null)
@@ -51,7 +58,8 @@ namespace Backend.Api.Controllers
 
         [HttpGet]
         //GET : /api/products
-        public async Task<IActionResult> GetAll([FromQuery]GetProducts query)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ProductDetailsDto>>> GetAll([FromQuery]GetProducts query)
         {
             var products = await QueryAsync(query);
 
@@ -71,7 +79,9 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery]SearchProducts query)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<ProductDetailsDto>>> Search([FromQuery]SearchProducts query)
         {
             var results = await QueryAsync(query);
 
@@ -91,9 +101,12 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
-       // [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         //POST : /api/products
-        public async Task<IActionResult> Post([FromBody]AddProduct command)
+        public async Task<ActionResult> Post([FromBody]AddProduct command)
         {
             await DispatchAsync(command);
 
@@ -104,8 +117,11 @@ namespace Backend.Api.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         //DELETE : /api/products/{id}
-        public async Task<IActionResult> Delete([FromBody] DeleteProduct command)
+        public async Task<ActionResult> Delete([FromBody] DeleteProduct command)
         {
             await DispatchAsync(command);
 
@@ -117,13 +133,16 @@ namespace Backend.Api.Controllers
         //PUT: /api/products
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Put([FromBody] UpdateProduct command)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Put([FromBody] UpdateProduct command)
         {
             await DispatchAsync(command);
 
             _logger.LogInfo($"Product with id: {command.ProductId} updated.");
 
-            return CreatedAtAction(nameof(Get), new { id = command.ProductId }, command);
+            return Ok();
         }       
     }
 }

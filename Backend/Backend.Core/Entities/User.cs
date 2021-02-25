@@ -1,6 +1,7 @@
 ﻿using Backend.Core.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Core.Entities
 {
@@ -44,7 +45,18 @@ namespace Backend.Core.Entities
                 throw new DomainException(ErrorCodes.InvalidUsername, "Username cannot be empty.");
             }
 
-            Username = username;
+            if (Username == username)
+            {
+                return;
+            }
+
+            if (username.Length < 4 || username.Length > 20)
+            {
+                throw new DomainException(ErrorCodes.InvalidUsername, "Username must contain at least 6 characters " +
+                    "and at most twenty characters.");
+            }
+
+            Username = username.ToLowerInvariant();
             DateUpdated = DateTime.UtcNow;
         }
 
@@ -55,7 +67,19 @@ namespace Backend.Core.Entities
                 throw new DomainException(ErrorCodes.InvalidEmail, "Email cannot be empty.");
             }
 
-            Email = email;
+            if (Email == email)
+            {
+                return;
+            }
+
+            EmailAddressAttribute emailAddress = new EmailAddressAttribute();
+
+            if (!emailAddress.IsValid(email))
+            {
+                throw new DomainException(ErrorCodes.InvalidEmail, "Invalid email format.");
+            }
+
+            Email = email.ToLowerInvariant();
             DateUpdated = DateTime.UtcNow;
         }
 
@@ -67,6 +91,5 @@ namespace Backend.Core.Entities
             Password = password;
             DateUpdated = DateTime.UtcNow;
         }
-
     }
 }

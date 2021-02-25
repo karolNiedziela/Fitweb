@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.EF;
+using Backend.Infrastructure.Services.Account;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,16 +14,16 @@ namespace Backend.Infrastructure.Services
         private readonly IProductInitializer _productInitializer;
         private readonly FitwebContext _context;
         private readonly IExerciseInitializer _exerciseInitializer;
-        private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
+        private readonly IAccountService _accountService;
 
         public DataInitializer(IProductInitializer productInitializer, IExerciseInitializer exerciseInitializer, 
-            FitwebContext context, IUserService userService, ILoggerManager logger)
+            FitwebContext context, ILoggerManager logger, IAccountService accountService)
         {
             _context = context;
             _productInitializer = productInitializer;
             _exerciseInitializer = exerciseInitializer;
-            _userService = userService;
+            _accountService = accountService;
             _logger = logger;
         }
 
@@ -42,7 +43,7 @@ namespace Backend.Infrastructure.Services
 
             if (!await _context.Users.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == Role.GetRole("Admin").Name)))
             {
-                await _userService.RegisterAsync("admin123", "admin123@email.com", "admin123", "Admin");
+                await _accountService.SignUpAsync("admin123", "admin123@email.com", "admin123", "Admin");
                 _logger.LogInfo($"User with username admin123 and role Admin added");
             }
         }

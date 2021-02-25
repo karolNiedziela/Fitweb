@@ -1,6 +1,7 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.EF.Configurations;
 using Backend.Infrastructure.Settings;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Backend.Infrastructure.EF
                 return;
             }
 
-            optionsBuilder.UseSqlServer(_settings.ConnectionString);
+            optionsBuilder.UseSqlServer(_settings.ConnectionString);         
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

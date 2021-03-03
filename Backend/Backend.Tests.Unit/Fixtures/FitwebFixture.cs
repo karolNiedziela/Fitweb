@@ -27,9 +27,9 @@ namespace Backend.Tests.Unit.Fixtures
             FitwebContext.Users.AddRange(new User
             {
                 Id = 1,
-                Username = "user1",
+                UserName = "user1",
                 Email = "user1@email.com",
-                Password = "secret",
+                PasswordHash = "secret",
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 IsExternalLoginProvider = false
@@ -37,9 +37,9 @@ namespace Backend.Tests.Unit.Fixtures
             new User
             {
                 Id = 2,
-                Username = "user2",
+                UserName = "user2",
                 Email = "user2@email.com",
-                Password = "secret",
+                PasswordHash = "secret",
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 IsExternalLoginProvider = false
@@ -47,9 +47,9 @@ namespace Backend.Tests.Unit.Fixtures
             new User
             {
                 Id = 3,
-                Username = "user3",
+                UserName = "user3",
                 Email = "user3@email.com",
-                Password = "secret",
+                PasswordHash = "secret",
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 IsExternalLoginProvider = false
@@ -62,21 +62,21 @@ namespace Backend.Tests.Unit.Fixtures
             });
 
 
-             FitwebContext.UserRoles.AddRange(new UserRole
-             {
-                 UserId = 1,
-                 RoleId = 1,
-             },
-             new UserRole
-             {
-                 UserId = 2,
-                 RoleId = 1,
-             },
-             new UserRole
-             {
-                 UserId = 3,
-                 RoleId = 1,
-             });
+            FitwebContext.UserRoles.AddRange(new UserRole
+            {
+                UserId = 1,
+                RoleId = 1,
+            },
+            new UserRole
+            {
+                UserId = 2,
+                RoleId = 1,
+            },
+            new UserRole
+            {
+                UserId = 3,
+                RoleId = 1,
+            });
 
             FitwebContext.CategoriesOfProduct.Add(new CategoryOfProduct
             {

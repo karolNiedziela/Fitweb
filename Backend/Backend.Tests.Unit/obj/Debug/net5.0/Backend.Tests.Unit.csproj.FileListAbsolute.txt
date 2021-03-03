@@ -261,3 +261,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Bac
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\ref\Backend.Tests.Unit.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\obj\Debug\net5.0\Backend.Tests.Unit.genruntimeconfig.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\SendGrid.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\StarkbankEcdsa.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Tests.Unit\bin\Debug\net5.0\Microsoft.Extensions.Identity.Stores.dll

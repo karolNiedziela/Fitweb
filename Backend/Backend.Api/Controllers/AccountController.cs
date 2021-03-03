@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.Auth;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.DTO;
@@ -6,11 +7,15 @@ using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
@@ -50,7 +55,7 @@ namespace Backend.Api.Controllers
         [Route("signin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<JwtDto>> SignInAsync([FromBody]SigIn command)
+        public async Task<ActionResult<JwtDto>> SignInAsync([FromBody]SignIn command)
         {
             command.TokenId = Guid.NewGuid();
             await DispatchAsync(command);

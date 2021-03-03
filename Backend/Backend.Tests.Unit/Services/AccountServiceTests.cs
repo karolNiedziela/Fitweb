@@ -7,7 +7,9 @@ using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Services.Account;
 using Backend.Tests.Unit.Fixtures;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using Shouldly;
 using System;
@@ -27,8 +29,13 @@ namespace Backend.Tests.Unit.Services
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtHandler _jwtHandler;
         private readonly IUserRepository _userRepository;
+        private readonly FakeUserManager _fakeUserManager;
+        private readonly IRoleStore<Role> _roleStore;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IEmailService _emailService;
         private readonly IAccountService _sut;
         private readonly FitwebFixture _fixture;
+        private readonly IConfiguration _configuration;
 
         public AccountServiceTests(FitwebFixture fixture)
         {
@@ -38,8 +45,15 @@ namespace Backend.Tests.Unit.Services
             _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
             _userRepository = Substitute.For<IUserRepository>();
             _jwtHandler = Substitute.For<IJwtHandler>();
+
+            _fakeUserManager = Substitute.For<FakeUserManager>();
+            _roleStore = Substitute.For<IRoleStore<Role>>();
+            _roleManager = new RoleManager<Role>(_roleStore, null, null, null, null);
+            _emailService = Substitute.For<IEmailService>();
+            _configuration = Substitute.For<IConfiguration>();
+
             _sut = new AccountService(_userRepository, _passwordHandler, _jwtHandler, _refreshTokenFactory,
-                _refreshTokenRepository);
+                _refreshTokenRepository, _fakeUserManager, _configuration, _emailService, _roleManager);
         }
 
         [Theory]
@@ -47,96 +61,36 @@ namespace Backend.Tests.Unit.Services
         public async Task SignUpAsync_ShouldAddNewUser(string username, string email, string password)
         {
             // Arrange 
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(false);
+
+            var role = _fixture.FitwebContext.Roles.SingleOrDefault(r => r.Name == Role.GetRole("User").Name);
+
+            var randomString = new RandomStringGenerator(20);
+
+            _roleManager.FindByNameAsync("User").Returns(role);
+
+            _fakeUserManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+
+            _fakeUserManager.GenerateEmailConfirmationTokenAsync(Arg.Any<User>()).Returns(randomString.RandomString);
 
             // Act
-            await _sut.SignUpAsync(username, email, password);
+            var id = await _sut.SignUpAsync(username, email, password);
 
-            // Assert
-            await _userRepository.Received(1).AddAsync(Arg.Any<User>());
-        }
-
-        [Theory]
-        [InlineData("user1", "user1@email.com", "secret")]
-        [InlineData("user2", "user2@email.com", "secret")]
-        [InlineData("user3", "user3@email.com", "secret")]
-        public async Task SignUpAsync_ShouldThrowException_WhenUserNameIsNotUnique(string username,
-            string email, string password)
-        {
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Username == username);
-            _userRepository.GetByUsernameAsync(username).Returns(user);
-
-            var exception = await Record.ExceptionAsync(() =>
-                _sut.SignUpAsync(username, email, password));
-
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"Username is already taken.");
-        }
-
-        [Theory]
-        [InlineData("us", "user1@email.com", "secret")]
-        [InlineData("us1", "user2@email.com", "secret")]
-        public async Task SignUpAsync_ShouldThrowException_WhenUserNameIsTooShort(string username, string email,
-            string password)
-        {
-            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
-
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
-            ((DomainException)exception).Code.ShouldBe(Core.Exceptions.ErrorCodes.InvalidUsername);
-            exception.Message.ShouldBe("Username must contain at least 6 characters " +
-                    "and at most twenty characters.");
-        }
-
-        [Theory]
-        [InlineData("user1", "user1@email.com", "secret")]
-        [InlineData("user2", "user2@email.com", "secret")]
-        [InlineData("user3", "user3@email.com", "secret")]
-        public async Task SignUpAsync_ShouldThrowException_WhenEmailIsNotUnique(string username,
-            string email, string password)
-        {
-            // Arranges
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Email == email);
-            _userRepository.GetByEmailAsync(email).Returns(user);
-
-            // Act
-            var exception = await Record.ExceptionAsync(() =>
-                _sut.SignUpAsync(username, email, password));
-
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"Email is already taken.");
-        }
-
-        [Theory]
-        [InlineData("user1", "user1mail.com", "secret")]
-        [InlineData("user2", "user2mail.com", "secret")]
-        public async Task SignUpAsync_ShouldThrowException_WhenEmailIsNotValid(string username, string email, string password)
-        {
-            _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(false);
-
-            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
-
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
-            ((DomainException)exception).Code.ShouldBe(Core.Exceptions.ErrorCodes.InvalidEmail);
-            exception.Message.ShouldBe("Invalid email format.");
         }
 
         [Fact]
         public async Task SignInAsync_ShouldReturnJwtDto_WhenDataIsValid()
         {
             var user = _fixture.FitwebContext.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).SingleOrDefault(u => u.Id == 1);
-            _userRepository.GetByUsernameAsync(user.Username).Returns(user);
+            _userRepository.GetByUsernameAsync(user.UserName).Returns(user);
 
-            _passwordHandler.IsValid(user.Password, "password").ReturnsForAnyArgs(true);
+            user.EmailConfirmed = true;
+
+            _passwordHandler.IsValid(user.PasswordHash, "password").ReturnsForAnyArgs(true);
 
             var jwtDto = new JwtDto
             {
                 UserId = user.Id,
-                Username = user.Username,
+                Username = user.UserName,
                 Role = user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault(),
                 AccessToken = "1234.56712.12323",
                 Expires = 10000000,
@@ -149,7 +103,7 @@ namespace Backend.Tests.Unit.Services
 
             _refreshTokenFactory.Create(Arg.Any<int>()).Returns(refreshToken);
 
-            var jwt = await _sut.SignInAsync(user.Username, user.Password);
+            var jwt = await _sut.SignInAsync(user.UserName, user.PasswordHash);
 
             jwt.ShouldNotBeNull();
             jwt.UserId.ShouldBe(jwtDto.UserId);
@@ -173,24 +127,39 @@ namespace Backend.Tests.Unit.Services
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
             exception.Message.ShouldBe("Invalid credentials");
-            exception.StackTrace.Length.Equals(2);
         }
 
         [Fact]
-        public async Task LoginAsync_ShouldThrowException_WhenPasswordIsNotValid()
+        public async Task SignInAsync_ShouldThrowException_WhenPasswordIsNotValid()
         {
             // Arrange
             var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
-            _userRepository.GetAsync(user.Id).Returns(user);
-            _passwordHandler.IsValid(Arg.Is(user.Password), Arg.Any<string>()).Returns(false);
+            _userRepository.GetByUsernameAsync(user.UserName).Returns(user);
+            _passwordHandler.IsValid(Arg.Is(user.PasswordHash), Arg.Any<string>()).Returns(false);
 
             // Act
-            var exception = await Record.ExceptionAsync(() => _sut.SignInAsync(user.Username, user.Password));
+            var exception = await Record.ExceptionAsync(() => _sut.SignInAsync(user.UserName, user.PasswordHash));
 
             // Arrange
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
             exception.Message.ShouldBe("Invalid credentials");
+        }
+
+        [Fact]
+        public async Task SignInAsync_ShouldThrowError_WhenEmailIsNotConfirmed()
+        {
+            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
+            _userRepository.GetByUsernameAsync(user.UserName).Returns(user);
+            _passwordHandler.IsValid(user.PasswordHash, "password").ReturnsForAnyArgs(true);
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => _sut.SignInAsync(user.UserName, user.PasswordHash));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.Message.ShouldBe("Email not confirmed. Confirm email to get access.");
+            ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.InvalidValue);
         }
 
     }

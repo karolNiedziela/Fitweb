@@ -5,10 +5,13 @@ using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
-using System;
-using System.Collections.Generic;
+using Backend.Infrastructure.Settings;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services.Account
@@ -20,44 +23,73 @@ namespace Backend.Infrastructure.Services.Account
         private readonly IJwtHandler _jwtHandler;
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailSender;
 
         public AccountService(IUserRepository userRepository, IPasswordHandler passwordHandler,
-            IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository)
+            IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository,
+            UserManager<User> userManager, IConfiguration configuration, IEmailService emailSender,
+            RoleManager<Role> roleManager)
         {
             _userRepository = userRepository;
             _passwordHandler = passwordHandler;
             _jwtHandler = jwtHandler;
             _refreshTokenFactory = refreshTokenFactory;
             _refreshTokenRepository = refreshTokenRepository;
+            _configuration = configuration;
+            _userManager = userManager;
+            _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
-        public async Task<int> SignUpAsync(string username, string email, string password, string roleName = "User")
+        public async Task<int> SignUpAsync(string username, string email, string password, string role = "User")
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
-            if (user != null)
-            {
-                throw new ServiceException(ErrorCodes.UsernameInUse, "Username is already taken.");
-            }
+            var user = new User(username, email, password);
 
-            user = await _userRepository.GetByEmailAsync(email);
-            if (user != null)
-            {
-                throw new ServiceException(ErrorCodes.EmailInUse, "Email is already taken.");
-            }
-
-            var hash = _passwordHandler.Hash(password);
-
-            user = new User(username, email, hash);
+            var roleFound = await _roleManager.FindByNameAsync(role);
 
             user.UserRoles.Add(new UserRole
             {
                 User = user,
-                RoleId = Role.GetRole(roleName).Id
+                RoleId = roleFound.Id
             });
 
-            await _userRepository.AddAsync(user);
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (!result.Succeeded)
+            {
+                throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
+            }
+
+            await GenerateEmailConfirmationTokenAsync(user);
 
             return user.Id;
+        }
+
+        public async Task GenerateEmailConfirmationTokenAsync(User user)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new ServiceException(ErrorCodes.InvalidValue, "Invalid email confirmation token.");
+            }
+
+            await SendConfirmationEmail(user, token);
+        }
+
+        public async Task SendConfirmationEmail(User user, string token)
+        {
+            var generalSettings = _configuration.GetSettings<GeneralSettings>();
+
+            var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            var url = string.Format(generalSettings.AppDomain + generalSettings.EmailConfirmation, user.Id, code);
+
+            await _emailSender.SendEmailAsync(user.Email, "Email Confirmation", $"Please confirm your account by" +
+                $" <a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");
         }
 
         public async Task<JwtDto> SignInAsync(string username, string password)
@@ -68,13 +100,19 @@ namespace Backend.Infrastructure.Services.Account
                 throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
             }
 
-            var isPasswordValid = _passwordHandler.IsValid(user.Password, password);
+            var isPasswordValid = _passwordHandler.IsValid(user.PasswordHash, password);
             if (!isPasswordValid)
             {
                 throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
             }
 
-            var jwt = _jwtHandler.CreateToken(user.Id, user.Username, user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
+            if (!user.EmailConfirmed)
+            {
+                throw new ServiceException(ErrorCodes.InvalidValue, "Email not confirmed. Confirm email to get access.");
+            }
+
+            var jwt = _jwtHandler.CreateToken(user.Id, user.UserName, 
+                user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
             jwt.RefreshToken = await CreateRefreshTokenAsync(user.Id);
 
             return jwt;
@@ -88,16 +126,12 @@ namespace Backend.Infrastructure.Services.Account
                 throw new ServiceException(ErrorCodes.UserNotFound, $"User with id: '{userId}' was not found.");
             }
 
-            var oldPasswordHash = _passwordHandler.Hash(oldPassword);
-            if (!_passwordHandler.IsValid(oldPasswordHash, oldPassword))
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+
+            if (!result.Succeeded)
             {
-                throw new ServiceException(ErrorCodes.InvalidValue, "Password is not valid.");
+                throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
             }
-
-            var hash = _passwordHandler.Hash(newPassword);
-            user.SetPassword(hash);
-
-            await _userRepository.UpdateAsync(user);
         }
 
         private async Task<string> CreateRefreshTokenAsync(int userId)

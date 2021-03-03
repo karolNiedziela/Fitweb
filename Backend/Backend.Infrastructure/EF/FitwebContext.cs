@@ -1,6 +1,8 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.EF.Configurations;
 using Backend.Infrastructure.Settings;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +11,7 @@ using System.Text;
 
 namespace Backend.Infrastructure.EF
 {
-    public class FitwebContext : DbContext
+    public class FitwebContext : IdentityDbContext<User, Role, int>
     {
         private readonly SqlSettings _settings;
 
@@ -34,6 +36,9 @@ namespace Backend.Infrastructure.EF
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+            builder.Entity<User>().ToTable("Users", "dbo");
+            builder.Entity<Role>().ToTable("Roles", "dbo");
+            builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles", "dbo");
         }
 
         public DbSet<Athlete> Athletes { get; set; }
@@ -44,15 +49,9 @@ namespace Backend.Infrastructure.EF
 
         public DbSet<Product> Products { get; set; }
 
-        public DbSet<Role> Roles { get; set; }
-
         public DbSet<AthleteExercise> AthleteExercises { get; set; }
 
         public DbSet<AthleteProduct> AthleteProducts { get; set; }
-
-        public DbSet<UserRole> UserRoles { get; set; }
-
-        public DbSet<User> Users { get; set; }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 

@@ -39,7 +39,7 @@ namespace Backend.Api.Framework
             var exceptionType = exception.GetType();
             switch (exception)
             {
-                case Exception e when exceptionType == typeof(UnauthorizedAccessException):
+                case Exception when exceptionType == typeof(UnauthorizedAccessException):
                     statusCode = (int)HttpStatusCode.Unauthorized;
                     break;
 
@@ -56,7 +56,7 @@ namespace Backend.Api.Framework
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
-            var response = new { statusCode = statusCode, errorCode = errorCode, message = exception.Message };
+            var response = new { statusCode, errorCode, message = exception.Message };
             var payload = JsonConvert.SerializeObject(response);
             
             return context.Response.WriteAsync(payload);

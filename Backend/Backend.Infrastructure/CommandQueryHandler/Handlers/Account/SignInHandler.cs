@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Handlers
 {
-    public class SigInHandler : ICommandHandler<SigIn>
+    public class SigInHandler : ICommandHandler<SignIn>
     {
         private readonly IAccountService _accountService;
         private readonly IMemoryCache _cache;
@@ -20,7 +20,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
             _accountService = accountService;
             _cache = cache;
         }
-        public async Task HandleAsync(SigIn command)
+        public async Task HandleAsync(SignIn command)
         {
            var jwt = await _accountService.SignInAsync(command.Username, command.Password);
             _cache.SetJwt(command.TokenId, jwt);

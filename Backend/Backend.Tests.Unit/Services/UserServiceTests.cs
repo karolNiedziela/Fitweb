@@ -23,13 +23,9 @@ using Xunit;
 namespace Backend.Tests.Unit.Services
 {
     public class UserServiceTests : IClassFixture<FitwebFixture>
-    { 
+    {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IPasswordHandler _passwordHandler;
-        private readonly IRefreshTokenFactory _refreshTokenFactory;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
-        private readonly IJwtHandler _jwtHandler;
         private readonly IUserService _sut; // system under testing
         private readonly FitwebFixture _fixture;
 
@@ -38,12 +34,8 @@ namespace Backend.Tests.Unit.Services
             _fixture = fixture;
             _userRepository = Substitute.For<IUserRepository>();
             _mapper = Substitute.For<IMapper>();
-            _passwordHandler = Substitute.For<IPasswordHandler>();
             _mapper = AutoMapperConfig.Initialize();
-            _refreshTokenFactory = Substitute.For<IRefreshTokenFactory>();
-            _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
-            _jwtHandler = Substitute.For<IJwtHandler>();
-            _sut = new UserService(_mapper, _passwordHandler, _userRepository);      
+            _sut = new UserService(_mapper, _userRepository);
         }
 
 
@@ -55,7 +47,7 @@ namespace Backend.Tests.Unit.Services
         {
             // Arrange
             var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == id);
-             _userRepository.GetAsync(id).Returns(user);
+            _userRepository.GetAsync(id).Returns(user);
 
             // Act
             var dto = await _sut.GetAsync(user.Id);
@@ -63,7 +55,7 @@ namespace Backend.Tests.Unit.Services
             // Assert
             dto.ShouldNotBeNull();
             dto.Id.ShouldBe(user.Id);
-            dto.Username.ShouldBe(user.Username);
+            dto.UserName.ShouldBe(user.UserName);
             dto.Email.ShouldBe(user.Email);
             dto.Role.ShouldBe(user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
             await _userRepository.Received(1).GetAsync(user.Id);
@@ -74,20 +66,20 @@ namespace Backend.Tests.Unit.Services
         [InlineData("user2")]
         public async Task GetAsyncByUsername_ShouldReturnUserDto(string username)
         {
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Username == username);
+            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.UserName == username);
             _userRepository.GetByUsernameAsync(username).Returns(user);
 
             // Act
-            var dto = await _sut.GetByUsernameAsync(user.Username);
+            var dto = await _sut.GetByUsernameAsync(user.UserName);
 
             // Assert
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType<UserDto>();
             dto.Id.ShouldBe(user.Id);
-            dto.Username.ShouldBe(user.Username);
+            dto.UserName.ShouldBe(user.UserName);
             dto.Email.ShouldBe(user.Email);
             dto.Role.ShouldBe(user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
-            await _userRepository.Received(1).GetByUsernameAsync(user.Username);
+            await _userRepository.Received(1).GetByUsernameAsync(user.UserName);
         }
 
         [Fact]
@@ -107,8 +99,8 @@ namespace Backend.Tests.Unit.Services
             dto.Count().ShouldBe(3);
 
             await _userRepository.Received(1).GetAllAsync();
-        }  
-     
+        }
+
 
         [Theory]
         [InlineData(1)]
@@ -143,75 +135,6 @@ namespace Backend.Tests.Unit.Services
             exception.Message.ShouldBe($"User with id: {id} was not found.");
             await _userRepository.DidNotReceive().DeleteAsync(Arg.Any<User>());
 
-        }
-
-        [Theory]
-        [InlineData(1, "user1", "user1@email", "secret")]
-        [InlineData(2, "user2", "user2@email", "secret")]
-        public async Task UpdateAsync_ShouldUpdateUser_WhenUserExistsAndDataIsValid(int id, string username,
-            string email, string password)
-        {
-            // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == id);
-            _userRepository.GetAsync(id).Returns(user);
-
-            // Act
-            await _sut.UpdateAsync(id, username, email, password);
-
-            // Assert
-            await _userRepository.Received(1).UpdateAsync(Arg.Any<User>());
-        }
-
-        //[Fact]
-        //public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButUsernameIsNotUnique()
-        //{
-        //    // Arrange
-        //    var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 3);
-        //    _userRepository.GetAsync(3).Returns(user);
-
-
-        //    // Act
-        //    var exception = await Record.ExceptionAsync(() =>  
-        //        _sut.UpdateAsync(3, "user1", "user1@email.com", "secret"));
-
-        //    // Assert
-        //    exception.ShouldNotBeNull();
-        //    exception.ShouldBeOfType(typeof(ServiceException));
-        //    exception.Message.ShouldBe($"User with 'user1' already exists.");
-        //}
-
-        //// TODO: Cant figure out the problem with linq expression
-        //[Fact]
-        //public async Task UpdateAsync_ShouldThrowException_WhenUserExistsButEmailIsNotUnique()
-        //{
-        //    // Arrange
-        //    var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
-        //    _userRepository.GetAsync(user.Id).Returns(user);
-
-        //    _userRepository.AnyAsync(Arg.Any<Expression<Func<User, bool>>>()).ReturnsForAnyArgs(true);
-
-        //    // Act
-        //    var exception = await Record.ExceptionAsync(() => 
-        //        _sut.UpdateAsync(1, "user1", "user1@email.com", "secret"));
-
-        //    // Assert
-        //    exception.ShouldNotBeNull();
-        //    exception.ShouldBeOfType(typeof(ServiceException));
-        //}
-
-        [Fact]
-        public async Task UpdateAsync_ShouldThrowException_WhenUserDoesNotExist()
-        {
-            // Arrange
-
-            // Act
-            var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(1, "karol", "karol@email.com", "testSecret"));
-
-            // Assert
-            exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"User with id: 1 was not found.");
-            await _userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>());
         }
     }
 }

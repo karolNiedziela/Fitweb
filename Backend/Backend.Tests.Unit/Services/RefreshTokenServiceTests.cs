@@ -61,7 +61,7 @@ namespace Backend.Tests.Unit.Services
             _userService.GetAsync(3).Returns(new UserDto
             {
                 Id = user.Id,
-                Username = user.Username,
+                UserName = user.UserName,
                 Email = user.Email,
                 Role = "User"
             });

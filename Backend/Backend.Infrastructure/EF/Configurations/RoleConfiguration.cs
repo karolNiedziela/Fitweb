@@ -15,10 +15,15 @@ namespace Backend.Infrastructure.EF.Configurations
         {
             builder.HasKey(r => r.Id);
 
+            builder.HasMany(u => u.UserRoles)
+               .WithOne(ur => ur.Role)
+               .HasForeignKey(ur => ur.RoleId)
+               .IsRequired();
+
             builder.Property(r => r.Name)
                    .HasConversion(new EnumToStringConverter<RoleId>());
-                    /*r => r.ToString(),
-                    r => (RoleId)Enum.Parse(typeof(RoleId), r));*/
+            /*r => r.ToString(),
+            r => (RoleId)Enum.Parse(typeof(RoleId), r));*/
 
             builder.HasData(
                 Enum.GetValues(typeof(RoleId))
@@ -26,7 +31,8 @@ namespace Backend.Infrastructure.EF.Configurations
                     .Select(r => new Role()
                     {
                         Id = (int)r,
-                        Name = r
+                        Name = r,
+                        NormalizedName = r.ToString().ToUpper()
                     }));
                         
         }

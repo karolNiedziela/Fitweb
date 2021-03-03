@@ -20,3 +20,4 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.C
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\ref\Backend.Core.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.pdb
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Core\obj\Debug\net5.0\Backend.Core.csprojAssemblyReference.cache

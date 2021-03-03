@@ -27,6 +27,8 @@ namespace Backend.Infrastructure.IoC.Modules
                    .SingleInstance();
             builder.RegisterInstance(_configuration.GetSettings<FacebookAuthSettings>())
                    .SingleInstance();
+            builder.RegisterInstance(_configuration.GetSettings<AuthMessageSenderSettings>())
+                   .SingleInstance();
         }
     }
 }

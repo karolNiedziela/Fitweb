@@ -2,6 +2,7 @@
 using Backend.Core.Factories;
 using Backend.Core.Services;
 using Backend.Infrastructure.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -39,6 +40,10 @@ namespace Backend.Infrastructure.IoC.Modules
             builder.RegisterType<PasswordHasher<IPasswordHandler>>()
                    .As<IPasswordHasher<IPasswordHandler>>()
                    .SingleInstance();
+
+            builder.RegisterType<EmailService>()
+                   .As<IEmailService>()
+                   .InstancePerDependency();
         }
     }
 }

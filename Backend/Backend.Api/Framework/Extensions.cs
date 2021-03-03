@@ -11,6 +11,5 @@ namespace Backend.Api.Framework
     {
         public static IApplicationBuilder UseMyExceptionHandler(this IApplicationBuilder builder)
             => builder.UseMiddleware(typeof(MyExceptionHandlerMiddleware));
-
     }
 }

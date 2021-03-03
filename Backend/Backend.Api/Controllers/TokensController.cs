@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Backend.Infrastructure.Auth;
 
 namespace Backend.Api.Controllers
 {
@@ -33,9 +34,10 @@ namespace Backend.Api.Controllers
         [HttpPost("revoke")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Revoke(string refreshToken)
+        public async Task<IActionResult> Revoke(string refreshtoken)
         {
-            await _refreshTokenService.RevokeAsync(refreshToken);
+            await _refreshTokenService.RevokeAsync(refreshtoken);
+
             return NoContent();
         }
     }

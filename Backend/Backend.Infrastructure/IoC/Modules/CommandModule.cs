@@ -12,8 +12,6 @@ namespace Backend.Infrastructure.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-
             builder.RegisterAssemblyTypes(typeof(ICommand).Assembly)
                    .AsClosedTypesOf(typeof(ICommandHandler<>))
                    .AsImplementedInterfaces()

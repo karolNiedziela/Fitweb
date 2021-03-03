@@ -220,3 +220,7 @@ C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Ap
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\ref\Backend.Api.dll
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.pdb
 C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\obj\Debug\net5.0\Backend.Api.genruntimeconfig.cache
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\SendGrid.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\StarkbankEcdsa.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\niedz\Desktop\C#\Fitweb\Backend\Backend.Api\bin\Debug\net5.0\Microsoft.Extensions.Identity.Stores.dll

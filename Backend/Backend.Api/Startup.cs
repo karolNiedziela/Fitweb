@@ -8,6 +8,7 @@ using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -79,6 +80,11 @@ namespace Backend
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fitweb API v1"));
             }
 
+            app.UseCors(options => options.WithOrigins(Configuration["general:clientURL"].ToString())
+               .AllowAnyHeader()
+               .AllowAnyMethod());
+
+
             app.UseMyExceptionHandler();
 
             app.UseHttpsRedirection();
@@ -87,13 +93,9 @@ namespace Backend
 
             app.UseRouting();
 
-            app.UseCors(builder => builder.WithOrigins(Configuration["general:clientURL"].ToString())
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowAnyOrigin());
-
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if (generalSettings.SeedData)

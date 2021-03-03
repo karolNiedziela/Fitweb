@@ -1,10 +1,13 @@
 ﻿using Autofac;
+using Backend.Core.Entities;
+using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Text;
 
@@ -20,6 +23,18 @@ namespace Backend.Infrastructure.Auth
             {
                 configuration = serviceProvider.GetService<IConfiguration>();
             }
+
+            services.AddIdentity<User, Role>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<FitwebContext>().AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = true;              
+            });
 
             var jwt = configuration.GetSettings<JwtSettings>();
 
@@ -62,7 +77,7 @@ namespace Backend.Infrastructure.Auth
                 {
                     opt.Challenge = jwt.Challenge;
                 }
-            });
+            });     
 
             return services;
         }

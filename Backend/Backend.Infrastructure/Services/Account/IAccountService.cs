@@ -1,4 +1,5 @@
 ﻿using Backend.Infrastructure.DTO;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Backend.Infrastructure.Services.Account
     {
         Task<JwtDto> SignInAsync(string username, string password);
 
-        Task<int> SignUpAsync(string username, string email, string password, string roleName = "User");
+        Task<int> SignUpAsync(string username, string email, string password, string role = "User");
 
         Task ChangePasswordAsync(int userId, string oldPassword, string newPassword);
     }

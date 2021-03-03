@@ -27,7 +27,7 @@ namespace Backend.Infrastructure.Repositories
 
         public async Task<User> GetByUsernameAsync(string username)
             => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-                .SingleOrDefaultAsync(u => u.Username == username);
+                .SingleOrDefaultAsync(u => u.UserName == username);
 
         public async Task<User> GetByEmailAsync(string email)
             => await _context.Users.AsNoTracking().Include(u => u.UserRoles).ThenInclude(ur => ur.Role)

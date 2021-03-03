@@ -64,17 +64,5 @@ namespace Backend.Api.Controllers
 
             return NoContent();
         }
-
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromBody]UpdateUser command)
-        {
-            await DispatchAsync(command);
-
-            _logger.LogInfo($"User with user id: {command.Id} updated profile data.");
-
-            return Ok();
-        }
     }
 }

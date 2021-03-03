@@ -18,12 +18,10 @@ namespace Backend.Infrastructure.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IPasswordHandler _passwordHandler;
 
-        public UserService(IMapper mapper, IPasswordHandler passwordHandler, IUserRepository userRepository)
+        public UserService(IMapper mapper,  IUserRepository userRepository)
         {
             _mapper = mapper;
-            _passwordHandler = passwordHandler;
             _userRepository = userRepository;
         }
 
@@ -54,47 +52,6 @@ namespace Backend.Infrastructure.Services
             
             await _userRepository.DeleteAsync(user);
         }
-
-        public async Task UpdateAsync(int id, string username, string email, string password)
-        {
-            var user = await _userRepository.GetOrFailAsync(id);
-
-            user.SetUsername(username);
-            user.SetEmail(email);
-            var hash = _passwordHandler.Hash(password);
-            user.SetPassword(hash);
-
-            try
-            {
-                await _userRepository.UpdateAsync(user);
-            }
-            catch (Exception exception)
-            {
-                HandleException(exception);
-            }
-        } 
-
-        private void HandleException(Exception exception)
-        {
-            if (exception.InnerException is SqlException sqlException)
-            {
-                if (sqlException.Message.Contains("IX_Users_Email"))
-                {
-                    throw new ServiceException(ErrorCodes.EmailInUse, "Email is already taken.");
-                }
-                else if (sqlException.Message.Contains("IX_Users_Username"))
-                {
-                    throw new ServiceException(ErrorCodes.UsernameInUse, "Username is already taken.");
-                }
-                else
-                {
-                    throw new ServiceException("Something went wrong.", "Exception during registration. Contact us example@email.com");
-                }
-            }
-            else
-            {
-                throw new ServiceException("Something went wrong.", "Exception during registration. Contact us example@email.com");
-            }
-        }
+     
     }
 }

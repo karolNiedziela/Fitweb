@@ -1,22 +1,20 @@
 ﻿using Backend.Core.Exceptions;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Core.Entities
 {
-    public class User : BaseEntity
+    public class User : IdentityUser<int>, IBaseEntity
     {
-        public string Username { get; set; }
-
-        public string Email { get; set; }
-
-        public string Password { get; set; }
-
         public bool IsExternalLoginProvider { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+        public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
 
         public User()
         {
@@ -28,6 +26,7 @@ namespace Backend.Core.Entities
             SetUsername(username);
             SetEmail(email);
             IsExternalLoginProvider = true;
+            EmailConfirmed = true;
         }
 
         public User(string username, string email, string password)
@@ -36,6 +35,7 @@ namespace Backend.Core.Entities
             SetEmail(email);
             SetPassword(password);
             IsExternalLoginProvider = false;
+            EmailConfirmed = false;
         }
 
         public void SetUsername(string username)
@@ -45,7 +45,7 @@ namespace Backend.Core.Entities
                 throw new DomainException(ErrorCodes.InvalidUsername, "Username cannot be empty.");
             }
 
-            if (Username == username)
+            if (UserName == username)
             {
                 return;
             }
@@ -56,7 +56,8 @@ namespace Backend.Core.Entities
                     "and at most twenty characters.");
             }
 
-            Username = username.ToLowerInvariant();
+            UserName = username.ToLowerInvariant();
+            NormalizedUserName = username.ToUpperInvariant();
             DateUpdated = DateTime.UtcNow;
         }
 
@@ -80,15 +81,16 @@ namespace Backend.Core.Entities
             }
 
             Email = email.ToLowerInvariant();
+            NormalizedEmail = email.ToUpperInvariant();
             DateUpdated = DateTime.UtcNow;
         }
 
         public void SetPassword(string password)
         {
-            if (Password == password)
+            if (PasswordHash == password)
                 return;
 
-            Password = password;
+            PasswordHash = password;
             DateUpdated = DateTime.UtcNow;
         }
     }

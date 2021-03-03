@@ -39,7 +39,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
         {
             var email = await _externalLoginService.LoginWithFacebookAsync(command.AccessToken);
             var user = await _userService.GetByUsernameAsync(email);
-            var jwt = _jwtHandler.CreateToken(user.Id, user.Username, user.Role);
+            var jwt = _jwtHandler.CreateToken(user.Id, user.UserName, user.Role);
             jwt.RefreshToken = await CreateRefreshTokenAsync(user.Id);
             _cache.SetJwt(command.TokenId, jwt);
         }

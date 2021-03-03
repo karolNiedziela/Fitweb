@@ -36,7 +36,7 @@ namespace Backend.Infrastructure.Services
 
             token.Use(_dateTimeProvider.Now);
             var user = await _userService.GetAsync(token.UserId);
-            var jwt = _jwtHandler.CreateToken(token.UserId, user.Username, user.Role);
+            var jwt = _jwtHandler.CreateToken(token.UserId, user.UserName, user.Role);
             var newRefreshToken = _refreshTokenFactory.Create(user.Id);
             await _refreshTokenRepository.AddAsync(newRefreshToken);
             await _refreshTokenRepository.UpdateAsync(token);

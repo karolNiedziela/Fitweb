@@ -1,0 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+body {
+  background: url("assets/images/background.png");
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+}

@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Backend.Core.Entities
 {
-    public class Role
+    public class Role : IdentityRole<int>
     {
-        public int Id { get; set; }
-
-        public RoleId Name { get; set; }
+        public new RoleId Name { get; set; }
 
         public List<UserRole> UserRoles { get; set; }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Backend.Core.Entities
 {
-    public class BaseEntity : IEntity
+    public class BaseEntity : IBaseEntity
     {
 
         public int Id { get; set; }

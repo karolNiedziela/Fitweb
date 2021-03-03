@@ -15,6 +15,5 @@ namespace Backend.Infrastructure.Services
 
         Task DeleteAsync(int userId);
 
-        Task UpdateAsync(int id, string username, string email, string password);
     }
 }

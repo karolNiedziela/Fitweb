@@ -23,7 +23,7 @@ namespace Backend.Infrastructure.Services
             stringPath += @"/Files/products.csv";
 
             var products = _loader.LoadCsvAsync(stringPath);
-
+            
             await _productRepository.AddRangeAsync(products);
         }
     }

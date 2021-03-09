@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Backend
@@ -102,6 +104,12 @@ namespace Backend
             {
                 var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
                 dataInitializer.SeedAsync();
+            }
+
+            var context = app.ApplicationServices.GetService<FitwebContext>();
+            if (context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
             }
 
             app.UseEndpoints(endpoints =>

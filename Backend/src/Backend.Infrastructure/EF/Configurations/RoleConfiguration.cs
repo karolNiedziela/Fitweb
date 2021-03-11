@@ -25,15 +25,15 @@ namespace Backend.Infrastructure.EF.Configurations
             ///*r => r.ToString(),
             //r => (RoleId)Enum.Parse(typeof(RoleId), r));*/
 
-            builder.HasData(
-                Enum.GetValues(typeof(RoleId))
-                    .Cast<RoleId>()
-                    .Select(r => new Role()
-                    {
-                        Id = (int)r,
-                        Name = r.ToString(),
-                        NormalizedName = r.ToString().ToUpper()
-                    }));
+            //builder.HasData(
+            //    Enum.GetValues(typeof(RoleId))
+            //        .Cast<RoleId>()
+            //        .Select(r => new Role()
+            //        {
+            //            Id = (int)r,
+            //            Name = r.ToString(),
+            //            NormalizedName = r.ToString().ToUpper()
+            //        }));
                         
         }
     }

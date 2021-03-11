@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Backend.Infrastructure.Migrations
 {
-    public partial class Identity : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -73,7 +73,7 @@ namespace Backend.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -90,8 +90,6 @@ namespace Backend.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsExternalLoginProvider = table.Column<bool>(type: "bit", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "date", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "date", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -385,10 +383,10 @@ namespace Backend.Infrastructure.Migrations
                     { 7, "Sunday" },
                     { 6, "Saturday" },
                     { 5, "Friday" },
-                    { 4, "Thursday" },
-                    { 3, "Wednesday" },
                     { 2, "Tuesday" },
-                    { 1, "Monday" }
+                    { 3, "Wednesday" },
+                    { 1, "Monday" },
+                    { 4, "Thursday" }
                 });
 
             migrationBuilder.InsertData(
@@ -396,25 +394,14 @@ namespace Backend.Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
+                    { 7, "Back" },
                     { 1, "Chest" },
                     { 2, "Legs" },
                     { 3, "Biceps" },
                     { 4, "Triceps" },
                     { 5, "Shoulders" },
                     { 6, "Abdominals" },
-                    { 7, "Back" },
                     { 8, "Forearm" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "Roles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { 1, "99d61aaf-de2e-486b-8ab2-0ece04bd3d4f", "Admin", "ADMIN" },
-                    { 2, "175073fa-8dfd-48ba-aa56-a57171b7c2df", "User", "USER" },
-                    { 3, "6449d013-bdaf-482b-b566-61f3f06e79c8", "Instructor", "INSTRUCTOR" }
                 });
 
             migrationBuilder.CreateIndex(

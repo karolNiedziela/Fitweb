@@ -24,19 +24,19 @@ namespace Backend.Infrastructure.Services.Account
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly GeneralSettings _generalSettings;
         private readonly IEmailService _emailSender;
 
         public AccountService(IUserRepository userRepository, IPasswordHandler passwordHandler,
             IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository,
-            UserManager<User> userManager, IConfiguration configuration, IEmailService emailSender)
+            UserManager<User> userManager, GeneralSettings generalSettings, IEmailService emailSender)
         {
             _userRepository = userRepository;
             _passwordHandler = passwordHandler;
             _jwtHandler = jwtHandler;
             _refreshTokenFactory = refreshTokenFactory;
             _refreshTokenRepository = refreshTokenRepository;
-            _configuration = configuration;
+            _generalSettings = generalSettings;
             _userManager = userManager;
             _emailSender = emailSender;
         }
@@ -45,18 +45,14 @@ namespace Backend.Infrastructure.Services.Account
         {
             var user = new User(username, email, password);
 
-            user.UserRoles.Add(new UserRole
-            {
-                User = user,
-                RoleId = Role.GetRole(role).Id
-            });
-
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
                 throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
             }
+
+            await _userManager.AddToRoleAsync(user, role);
 
             await GenerateEmailConfirmationTokenAsync(user);
 
@@ -79,7 +75,10 @@ namespace Backend.Infrastructure.Services.Account
 
             if (_userManager.Options.SignIn.RequireConfirmedEmail)
             {
-                throw new ServiceException(ErrorCodes.EmailNotConfirmed, "Email not confirmed. Confirm email to get access.");
+                if (!user.EmailConfirmed)
+                {
+                    throw new ServiceException(ErrorCodes.EmailNotConfirmed, "Email not confirmed. Confirm email to get access.");
+                }
             }
 
             var jwt = _jwtHandler.CreateToken(user.Id, user.UserName,
@@ -103,11 +102,9 @@ namespace Backend.Infrastructure.Services.Account
 
         public async Task SendConfirmationEmailAsync(User user, string token)
         {
-            var generalSettings = _configuration.GetSettings<GeneralSettings>();
-
             var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            var url = string.Format(generalSettings.AppDomain + generalSettings.EmailConfirmation, user.Id, code);
+            var url = string.Format(_generalSettings.AppDomain + _generalSettings.EmailConfirmation, user.Id, code);
 
             await _emailSender.SendEmailAsync(user.Email, "Email Confirmation", $"Please confirm your account by" +
                 $" <a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");
@@ -139,11 +136,9 @@ namespace Backend.Infrastructure.Services.Account
 
         public async Task SendForgotPasswordEmailAsync(User user, string token)
         {
-            var generalSettings = _configuration.GetSettings<GeneralSettings>();
-
             var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            var url = string.Format(generalSettings.AppDomain + generalSettings.ForgotPassword, user.Id, code);
+            var url = string.Format(_generalSettings.AppDomain + _generalSettings.ForgotPassword, user.Id, code);
 
             await _emailSender.SendEmailAsync(user.Email, "Forgot password", $"Reset password by" +
                 $"<a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");

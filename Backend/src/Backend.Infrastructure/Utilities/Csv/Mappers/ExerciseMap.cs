@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Core.Factories;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Auth;
@@ -26,6 +27,7 @@ namespace Backend.Tests.Unit.Services
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IExternalLoginService _sut;
+        private readonly FakeUserManager _fakeUserManager;
 
         public ExternalLoginServiceTests()
         {
@@ -34,8 +36,9 @@ namespace Backend.Tests.Unit.Services
             _jwtHandler = Substitute.For<IJwtHandler>();
             _refreshTokenFactory = Substitute.For<IRefreshTokenFactory>();
             _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
+            _fakeUserManager = Substitute.For<FakeUserManager>();
             _sut = new ExternaLoginService(_facebookAuthService, _userRepository, _jwtHandler, 
-                _refreshTokenFactory, _refreshTokenRepository);
+                _refreshTokenFactory, _refreshTokenRepository, _fakeUserManager);
         }
 
         [Fact]
@@ -69,20 +72,12 @@ namespace Backend.Tests.Unit.Services
                 Id = 10,
                 UserName = facebookInfoResult.Email,
                 Email = facebookInfoResult.Email,
-                UserRoles = new List<UserRole>
-                {
-                    new UserRole
-                    {
-                        UserId = 10,
-                        RoleId = Role.GetRole(RoleId.User.ToString()).Id
-                    }
-                }
             };
             var jwtDto = new JwtDto
             {
                 UserId = user.Id,
                 Username = user.UserName,
-                Role = Role.GetRole("User").Name,
+                Role = RoleId.User.ToString(),
                 AccessToken = "1234.56712.12323",
                 Expires = 10000000,
                 RefreshToken = string.Empty
@@ -103,7 +98,6 @@ namespace Backend.Tests.Unit.Services
             jwt.Expires.ShouldBe(jwtDto.Expires);
             jwt.RefreshToken.ShouldBe(jwtDto.RefreshToken);
             jwt.ShouldBeOfType(typeof(JwtDto));
-            await _userRepository.Received(1).AddAsync(Arg.Any<User>());
         }
 
         [Fact]
@@ -162,7 +156,7 @@ namespace Backend.Tests.Unit.Services
             {
                 UserId = user.Id,
                 Username = user.UserName,
-                Role = Role.GetRole("User").Name,
+                Role = RoleId.User.ToString(),
                 AccessToken = "1234.56712.12323",
                 Expires = 10000000,
                 RefreshToken = string.Empty
@@ -183,7 +177,6 @@ namespace Backend.Tests.Unit.Services
             jwt.Expires.ShouldBe(jwtDto.Expires);
             jwt.RefreshToken.ShouldBe(jwtDto.RefreshToken);
             jwt.ShouldBeOfType(typeof(JwtDto));
-            await _userRepository.Received(0).AddAsync(Arg.Is(user));
         }
     }
 }

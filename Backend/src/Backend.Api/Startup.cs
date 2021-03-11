@@ -18,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -31,8 +32,7 @@ namespace Backend
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddUserSecrets<FacebookAuthSettings>()
-                .AddUserSecrets<AuthMessageSenderSettings>()
+                .AddUserSecrets<Startup>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -102,14 +102,8 @@ namespace Backend
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if (generalSettings.SeedData)
             {
-                var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
+                var dataInitializer = app.ApplicationServices.GetService<IGlobalSeeder>();
                 dataInitializer.SeedAsync();
-            }
-
-            var context = app.ApplicationServices.GetService<FitwebContext>();
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
             }
 
             app.UseEndpoints(endpoints =>

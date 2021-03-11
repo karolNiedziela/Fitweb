@@ -42,13 +42,6 @@ namespace Backend.Infrastructure.Repositories
         public async Task<bool> AnyAsync(Expression<Func<User, bool>> expression)
             => await _context.Users.AnyAsync(expression);
 
-
-        public async Task AddAsync(User user)
-        {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();     
-        }
-
         public async Task DeleteAsync(User user)
         {
             _context.Users.Remove(user);

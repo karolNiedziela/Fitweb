@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Backend.Core.Entities
+namespace Backend.Core.Enums
 {
     public enum CategoryOfProductId
     {

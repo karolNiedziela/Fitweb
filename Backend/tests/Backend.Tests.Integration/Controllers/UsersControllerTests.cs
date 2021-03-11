@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.EF;
@@ -37,9 +38,13 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnNotFound_WhenUserDoesNotExist()
         {
-            var userId = 5;
+            var client = FreshClient();
 
-            var response = await _client.GetAsync($"/api/users/{userId}");
+            // 1 is tesAdmin
+            // 2 is testUser
+            var userId = 3;
+
+            var response = await client.GetAsync($"/api/users/{userId}");
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
@@ -48,8 +53,8 @@ namespace Backend.Tests.Integration.Controllers
         {
             var user = await _client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
             {
-                Username = "testUser",
-                Email = "testUser@email.com",
+                Username = "test",
+                Email = "test@email.com",
                 Password = "testSecret",
                 Role = RoleId.User.ToString()
             });
@@ -66,36 +71,37 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task GetAll_ShouldReturnIEnumerableUserDto()
         {
-            // Arrange 
+            var client = FreshClient();
+
             var response = await _client.GetAsync("/api/users");
 
             response.EnsureSuccessStatusCode();
 
-            var dto = JsonConvert.DeserializeObject<IEnumerable<UserDto>>(await response.Content.ReadAsStringAsync());
+            var dto = await response.ReadAsString<IEnumerable<UserDto>>();
             dto.ShouldNotBeNull();
             dto.Count().ShouldBeGreaterThan(0);
         }
 
         [Fact]
-        public async Task Delete_ShouldReturnNoContent_WhenUserIsAuthorizedAndRoleIsAdmin()
+        public async Task Delete_ShouldReturnNoContent_WhenUserIsAuthorizedAndUserIsAdmin()
         {
+            var client = FreshClient();
 
-            var user = await _client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
+            var user = await client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
             {
-                Username = "testDeleteUser",
-                Email = "testDeleteUser@email.com",
+                Username = "test",
+                Email = "test@email.com",
                 Password = "testSecret",
-                Role = RoleId.User.ToString()
             });
 
-            await _client.AuthenticateAsync();
+            await client.AuthenticateAsync();
 
             var deleteUser = new DeleteUser
             {
                 Id = user.Id
             };
 
-            var response = await _client.DeleteAsJsonAsync("/api/users", deleteUser);
+            var response = await client.DeleteAsJsonAsync("/api/users", deleteUser);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -117,11 +123,47 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnBadRequest_WhenUserIsAdminButDataIsNotValid()
         {
-            await _client.AuthenticateAsync();
+            var client = FreshClient();
 
-            var response = await _client.DeleteAsJsonAsync("/api/users", new DeleteUser { });
+            await client.AuthenticateAsync();
+
+            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 0 });
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Delete_ShouldReturnForbidden_WhenUserIsAuthorizedButIsNotAdmin()
+        {
+            var client = FreshClient();
+
+            await client.AuthenticateUserAsync();
+
+            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 0 });
+
+            response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        }
+
+        private HttpClient FreshClient()
+        {
+            var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+
+                        var db = scopedServices.GetRequiredService<FitwebContext>();
+                        db.Users.RemoveRange(db.Users.Where(u => u.UserName != "testAdmin" && u.UserName != "testUser"));
+                        db.SaveChanges();
+                    }
+                });
+            }).CreateClient();
+
+            return client;
         }
 
     }

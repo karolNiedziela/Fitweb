@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Backend.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,14 @@ namespace Backend.Core.Entities
         public int Id { get; set; }
 
         public CategoryOfProductId Name { get; set; }
+
+        public string CategoryName
+        {
+            get
+            {
+                return Name.ToString().Replace("_", " ");
+            }
+        }
 
         public CategoryOfProduct()
         {

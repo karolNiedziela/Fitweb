@@ -12,6 +12,7 @@ using Backend.Infrastructure.CommandQueryHandler.Queries.Products;
 using Microsoft.AspNetCore.Http;
 using Backend.Infrastructure.DTO;
 using System.Collections.Generic;
+using Backend.Infrastructure.Auth;
 
 namespace Backend.Api.Controllers
 {
@@ -101,10 +102,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         //POST : /api/products
         public async Task<ActionResult> Post([FromBody]AddProduct command)
         {
@@ -116,10 +118,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         //DELETE : /api/products/{id}
         public async Task<ActionResult> Delete([FromBody] DeleteProduct command)
         {
@@ -132,10 +135,11 @@ namespace Backend.Api.Controllers
 
         //PUT: /api/products
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Put([FromBody] UpdateProduct command)
         {
             await DispatchAsync(command);

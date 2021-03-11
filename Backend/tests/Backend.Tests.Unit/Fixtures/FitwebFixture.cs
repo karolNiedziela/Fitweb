@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;

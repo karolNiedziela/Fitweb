@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.Auth;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Exercises;
@@ -99,10 +100,11 @@ namespace Backend.Api.Controllers
 
 
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Post([FromBody]AddExercise command)
         {
             await DispatchAsync(command);
@@ -113,10 +115,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete([FromBody]DeleteExercise command)
         {
             await DispatchAsync(command);
@@ -127,10 +130,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Put([FromBody]UpdateExercise command)
         {
             await DispatchAsync(command);

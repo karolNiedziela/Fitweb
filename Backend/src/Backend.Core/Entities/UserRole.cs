@@ -12,7 +12,6 @@ namespace Backend.Core.Entities
         public User User { get; set; }
 
 
-
         public UserRole()
         {
 

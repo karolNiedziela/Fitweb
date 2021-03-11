@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Backend.Core.Entities
+namespace Backend.Core.Enums
 {
     public enum RoleId
     {
-        Admin = 1,
+        Admin,
         User,
         Instructor
     }

@@ -2,8 +2,8 @@
 
 namespace Backend.Infrastructure.Services
 {
-    public interface IExerciseInitializer
+    public interface IGlobalSeeder
     {
-        Task LoadFromCsv();
+        Task SeedAsync();
     }
 }

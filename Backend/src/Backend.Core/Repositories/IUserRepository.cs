@@ -17,8 +17,6 @@ namespace Backend.Core.Repositories
 
         Task<IEnumerable<User>> GetAllAsync();
 
-        Task AddAsync(User user);
-
         Task DeleteAsync(User user);
 
         Task UpdateAsync(User user);

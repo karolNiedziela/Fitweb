@@ -14,7 +14,7 @@ namespace Backend.Infrastructure.Mappers
             => new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<User, UserDto>()
-                   .ForMember(dest => dest.Role, opt => opt.MapFrom(u => u.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault()));
+                   .ForMember(dest => dest.Role, opt => opt.MapFrom(u => u.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault()));
                 cfg.CreateMap<Athlete, AthleteDto>()
                    .ForMember(dest => dest.Products, opt => opt.MapFrom(a => a.AthleteProducts.Select(
                      ap => new AthleteProduct

@@ -1,10 +1,12 @@
-﻿using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.Auth;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Commands.Athletes;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Athletes;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Logger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -120,8 +122,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete("{athleteId}")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete([FromBody]DeleteAthlete command)
         {
             await DispatchAsync(command);

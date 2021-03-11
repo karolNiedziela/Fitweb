@@ -11,7 +11,8 @@ using System.Text;
 
 namespace Backend.Infrastructure.EF
 {
-    public class FitwebContext : IdentityDbContext<User, Role, int>
+    public class FitwebContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>,
+        UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
 
         public FitwebContext(DbContextOptions<FitwebContext> options) : base(options)
@@ -24,7 +25,7 @@ namespace Backend.Infrastructure.EF
             builder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
             builder.Entity<User>().ToTable("Users", "dbo");
             builder.Entity<Role>().ToTable("Roles", "dbo");
-            builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles", "dbo");
+            builder.Entity<UserRole>().ToTable("UserRoles", "dbo");
         }
 
         public DbSet<Athlete> Athletes { get; set; }

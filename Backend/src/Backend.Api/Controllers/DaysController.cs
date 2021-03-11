@@ -1,4 +1,6 @@
-﻿using Backend.Infrastructure.CommandQueryHandler.Commands;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Days;
 using Backend.Infrastructure.EF;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,20 +15,17 @@ namespace Backend.Api.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class DaysController : Controller
+    public class DaysController : ApiControllerBase
     {
-        private readonly FitwebContext _context;
-
-        public DaysController(FitwebContext context) 
+        public DaysController(IDispatcher dispatcher) : base(dispatcher)
         {
-            _context = context;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAll()
         {
-            var days = await _context.Days.ToListAsync();
+            var days = await QueryAsync(new GetDays());
 
             return Ok(days);
         }

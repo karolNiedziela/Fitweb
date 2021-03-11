@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.Auth;
+using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Users;
 using Backend.Infrastructure.DTO;
@@ -51,10 +52,11 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Delete([FromBody] DeleteUser command)
         {
             await DispatchAsync(command);

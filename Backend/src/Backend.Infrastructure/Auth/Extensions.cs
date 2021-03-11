@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Text;
+using Microsoft.Extensions.Options;
+using Backend.Core.Enums;
 
 namespace Backend.Infrastructure.Auth
 {
@@ -24,18 +26,30 @@ namespace Backend.Infrastructure.Auth
                 configuration = serviceProvider.GetService<IConfiguration>();
             }
 
-            services.AddIdentity<User, Role>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<FitwebContext>().AddDefaultTokenProviders();
+            services.AddIdentity<User, Role>(
+                options => options.SignIn.RequireConfirmedAccount = false
+                )
+                .AddEntityFrameworkStores<FitwebContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
+
+                // Password settings.
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
+                options.Password.RequiredUniqueChars = 1;
+
+                // SigIn settings.
+                options.SignIn.RequireConfirmedEmail = true;                
+
+                // User settings.
                 options.User.RequireUniqueEmail = true;
-                options.SignIn.RequireConfirmedEmail = true;
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnoprstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             });
 
             var jwt = configuration.GetSettings<JwtSettings>();
@@ -58,14 +72,15 @@ namespace Backend.Infrastructure.Auth
                 RequireExpirationTime = jwt.RequireExpirationTime,
                 RequireSignedTokens = jwt.RequireSignedTokens,
                 ClockSkew = TimeSpan.Zero
-            };
+            };        
 
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(opt =>
+            })
+            .AddJwtBearer(opt =>
             {
                 opt.Authority = jwt.Authority;
                 opt.Audience = jwt.Audience;
@@ -79,7 +94,12 @@ namespace Backend.Infrastructure.Auth
                 {
                     opt.Challenge = jwt.Challenge;
                 }
-            });     
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(PolicyNames.AdminOnly, policy => policy.RequireRole(RoleId.Admin.ToString()));
+            });
 
             return services;
         }

@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Core.Exceptions;
 using Backend.Core.Factories;
 using Backend.Core.Repositories;
@@ -6,6 +7,7 @@ using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Services.Account;
+using Backend.Infrastructure.Settings;
 using Backend.Tests.Unit.Fixtures;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Backend.Tests.Unit.Auth
+namespace Backend.Tests.Unit.Services
 {
     public class AccountServiceTests : IClassFixture<FitwebFixture>
     {
@@ -33,7 +35,7 @@ namespace Backend.Tests.Unit.Auth
         private readonly IEmailService _emailService;
         private readonly IAccountService _sut;
         private readonly FitwebFixture _fixture;
-        private readonly IConfiguration _configuration;
+        private readonly GeneralSettings _generalSettings;
 
         public AccountServiceTests(FitwebFixture fixture)
         {
@@ -46,10 +48,10 @@ namespace Backend.Tests.Unit.Auth
 
             _fakeUserManager = Substitute.For<FakeUserManager>();
             _emailService = Substitute.For<IEmailService>();
-            _configuration = Substitute.For<IConfiguration>();
+            _generalSettings = Substitute.For<GeneralSettings>();
 
             _sut = new AccountService(_userRepository, _passwordHandler, _jwtHandler, _refreshTokenFactory,
-                _refreshTokenRepository, _fakeUserManager, _configuration, _emailService);
+                _refreshTokenRepository, _fakeUserManager, _generalSettings, _emailService);
         }
 
         [Theory]
@@ -57,9 +59,6 @@ namespace Backend.Tests.Unit.Auth
         public async Task SignUpAsync_ShouldAddNewUser(string username, string email, string password)
         {
             // Arrange 
-
-            var role = _fixture.FitwebContext.Roles.SingleOrDefault(r => r.Name == Role.GetRole("User").Name);
-
             var randomString = new RandomStringGenerator(20);
 
             _fakeUserManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Success);

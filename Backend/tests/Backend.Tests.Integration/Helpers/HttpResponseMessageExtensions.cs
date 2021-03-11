@@ -18,5 +18,6 @@ namespace Backend.Tests.Integration.Helpers
 
             return model;
         }
+
     }
 }

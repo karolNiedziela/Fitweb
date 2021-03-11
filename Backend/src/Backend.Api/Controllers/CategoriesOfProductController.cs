@@ -9,25 +9,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.CommandQueryHandler.Queries;
+using Backend.Infrastructure.CommandQueryHandler;
 
 namespace Backend.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesOfProductController : Controller
+    public class CategoriesOfProductController : ApiControllerBase
     {
-        private readonly FitwebContext _context;
-
-        public CategoriesOfProductController(FitwebContext context)
+        public CategoriesOfProductController(IDispatcher dispatcher) : base(dispatcher)
         {
-            _context = context;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAll()
         {
-            var categories = await _context.CategoriesOfProduct.ToListAsync();
+            var categories = await QueryAsync(new GetCategories());
 
             return Ok(categories);
         }

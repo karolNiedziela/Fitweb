@@ -1,4 +1,5 @@
-﻿using Backend.Infrastructure.Exceptions;
+﻿using Backend.Core.Exceptions;
+using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -44,6 +45,10 @@ namespace Backend.Api.Framework
                     break;
 
                 case ServiceException e when exceptionType == typeof(ServiceException):
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    errorCode = e.Code;
+                    break;
+                case DomainException e when exceptionType == typeof(DomainException):
                     statusCode = (int)HttpStatusCode.BadRequest;
                     errorCode = e.Code;
                     break;

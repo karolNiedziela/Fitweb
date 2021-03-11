@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Repositories;
@@ -44,7 +45,7 @@ namespace Backend.Infrastructure.Extensions
 
         public static async Task<string> CheckIfAdminExists(this IUserRepository repository)
         {
-            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == Role.GetRole(RoleId.Admin.ToString()).Name)))
+            if (await repository.AnyAsync(u => u.UserRoles.Any(ur => ur.Role.Name == RoleId.Admin.ToString())))
             {
                 return RoleId.User.ToString();
             }

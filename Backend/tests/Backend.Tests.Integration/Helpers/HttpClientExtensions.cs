@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.DTO;
 using Newtonsoft.Json;
@@ -32,16 +33,6 @@ namespace Backend.Tests.Integration.Helpers
 
         public static async Task AuthenticateAsync(this HttpClient httpClient)
         {
-            var signUpResponse = await httpClient.PostAsJsonAsync("https://localhost:5001/api/account/signup", new SignUp
-            {
-                Username = "testAdmin",
-                Email = "testAdminEmail@email.com",
-                Password = "testAdminSecret",
-                Role = RoleId.Admin.ToString()
-            });
-
-            var resultSingUpRespnse = await signUpResponse.Content.ReadAsStringAsync();
-
             var loginResponse = await httpClient.PostAsJsonAsync("https://localhost:5001/api/account/signin", new SignIn
             {
                 Username = "testAdmin",
@@ -54,6 +45,21 @@ namespace Backend.Tests.Integration.Helpers
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);           
         }
+
+        public static async Task AuthenticateUserAsync(this HttpClient httpClient)
+        {
+            var loginResponse = await httpClient.PostAsJsonAsync("https://localhost:5001/api/account/signin", new SignIn
+            {
+                Username = "testUser",
+                Password = "testUserSecret"
+            });
+
+            var resultLoginResponse = await loginResponse.Content.ReadAsStringAsync();
+
+            var model = JsonConvert.DeserializeObject<JwtDto>(resultLoginResponse);
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);
+        } 
 
         private static HttpContent Serialize(object data) => new StringContent(JsonConvert.SerializeObject(data),
             Encoding.UTF8, "application/json");

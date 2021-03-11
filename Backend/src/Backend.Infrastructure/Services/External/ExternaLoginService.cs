@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Backend.Infrastructure.Auth;
 using Backend.Core.Factories;
 using Backend.Infrastructure.DTO;
+using Backend.Core.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Infrastructure.Services.External
 {
@@ -19,15 +21,18 @@ namespace Backend.Infrastructure.Services.External
         private readonly IJwtHandler _jwtHandler;
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly UserManager<User> _userManager;
 
         public ExternaLoginService(IFacebookAuthService facebookAuthService, IUserRepository userRepository,
-            IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository)
+            IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository,
+            UserManager<User> userManager)
         {
             _facebookAuthService = facebookAuthService;
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
             _refreshTokenFactory = refreshTokenFactory;
             _refreshTokenRepository = refreshTokenRepository;
+            _userManager = userManager;
         }
 
         public async Task<JwtDto> LoginWithFacebookAsync(string accessToken)
@@ -46,12 +51,12 @@ namespace Backend.Infrastructure.Services.External
             {
                 user = new User(userInfo.Email, userInfo.Email);
 
-                user.UserRoles.Add(UserRole.Create(user, Role.GetRole("User")));
+                await _userManager.CreateAsync(user);
 
-                await _userRepository.AddAsync(user);
+                await _userManager.AddToRoleAsync(user, RoleId.User.ToString());
             }
 
-            var jwt = _jwtHandler.CreateToken(user.Id, user.UserName, Role.GetRole("User").Name);
+            var jwt = _jwtHandler.CreateToken(user.Id, user.UserName, RoleId.User.ToString());
             jwt.RefreshToken = await CreateRefreshTokenAsync(user.Id);
 
             return jwt;

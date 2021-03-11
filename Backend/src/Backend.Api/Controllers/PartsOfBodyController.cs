@@ -1,4 +1,6 @@
-﻿using Backend.Infrastructure.EF;
+﻿using Backend.Infrastructure.CommandQueryHandler;
+using Backend.Infrastructure.CommandQueryHandler.Queries.PartsOfBody;
+using Backend.Infrastructure.EF;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,20 +13,17 @@ namespace Backend.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PartOfBodiesController : Controller
+    public class PartsOfBodyController : ApiControllerBase
     {
-        private readonly FitwebContext _context;
-
-        public PartOfBodiesController(FitwebContext context)
+        public PartsOfBodyController(IDispatcher dispatcher) : base(dispatcher)
         {
-            _context = context;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAll()
         {
-            var parts = await _context.PartOfBodies.ToListAsync();
+            var parts = await QueryAsync(new GetParts());
 
             return Ok(parts);
         }

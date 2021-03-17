@@ -1,0 +1,25 @@
+<div class="flex-container">
+  <div class="manual">
+    <div class="tab-header" routerlink="sign">
+      <h2 routerLink="./in" routerLinkActive="active">Sign In</h2>
+      <h2 routerLink="./up" routerLinkActive="active">Sign Up</h2>
+    </div>
+    <div class="row">
+      <div class="col">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+  <div class="external">
+    <div class="external-div facebook">
+      <button class="btn btn-primary btn-fb">
+        <i class="fab fa-facebook-square"></i> Continue with Facebook
+      </button>
+    </div>
+    <div class="external-div google">
+      <button class="btn btn-google">
+        <i class="fab fa-google"></i> Continue with Google
+      </button>
+    </div>
+  </div>
+</div>

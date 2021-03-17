@@ -1,13 +1,46 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-footer {
+.footer {
   background: rgba(0, 0, 0, 0.7) !important;
   color: white;
   padding: 1rem 0 2rem;
-  width: 100%;
-  margin-top: 4rem;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  display: flex;
+}
+
+.col-md-5 {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.contacts {
+  text-align: center;
+  width: 30%;
+  margin: 0 auto;
+}
+
+.flex-contacts {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.contact {
+  cursor: pointer;
+  letter-spacing: 0.05rem;
+}
+
+.contact i {
+  position: relative;
+  top: 0;
+  transition: all ease 0.5s;
+}
+
+.contact-i {
+  color: #16caaf;
+  transform: translateY(-5px) scale(1.2, 1.2);
 }
 
 h1 {
@@ -20,4 +53,14 @@ hr.socket {
   width: 100%;
   border-top: 0.2rem solid #dae4f0;
   margin: 0.8rem 0;
+}
+
+i {
+  font-size: 20px;
+}
+
+@media (max-width: 767px) {
+  h1 {
+    font-size: 2rem;
+  }
 }

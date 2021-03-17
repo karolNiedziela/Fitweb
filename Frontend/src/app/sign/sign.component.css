@@ -1,0 +1,181 @@
+/*
+
+  Content:
+    1. Manual signing
+      1.1 Manual tabs
+      1.2 Manual signing form
+      1.2.1 Form labels
+      1.2.2 Form inputs
+      1.2.3 Form submit
+      1.2.4 Form validation
+    2. External signing
+      2.1 External buttons
+
+*/
+
+.flex-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  margin: 0 auto;
+  padding-top: 8rem;
+  align-items: center;
+}
+
+/* 
+
+  Manual signing
+
+*/
+
+.manual {
+  border-radius: 10px 10px 10px 10px;
+  background: #2e3137;
+  padding: 30px 45px;
+  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  height: auto;
+  width: 500px;
+}
+
+/*
+
+    Manual tabs
+
+*/
+
+.tab-header {
+  text-align: center;
+}
+
+.tab-header h2:hover {
+  color: #fff;
+  border-bottom: 4px solid #fff;
+}
+
+.tab-header h2.active {
+  color: #fff;
+  border-bottom: 4px solid #fff;
+}
+
+.tab-header h2 {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-block;
+  padding: 30px 40px 10px 40px;
+  cursor: pointer;
+  color: #545d6a;
+  border-bottom: 2px solid #545d6a;
+}
+
+.tab-header h2:focus {
+  outline: none;
+}
+
+/*
+
+    Manual signing form
+
+*/
+
+form {
+  margin: 0px 16px;
+}
+
+/*
+
+      Form labels
+
+*/
+
+.control-label {
+  letter-spacing: 0.1rem;
+}
+
+div.form-group label:first-child {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.form-group:focus-within .control-label {
+  color: white;
+}
+
+/* 
+
+      Form inputs
+
+*/
+
+input.form-control {
+  background-color: #636b7b;
+  color: #fff;
+}
+
+input.form-control:focus {
+  border: 1px solid white;
+}
+
+/*
+
+      Form submit 
+
+*/
+
+button[type="submit"].btn {
+  border-radius: 20px;
+  background-color: #04c582;
+  color: #fff;
+}
+
+/*
+
+      Form validation
+
+*/
+
+div.form-group label:not(.text-danger) {
+  color: #868f9c;
+  font-weight: 700;
+}
+
+div.form-group.required > label:first-child:after {
+  content: "*";
+  color: #fff;
+  padding-left: 5px;
+}
+
+div.form-group input.invalid {
+  border: 1px solid #dc3545;
+}
+
+/* 
+
+  External signing 
+  
+*/
+
+.external-div {
+  margin-bottom: 2.5rem;
+}
+
+/* 
+
+    External buttons 
+
+*/
+
+.external .btn {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 1.5rem;
+}
+
+.btn-google {
+  border: 1px solid black;
+  border-radius: 0.5rem;
+}
+
+.btn-google:hover {
+  background: rgb(248, 239, 223);
+}

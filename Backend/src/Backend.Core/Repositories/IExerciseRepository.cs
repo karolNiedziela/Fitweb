@@ -14,9 +14,7 @@ namespace Backend.Core.Repositories
 
         Task<Exercise> GetAsync(string name);
 
-        Task<PagedList<Exercise>> GetAllAsync(PaginationQuery paginationQuery);
-
-        Task<PagedList<Exercise>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null);
+        Task<PagedList<Exercise>> GetAllAsync(string name, string partOfBody, PaginationQuery paginationQuery);
 
         Task AddAsync(Exercise exercise);
 

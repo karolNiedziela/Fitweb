@@ -17,6 +17,7 @@ namespace Backend.Core.Entities
 
         }
 
+        // User using external login provider
         public User(string username, string email)
         {
             SetUsername(username);
@@ -25,6 +26,8 @@ namespace Backend.Core.Entities
             EmailConfirmed = true;
         }
 
+
+        // User manually signing up
         public User(string username, string email, string password)
         {
             SetUsername(username);

@@ -78,11 +78,6 @@ namespace Backend.Core.Entities
             DateUpdated = DateTime.UtcNow;
         }
 
-        public void SetDay(Day day)
-        {
-            Day = day;
-        }
-
         public static AthleteExercise Create(Athlete athlete, Exercise exercise, double weight,
             int numberOfSets, int numberOfReps, Day day)
             => new AthleteExercise(athlete, exercise, weight, numberOfSets, numberOfReps, day);

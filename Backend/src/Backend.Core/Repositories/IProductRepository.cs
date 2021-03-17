@@ -14,9 +14,7 @@ namespace Backend.Core.Repositories
 
         Task<Product> GetAsync(string name);
 
-        Task<PagedList<Product>> GetAllAsync(PaginationQuery paginationQuery);
-
-        Task<PagedList<Product>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null);
+        Task<PagedList<Product>> GetAllAsync(string name, string category, PaginationQuery paginationQuery);
 
         Task AddAsync(Product product);
 

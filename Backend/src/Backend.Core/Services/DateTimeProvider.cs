@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Backend.Core.Services
 {
+
     public class DateTimeProvider : IDateTimeProvider
     {
         public DateTime Now => DateTime.UtcNow;

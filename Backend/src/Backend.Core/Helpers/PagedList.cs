@@ -23,16 +23,6 @@ namespace Backend.Core.Helpers
 
         public bool HasNext => CurrentPage < TotalPages;
 
-        public PagedList(List<T> items, int currentPage, int totalPages, int pageSize, int totalCount)
-        {
-            CurrentPage = currentPage;
-            TotalPages = totalPages;
-            PageSize = pageSize;
-            TotalCount = totalCount;
-
-            AddRange(items);
-        }
-
         public PagedList(List<T> items, int count, int currentPage, int pageSize)
         {
             TotalCount = count;
@@ -46,6 +36,10 @@ namespace Backend.Core.Helpers
         public async static Task<PagedList<T>> ToPagedList(IQueryable<T> source, int currentPage, int pageSize)
         {
             var count = source.Count();
+
+            // Skip records based on current page number multiplied by page size and take number of records
+            // based on page size
+            // Example: currentPage = 2, pageSize = 10, so skip 10 elements and take next 10 elements
             var items = await source.Skip((currentPage - 1) * pageSize).Take(pageSize).ToListAsync();
 
             return new PagedList<T>(items, count, currentPage, pageSize);

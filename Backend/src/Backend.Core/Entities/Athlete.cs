@@ -14,6 +14,10 @@ namespace Backend.Core.Entities
 
         public ICollection<AthleteExercise> AthleteExercises { get; set; }
 
+        public CaloricDemand CaloricDemand { get; set; }
+
+        public int? CaloricDemandId { get; set; }
+
         public Athlete()
         {
 

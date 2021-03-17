@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Backend.Core.Helpers
@@ -9,9 +10,10 @@ namespace Backend.Core.Helpers
     {
         const int maxPageSize = 20;
 
-        public int PageNumber { get; set; } = 1;
+        private int _pageSize = 10; 
 
-        private int _pageSize = 10;
+
+        public int PageNumber { get; set; } = 1;
 
         public int PageSize
         {
@@ -26,7 +28,14 @@ namespace Backend.Core.Helpers
         }
 
         public PaginationQuery()
-        { 
+        {
+
+        }
+
+        public PaginationQuery(int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
     }
     

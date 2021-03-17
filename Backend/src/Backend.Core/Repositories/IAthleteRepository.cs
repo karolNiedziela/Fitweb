@@ -11,7 +11,7 @@ namespace Backend.Core.Repositories
 {
     public interface IAthleteRepository 
     {
-        Task<Athlete> GetAsync(int id);
+        Task<Athlete> GetAsync(int userId);
 
         Task<IEnumerable<Athlete>> GetAllAsync();
 

@@ -44,7 +44,7 @@ namespace Backend.Tests.Unit.Auth
             jwtDto.UserId.ShouldBe(userId);
             jwtDto.Username.ShouldBe(username);
             jwtDto.Role.ShouldBe(role);
-            jwtDto.Expires.ShouldBeGreaterThanOrEqualTo(expires.ToTimeStamp());
+            jwtDto.Expires.ShouldBeGreaterThanOrEqualTo(expires.ToUnixTimeMilliseconds());
             jwtDto.RefreshToken.ShouldBeEmpty();
             jwtDto.AccessToken.ShouldNotBeNull();
         }

@@ -73,7 +73,7 @@ namespace Backend.Tests.Integration.Controllers
         {
             var client = FreshClient();
 
-            var response = await _client.GetAsync("/api/users");
+            var response = await client.GetAsync("/api/users");
 
             response.EnsureSuccessStatusCode();
 

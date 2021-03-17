@@ -52,7 +52,7 @@ namespace Backend.Tests.Unit.Services
             dto.ShouldNotBeNull();
             dto.Id.ShouldBe(product.Id);
             dto.Name.ShouldBe(product.Name);
-            dto.ShouldBeOfType(typeof(ProductDetailsDto));
+            dto.ShouldBeOfType(typeof(ProductDto));
             await _productRepository.Received(1).GetAsync(product.Id);
         }
 
@@ -72,26 +72,29 @@ namespace Backend.Tests.Unit.Services
             dto.ShouldNotBeNull();
             dto.Id.ShouldBe(product.Id);
             dto.Name.ShouldBe(product.Name);
-            dto.ShouldBeOfType(typeof(ProductDetailsDto));
+            dto.ShouldBeOfType(typeof(ProductDto));
             await _productRepository.Received(1).GetAsync(product.Name);
         }
 
-        [Fact]
-        public async Task GetAllAsync_ShoudlReturnPagedListOfProductDetailsDto()
+        [Theory]
+        [InlineData("exercise1", "Chest")]
+        [InlineData("exercise1", null)]
+        [InlineData(null, null)]
+        public async Task GetAllAsync_ShoudlReturnPagedListOfProductDetailsDto(string name, string partOfBody)
         {
             // Arrange
             var products = _fixture.FitwebContext.Products.ToList();
             var paginationQuery = Substitute.For<PaginationQuery>();
             var pageList = Substitute.For<PagedList<Product>>(products, 10, 10, 10);
-            _productRepository.GetAllAsync(paginationQuery).Returns(pageList);
+            _productRepository.GetAllAsync(name, partOfBody, paginationQuery).Returns(pageList);
 
 
             // Act
-            var dto = await _sut.GetAllAsync(paginationQuery);
+            var dto = await _sut.GetAllAsync(name, partOfBody, paginationQuery);
 
             // Assert
             dto.ShouldNotBeNull();
-            dto.ShouldBeOfType(typeof(PagedList<ProductDetailsDto>));
+            dto.ShouldBeOfType(typeof(PagedList<ProductDto>));
             dto.Count.ShouldBe(products.Count);
         }
 

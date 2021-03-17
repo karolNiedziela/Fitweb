@@ -61,7 +61,7 @@ namespace Backend.Tests.Integration.Controllers
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var returnedProduct = await response.ReadAsString<ProductDetailsDto>();
+            var returnedProduct = await response.ReadAsString<ProductDto>();
 
             returnedProduct.Id.ShouldBe(createdProduct.Id);
             returnedProduct.Name.ShouldBe(createdProduct.Name);
@@ -77,8 +77,11 @@ namespace Backend.Tests.Integration.Controllers
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
-        [Fact]
-        public async Task GetAll_ShouldReturnIEnumerableProductDetailsDtoWithGivenPagination()
+        [Theory]
+        [InlineData("api/products?pageNumber=1&pageSize=10")]
+        [InlineData("api/products?name=testProduct&pageNumber=1&pageSize=10")]
+        [InlineData("api/products?name=testProduct&category=Meat&pageNumber=1&pageSize=10")]
+        public async Task GetAll_ShouldReturnIEnumerableProductDetailsDtoWithGivenPagination(string query)
         {
             var client = FreshClient();
 
@@ -94,7 +97,7 @@ namespace Backend.Tests.Integration.Controllers
             };
             await client.CreatePostAsync("/api/products", addProduct);
 
-            var response = await client.GetAsync($"api/products?pageNumber=1&pageSize=10");
+            var response = await client.GetAsync(query);
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -102,8 +105,8 @@ namespace Backend.Tests.Integration.Controllers
 
             pagination.ShouldNotBeNull();
 
-            var products = await response.ReadAsString<IEnumerable<ProductDetailsDto>>();
-            products.Count().ShouldBeGreaterThan(0);
+            var products = await response.ReadAsString<IEnumerable<ProductDto>>();
+            products.Count().ShouldBe(1);
         }
 
         [Fact]

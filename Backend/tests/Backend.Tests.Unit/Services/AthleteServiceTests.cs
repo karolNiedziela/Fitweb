@@ -231,7 +231,7 @@ namespace Backend.Tests.Unit.Services
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
             ((ServiceException)exception).Code.ShouldBe(ErrorCodes.AthleteNotFound);
-            exception.Message.ShouldBe($"Athlete with id: {50} was not found.");
+            exception.Message.ShouldBe($"Athlete with user id: {50} was not found.");
         }
     }
 }

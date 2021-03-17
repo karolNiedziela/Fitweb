@@ -69,8 +69,11 @@ namespace Backend.Tests.Integration.Controllers
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
-        [Fact]
-        public async Task GetAll_ShouldReturnIEnumerableExerciseDto()
+        [Theory]
+        [InlineData("api/exercises?pageNumber=1&pageSize=10")]
+        [InlineData("api/exercises?name=testExercise&pageNumber=1&pageSize=10")]
+        [InlineData("api/exercises?name=testExercise&partOfBody=Chest&pageNumber=1&pageSize=10")]
+        public async Task GetAll_ShouldReturnIEnumerableExerciseDto(string query)
         {
             var client = FreshClient();
 
@@ -91,7 +94,7 @@ namespace Backend.Tests.Integration.Controllers
             var createdExercise1 = await client.CreatePostAsync("/api/exercises", addExercise1);
             var createdExercise2 = await client.CreatePostAsync("/api/exercises", addExercise2);
 
-            var response = await client.GetAsync("/api/exercises?pageNumber=1&pageSize=10");
+            var response = await client.GetAsync(query);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -103,7 +106,7 @@ namespace Backend.Tests.Integration.Controllers
             var exercisesDto = await response.ReadAsString<IEnumerable<ExerciseDto>>();
 
             exercisesDto.ShouldNotBeNull();
-            exercisesDto.Count().ShouldBeGreaterThan(0);
+            exercisesDto.Count().ShouldBe(2);
         }
 
         [Fact]

@@ -67,16 +67,19 @@ namespace Backend.Tests.Unit.Services
             await _exerciseRepository.Received(1).GetAsync(exercise.Name);
         }
         
-        [Fact]
-        public async Task GetAllAsync_ShouldReturnIEnumerableExerciseDto()
+        [Theory]
+        [InlineData("product1", "Meat")]
+        [InlineData("product1", null)]
+        [InlineData(null, null)]
+        public async Task GetAllAsync_ShouldReturnIEnumerableExerciseDto(string name, string category)
         {
             var exercises = _fixture.FitwebContext.Exercises.ToList();
             var pagedList = Substitute.For<PagedList<Exercise>>(exercises, 10, 10, 10);
             var paginationQuery = Substitute.For<PaginationQuery>();
-            _exerciseRepository.GetAllAsync(paginationQuery).Returns(pagedList);
+            _exerciseRepository.GetAllAsync(name, category, paginationQuery).Returns(pagedList);
 
 
-            var dto = await _sut.GetAllAsync(paginationQuery);
+            var dto = await _sut.GetAllAsync(name, category, paginationQuery);
 
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(PagedList<ExerciseDto>));

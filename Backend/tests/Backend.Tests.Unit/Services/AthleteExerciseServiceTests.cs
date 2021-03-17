@@ -36,10 +36,10 @@ namespace Backend.Tests.Unit.Services
         [Theory]
         [InlineData(1, 2, 100, 4, 12, "Monday")]
         [InlineData(1, 2, 15, 3, 10, "Sunday")]
-        public async Task AddAsync_ShouldAddExercise_WhenAthleteExistsAndExerciseExistsAndDataIsValid(int athleteId, int exerciseId,
+        public async Task AddAsync_ShouldAddExercise_WhenAthleteExistsAndExerciseExistsAndDataIsValid(int userId, int exerciseId,
             double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.Id == athleteId)
+            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
                                                 .Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                 .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId
@@ -58,7 +58,7 @@ namespace Backend.Tests.Unit.Services
             _exerciseRepository.GetAsync(exerciseId).Returns(exercise);
 
 
-            await _sut.AddAsync(athleteId, exerciseId, weight, numberOfSets, numberOfReps, dayName);
+            await _sut.AddAsync(userId, exerciseId, weight, numberOfSets, numberOfReps, dayName);
 
             await _athleteRepository.Received(1).UpdateAsync(athlete);
         }
@@ -71,15 +71,15 @@ namespace Backend.Tests.Unit.Services
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(ServiceException));
             ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.AthleteNotFound);
-            exception.Message.ShouldBe($"Athlete with id: {1} was not found.");
+            exception.Message.ShouldBe($"Athlete with user id: {1} was not found.");
         }
 
         [Theory]
         [InlineData(1, 7, 50, 4, 12, "Tuesday")]
-        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseDoesNotExist(int athleteId, int exerciseId,
+        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseDoesNotExist(int userId, int exerciseId,
             double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.Id == athleteId)
+            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
                                                .Include(a => a.AthleteExercises)
                                                    .ThenInclude(ae => ae.Day)
                                                .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId
@@ -93,7 +93,7 @@ namespace Backend.Tests.Unit.Services
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(athleteId, exerciseId, weight, numberOfSets, 
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(userId, exerciseId, weight, numberOfSets, 
                 numberOfReps, "Monday"));
 
             exception.ShouldNotBeNull();
@@ -104,10 +104,10 @@ namespace Backend.Tests.Unit.Services
 
         [Theory]
         [InlineData(1, 2, -30, 4, 12, "Monday")]
-        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButWeightIsNegative(int athleteId, int exerciseId,
+        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButWeightIsNegative(int userId, int exerciseId,
             double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.Id == athleteId)
+            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
                                                 .Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                 .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId
@@ -125,7 +125,7 @@ namespace Backend.Tests.Unit.Services
 
             _exerciseRepository.GetAsync(exerciseId).Returns(exercise);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(athleteId, exerciseId, weight, 
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(userId, exerciseId, weight, 
                 numberOfSets, numberOfReps, dayName));
 
             exception.ShouldNotBeNull();
@@ -136,10 +136,10 @@ namespace Backend.Tests.Unit.Services
 
         [Theory]
         [InlineData(1, 2, 30, -4, 12, "Monday")]
-        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButNumberOfSetsIsNegative(int athleteId, int exerciseId,
+        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButNumberOfSetsIsNegative(int userId, int exerciseId,
            double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.Id == athleteId)
+            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
                                                 .Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                 .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId
@@ -157,7 +157,7 @@ namespace Backend.Tests.Unit.Services
 
             _exerciseRepository.GetAsync(exerciseId).Returns(exercise);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(athleteId, exerciseId, weight,
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(userId, exerciseId, weight,
                 numberOfSets, numberOfReps, dayName));
 
             exception.ShouldNotBeNull();
@@ -168,10 +168,10 @@ namespace Backend.Tests.Unit.Services
 
         [Theory]
         [InlineData(1, 2, 30, 4, -12, "Monday")]
-        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButNumberOfRepsIsNegative(int athleteId, int exerciseId,
+        public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndExerciseExistsButNumberOfRepsIsNegative(int userId, int exerciseId,
            double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.Id == athleteId)
+            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
                                                 .Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                 .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId
@@ -189,7 +189,7 @@ namespace Backend.Tests.Unit.Services
 
             _exerciseRepository.GetAsync(exerciseId).Returns(exercise);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(athleteId, exerciseId, weight,
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(userId, exerciseId, weight,
                 numberOfSets, numberOfReps, dayName));
 
             exception.ShouldNotBeNull();

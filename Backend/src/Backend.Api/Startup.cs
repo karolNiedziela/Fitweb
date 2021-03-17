@@ -37,7 +37,6 @@ namespace Backend
             Configuration = builder.Build();
         }
 
-
         public IConfiguration Configuration { get; }
         public ILifetimeScope AutofacContainer { get; private set; }
 
@@ -62,9 +61,38 @@ namespace Backend
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fitweb API", Version = "v1" });
                 c.DescribeAllParametersInCamelCase();
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Authorization with JSON Web Token Example: Bearer {token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+               {
+                 new OpenApiSecurityScheme
+                 {
+                   Reference = new OpenApiReference
+                   {
+                     Type = ReferenceType.SecurityScheme,
+                     Id = "Bearer"
+                   }
+                  },
+                  new string[] { }
+                }
+              });
             });
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FitwebOrigin", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -82,9 +110,7 @@ namespace Backend
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fitweb API v1"));
             }
 
-            app.UseCors(options => options.WithOrigins(Configuration["general:clientURL"].ToString())
-               .AllowAnyHeader()
-               .AllowAnyMethod());
+            app.UseCors("FitwebOrigin");
 
 
             app.UseMyExceptionHandler();

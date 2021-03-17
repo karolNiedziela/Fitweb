@@ -1,5 +1,7 @@
 ﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
+using Backend.Infrastructure.CommandQueryHandler.Queries.Athletes;
+using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
-    [Route("athletes/exercises")]
+    [Route("athlete/exercises")]
     [ApiController]
     public class AthletesExercisesController : ApiControllerBase
     {
@@ -23,6 +25,35 @@ namespace Backend.Api.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AthleteDto>> GetAll(string dayName = "Monday")
+        {
+            var athlete = await QueryAsync(new GetAthleteExercises(UserId, dayName));
+            if (athlete is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(athlete);
+        }
+
+        [HttpGet("{exerciseId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AthleteDto>> Get(int exerciseId)
+        {
+            var athlete = await QueryAsync(new GetAthleteExercise(UserId, exerciseId));
+            if (athlete is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(athlete);
+        }
+
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -30,10 +61,10 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with id: {command.AthleteId}.");
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with user id: {command.UserId}.");
 
-            return CreatedAtAction("GetExercise", "Athletes",
-                new { athleteId = command.AthleteId, exerciseId = command.ExerciseId }, command);
+            return CreatedAtAction(nameof(Get),
+                new { exerciseId = command.ExerciseId }, command);
         }
 
         [HttpDelete]
@@ -43,7 +74,7 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with id: {command.AthleteId}.");
+            _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with user id: {command.UserId}.");
 
             return NoContent();
         }

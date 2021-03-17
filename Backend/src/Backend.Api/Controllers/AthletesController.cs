@@ -38,75 +38,19 @@ namespace Backend.Api.Controllers
             return Ok(athletes);
         }
 
-        [HttpGet("{athleteId}")]
+        [HttpGet("{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AthleteDto>> Get(int athleteId)
+        public async Task<ActionResult<AthleteDto>> Get(int userId)
         {
-            var athlete = await QueryAsync(new GetAthlete(athleteId));
+            var athlete = await QueryAsync(new GetAthlete(userId));
             if (athlete == null)
             {
                 return NotFound();
             }
 
             return Ok(athlete);
-        }
-
-        [HttpGet("{athleteId}/products")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AthleteDto>> GetProducts(int athleteId, DateTime? date = null)
-        {
-            var athlete = await QueryAsync(new GetAthleteProducts(athleteId, date));
-            if (athlete == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(athlete);
-        }
-
-        [HttpGet("{athleteId}/products/{productId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AthleteDto>> GetProduct(int athleteId, int productId)
-        {
-            var athlete = await QueryAsync(new GetAthleteProduct(athleteId, productId));
-            if (athlete == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(athlete);
-        }
-
-        [HttpGet("{athleteId}/exercises")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AthleteDto>> GetExercises(int athleteId, string dayName = "Monday")
-        {
-            var athlete = await QueryAsync(new GetAthleteExercises(athleteId, dayName));
-            if (athlete is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(athlete);
-        }
-
-        [HttpGet("{athleteId}/exercises/{exerciseId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AthleteDto>> GetExercise(int athleteId, int exerciseId)
-        {
-            var athlete = await QueryAsync(new GetAthleteExercise(athleteId, exerciseId));
-            if (athlete is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(athlete);
-        }
+        }    
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -117,11 +61,11 @@ namespace Backend.Api.Controllers
 
             _logger.LogInfo($"Athlete with user id {command.UserId} added.");
 
-            return CreatedAtAction(nameof(Get), new { athleteId = command.AthleteId }, command);
+            return CreatedAtAction(nameof(Get), new { userId = command.UserId }, command);
         
         }
 
-        [HttpDelete("{athleteId}")]
+        [HttpDelete]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -131,7 +75,7 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"Athlete with id {command.AthleteId} removed.");
+            _logger.LogInfo($"Athlete with user id {command.UserId} removed.");
 
             return NoContent();
         }

@@ -59,28 +59,6 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<ExerciseDto>>> GetAll([FromQuery]GetExercises query)
         {
-            var exercises = await QueryAsync(query);
-
-            var metadata = new
-            {
-                exercises.TotalCount,
-                exercises.PageSize,
-                exercises.CurrentPage,
-                exercises.TotalPages,
-                exercises.HasNext,
-                exercises.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-            return Ok(exercises);
-        }
-
-        [HttpGet("search")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<ExerciseDto>>> Search([FromQuery]SearchExercises query)
-        {
             var results = await QueryAsync(query);
 
             var metadata = new
@@ -96,7 +74,7 @@ namespace Backend.Api.Controllers
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             return Ok(results);
-        }
+        }   
 
 
         [HttpPost]

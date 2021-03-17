@@ -32,7 +32,7 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         //GET : /api/products/id
-        public async Task<ActionResult<ProductDetailsDto>> Get(int id)
+        public async Task<ActionResult<ProductDto>> Get(int id)
         {
             var product = await QueryAsync(new GetProduct(id));
             if (product is null)
@@ -46,7 +46,7 @@ namespace Backend.Api.Controllers
         [HttpGet("{name}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductDetailsDto>> Get(string name)
+        public async Task<ActionResult<ProductDto>> Get(string name)
         {
             var product = await QueryAsync(new GetProductByName(name));
             if (product is null)
@@ -60,7 +60,7 @@ namespace Backend.Api.Controllers
         [HttpGet]
         //GET : /api/products
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ProductDetailsDto>>> GetAll([FromQuery]GetProducts query)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll([FromQuery]GetProducts query)
         {
             var products = await QueryAsync(query);
 
@@ -77,28 +77,6 @@ namespace Backend.Api.Controllers
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             return Ok(products);
-        }
-
-        [HttpGet("search")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<ProductDetailsDto>>> Search([FromQuery]SearchProducts query)
-        {
-            var results = await QueryAsync(query);
-
-            var metadata = new
-            {
-                results.TotalCount,
-                results.PageSize,
-                results.CurrentPage,
-                results.TotalPages,
-                results.HasNext,
-                results.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-            return Ok(results);
         }
 
         [HttpPost]

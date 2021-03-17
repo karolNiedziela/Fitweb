@@ -22,41 +22,28 @@ namespace Backend.Infrastructure.Services
             _productRepository = productRepository;
         }
 
-        public async Task<ProductDetailsDto> GetAsync(int id)
+        public async Task<ProductDto> GetAsync(int id)
         {
             var product = await _productRepository.GetAsync(id);
 
-            return _mapper.Map<Product, ProductDetailsDto>(product);
+            return _mapper.Map<Product, ProductDto>(product);
         }
 
-        public async Task<ProductDetailsDto> GetAsync(string name)
+        public async Task<ProductDto> GetAsync(string name)
         {
             var product = await _productRepository.GetAsync(name);
 
-            return _mapper.Map<Product, ProductDetailsDto>(product);
+            return _mapper.Map<Product, ProductDto>(product);
         }
 
-        public async Task<PagedList<ProductDetailsDto>> GetAllAsync(PaginationQuery paginationQuery)
+        public async Task<PagedList<ProductDto>> GetAllAsync(string name, string category, 
+            PaginationQuery paginationQuery)
         {
-            var products =  await _productRepository.GetAllAsync(paginationQuery);
+            var products = await _productRepository.GetAllAsync(name, category, paginationQuery);
 
-            var productsDTO = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDetailsDto>>(products).ToList();
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
 
-            return new PagedList<ProductDetailsDto>(productsDTO, products.TotalCount, products.CurrentPage, products.PageSize);
-        }
-
-        public async Task<PagedList<ProductDetailsDto>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null)
-        {
-            if (category is not null && CategoryOfProduct.GetCategory(category) is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"{category} does not exist.");
-            }
-
-            var products = await _productRepository.SearchAsync(paginationQuery, name, category);
-
-            var productsDto = _mapper.Map<IEnumerable<ProductDetailsDto>>(products).ToList();
-
-            return new PagedList<ProductDetailsDto>(productsDto, products.TotalCount, products.CurrentPage, products.PageSize);
+            return new PagedList<ProductDto>(productsDto, products.TotalCount, products.CurrentPage, products.PageSize);
         }
 
         public async Task<int> AddAsync(string name, double calories, double proteins,

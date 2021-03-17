@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
 
         public async Task HandleAsync(AddAthleteExercise command)
         {
-            await _athleteExerciseService.AddAsync(command.AthleteId, command.ExerciseId, command.Weight,
+            await _athleteExerciseService.AddAsync(command.UserId, command.ExerciseId, command.Weight,
                 command.NumberOfSets, command.NumberOfReps, command.DayName);
         }
     }

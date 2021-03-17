@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Products
 {
-    public class GetProductByNameHandler : IQueryHandler<GetProductByName, ProductDetailsDto>
+    public class GetProductByNameHandler : IQueryHandler<GetProductByName, ProductDto>
     {
         private readonly IProductService _productService;
 
@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Products
             _productService = productService;
         }
 
-        public async Task<ProductDetailsDto> HandleAsync(GetProductByName query)
+        public async Task<ProductDto> HandleAsync(GetProductByName query)
         {
             return await _productService.GetAsync(query.Name);
         }

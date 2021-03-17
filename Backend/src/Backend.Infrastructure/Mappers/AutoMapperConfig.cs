@@ -45,15 +45,16 @@ namespace Backend.Infrastructure.Mappers
                          NumberOfReps = ae.NumberOfReps,
                          Day = ae.Day,
                     }).ToList()));
-                cfg.CreateMap<Product, ProductDto>();
+                cfg.CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name.ToString().Replace("_", " ")));
                 cfg.CreateMap<AthleteProduct, AthleteProductDto>().ForMember(dest => dest.DateCreated, opt => opt.MapFrom(ap => ap.DateCreated.ToShortDateString()))
                 .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(ap => ap.DateUpdated.ToShortDateString()));
                 cfg.CreateMap<Exercise, ExerciseDto>()
                    .ForMember(dest => dest.PartOfBody, opt => opt.MapFrom(e => e.PartOfBody.Name));
                 cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()
                    .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
-                cfg.CreateMap<Product, ProductDetailsDto>()
-                   .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name.ToString().Replace("_", " ")));
+
+                cfg.CreateMap<CaloricDemand, CaloricDemandDto>();
             })
             .CreateMapper();
     }

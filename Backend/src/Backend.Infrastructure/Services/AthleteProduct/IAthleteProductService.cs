@@ -7,8 +7,8 @@ namespace Backend.Infrastructure.Services
 {
     public interface IAthleteProductService
     {
-        Task AddAsync(int athleteId, int productId, double weight);
+        Task AddAsync(int userId, int productId, double weight);
 
-        Task DeleteAsync(int athleteId, int productId);
+        Task DeleteAsync(int userId, int productId);
     }
 }

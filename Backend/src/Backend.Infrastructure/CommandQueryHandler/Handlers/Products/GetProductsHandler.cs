@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Products
 {
-    public class GetProductsHandler : IQueryHandler<GetProducts, PagedList<ProductDetailsDto>>
+    public class GetProductsHandler : IQueryHandler<GetProducts, PagedList<ProductDto>>
     {
         private readonly IProductService _productService;
 
@@ -19,14 +19,11 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Products
             _productService = productService;
         }
 
-        public async Task<PagedList<ProductDetailsDto>> HandleAsync(GetProducts query)
+        public async Task<PagedList<ProductDto>> HandleAsync(GetProducts query)
         {
 
-            return await _productService.GetAllAsync(new PaginationQuery 
-            { 
-                PageSize = query.PageSize, 
-                PageNumber = query.PageNumber 
-            });
+            return await _productService.GetAllAsync(query.Name, query.Category,
+                new PaginationQuery(query.PageNumber, query.PageSize));
         }
     }
 }

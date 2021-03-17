@@ -8,20 +8,20 @@ namespace Backend.Infrastructure.Services
 {
     public interface IAthleteService
     {
-        Task<AthleteDto> GetAsync(int id);
+        Task<AthleteDto> GetAsync(int userId);
 
-        Task<AthleteDto> GetProductsAsync(int id, DateTime? date);
+        Task<AthleteDto> GetProductsAsync(int userId, DateTime? date);
 
-        Task<AthleteDto> GetProductAsync(int id, int productId);
+        Task<AthleteDto> GetProductAsync(int userId, int productId);
 
-        Task<AthleteDto> GetExercisesAsync(int id, string dayName);
+        Task<AthleteDto> GetExercisesAsync(int userId, string dayName);
 
-        Task<AthleteDto> GetExerciseAsync(int id, int exerciseId);
+        Task<AthleteDto> GetExerciseAsync(int userId, int exerciseId);
 
         Task<IEnumerable<AthleteDto>> GetAllAsync();
 
         Task<int> CreateAsync(int userId);
 
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int userId);
     }
 }

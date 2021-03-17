@@ -29,7 +29,7 @@ namespace Backend.Infrastructure.Extensions
             {
                 options.UseSqlServer(sqlSettings.ConnectionString);
             });
-            services.AddJwt();
+            services.AddAuth();
             services.AddHttpClient();
 
             return services;

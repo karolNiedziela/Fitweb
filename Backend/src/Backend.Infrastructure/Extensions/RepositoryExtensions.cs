@@ -22,12 +22,12 @@ namespace Backend.Infrastructure.Extensions
             return user;
         }
 
-        public static async Task<Athlete> GetOrFailAsync(this IAthleteRepository repository, int id)
+        public static async Task<Athlete> GetOrFailAsync(this IAthleteRepository repository, int userId)
         {
-            var athlete = await repository.GetAsync(id);
+            var athlete = await repository.GetAsync(userId);
             if (athlete == null)
             {
-                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with id: {id} was not found.");
+                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with user id: {userId} was not found.");
             }
 
             return athlete;

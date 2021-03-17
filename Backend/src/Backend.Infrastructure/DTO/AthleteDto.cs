@@ -13,5 +13,7 @@ namespace Backend.Infrastructure.DTO
         public List<AthleteProductDto> Products { get; set; }
 
         public List<AthleteExerciseDto> Exercises { get; set; }
+
+        public CaloricDemandDto CaloricDemand { get; set; }
     }
 }

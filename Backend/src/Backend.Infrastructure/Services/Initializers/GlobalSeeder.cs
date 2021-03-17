@@ -8,6 +8,7 @@ namespace Backend.Infrastructure.Services.Initializers
 {
     public class GlobalSeeder : IGlobalSeeder
     {
+        // provides all instances of classes implementing IDataInitializer
         private readonly IEnumerable<IDataInitializer> _datas;
 
         public GlobalSeeder(IEnumerable<IDataInitializer> datas)

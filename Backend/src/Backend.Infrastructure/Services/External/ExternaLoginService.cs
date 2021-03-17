@@ -47,6 +47,9 @@ namespace Backend.Infrastructure.Services.External
             var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);
 
             var user = await _userRepository.GetByEmailAsync(userInfo.Email);
+
+            // if user does not exist create user and sign in
+            // else user exists, just sign in
             if (user is null)
             {
                 user = new User(userInfo.Email, userInfo.Email);

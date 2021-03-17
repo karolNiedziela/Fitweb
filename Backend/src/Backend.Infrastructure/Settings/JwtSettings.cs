@@ -58,7 +58,7 @@ namespace Backend.Infrastructure.Settings
 
         public bool ValidateTokenReplay { get; set; }
 
-        public bool ValidateIssuerSigningKey { get; set; }
+        public bool ValidateIssuerSigningKey { get; set; } = true;
 
         public bool RefreshOnIssuerKeyNotFound { get; set; } = true;
 

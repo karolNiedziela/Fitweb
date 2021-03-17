@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
 
         public async Task HandleAsync(CreateAthlete command)
         {
-            command.AthleteId = await _athleteService.CreateAsync(command.UserId);
+            await _athleteService.CreateAsync(command.UserId);
         }
     }
 }

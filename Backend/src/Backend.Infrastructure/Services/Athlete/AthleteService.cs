@@ -30,9 +30,9 @@ namespace Backend.Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<AthleteDto> GetAsync(int id)
+        public async Task<AthleteDto> GetAsync(int userId)
         {
-            var athlete = await _athleteRepository.GetAsync(id);
+            var athlete = await _athleteRepository.GetAsync(userId);
 
             return _mapper.Map<AthleteDto>(athlete);
         }
@@ -44,7 +44,7 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<IEnumerable<AthleteDto>>(athletes);
         }
 
-        public async Task<AthleteDto> GetProductsAsync(int id, DateTime? date)
+        public async Task<AthleteDto> GetProductsAsync(int userId, DateTime? date)
         {
 
             if (date is null)
@@ -52,7 +52,7 @@ namespace Backend.Infrastructure.Services
                 date = DateTime.Today;
             }
 
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == id,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteProducts.Where(ap => ap.DateCreated.Date == date))
                                                     .ThenInclude(ap => ap.Product)
                                                         .ThenInclude(p => p.CategoryOfProduct));
@@ -61,9 +61,9 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<AthleteDto>(athlete);
         }
          
-        public async Task<AthleteDto> GetProductAsync(int id, int productId)
+        public async Task<AthleteDto> GetProductAsync(int userId, int productId)
         {
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == id,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteProducts
                                                    .Where(ap => ap.ProductId == productId))
                                                     .ThenInclude(ap => ap.Product)
@@ -72,9 +72,9 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<AthleteDto>(athlete);
         }
 
-        public async Task<AthleteDto> GetExercisesAsync(int id, string dayName)
+        public async Task<AthleteDto> GetExercisesAsync(int userId, string dayName)
         {
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == id,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                   .Include(a => a.AthleteExercises.Where(ae => ae.DayId == Day.GetDay(dayName).Id))
@@ -84,9 +84,9 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<AthleteDto>(athlete);
         }
 
-        public async Task<AthleteDto> GetExerciseAsync(int id, int exerciseId)
+        public async Task<AthleteDto> GetExerciseAsync(int userId, int exerciseId)
         {
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == id,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteExercises
                                                     .Where(ae => ae.ExerciseId == exerciseId))
                                                     .ThenInclude(ae => ae.Day)
@@ -112,11 +112,11 @@ namespace Backend.Infrastructure.Services
             return athlete.Id;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int userId)
         {
-            var athlete = await _athleteRepository.GetOrFailAsync(id);
+            var athlete = await _athleteRepository.GetOrFailAsync(userId);
 
-            _logger.LogInfo($"Athlete with id: {id} was removed.");
+            _logger.LogInfo($"Athlete with user id: {userId} was removed.");
 
             await _athleteRepository.DeleteAsync(athlete);
         }

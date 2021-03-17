@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Helpers;
 using Backend.Infrastructure.DTO;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,13 @@ namespace Backend.Infrastructure.CommandQueryHandler.Queries
 {
     public class GetExercises : IQuery<PagedList<ExerciseDto>>
     {
-        public int PageNumber { get; set; }
+        public string Name { get; set; } 
 
-        public int PageSize { get; set; }
+        public string PartOfBody { get; set; }
+
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; set; } = 10;
+
     }
 }

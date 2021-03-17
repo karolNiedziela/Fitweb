@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Queries
 {
-    public class GetProduct : IQuery<ProductDetailsDto>
+    public class GetProduct : IQuery<ProductDto>
     { 
         public int Id { get;  }
 

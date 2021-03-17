@@ -20,9 +20,9 @@ namespace Backend.Infrastructure.Services
             _exerciseRepository = exerciseRepository;
         }
 
-        public async Task AddAsync(int athleteId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName)
+        public async Task AddAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName)
         {
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                   .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId))
@@ -31,7 +31,7 @@ namespace Backend.Infrastructure.Services
 
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with id: {athleteId} was not found.");
+                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with user id: {userId} was not found.");
             }
 
             if (athlete.AthleteExercises.Any(ae => ae.ExerciseId == exerciseId && ae.DateUpdated.ToShortDateString() == DateTime.Today.ToShortDateString()))
@@ -50,9 +50,9 @@ namespace Backend.Infrastructure.Services
             await _athleteRepository.UpdateAsync(athlete);
         }
 
-        public async Task DeleteAsync(int athleteId, int exerciseId)
+        public async Task DeleteAsync(int userId, int exerciseId)
         {
-            var athlete = await _athleteRepository.FindByCondition(condition: a => a.Id == athleteId,
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteExercises)
                                                     .ThenInclude(ae => ae.Day)
                                                   .Include(a => a.AthleteExercises)
@@ -60,13 +60,14 @@ namespace Backend.Infrastructure.Services
                                                         .ThenInclude(e => e.PartOfBody));
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with id: {athleteId} was not found.");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
             }
 
             var exercise = athlete.AthleteExercises.SingleOrDefault(ae => ae.ExerciseId == exerciseId);
             if (exercise is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id {exerciseId} for athlete with id {athleteId} was not found");
+                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id {exerciseId} " +
+                    $"for athlete with user id {userId} was not found");
             }
 
             athlete.AthleteExercises.Remove(exercise);

@@ -8,13 +8,11 @@ namespace Backend.Infrastructure.Services
 {
     public interface IProductService
     {
-        Task<ProductDetailsDto> GetAsync(int id);
+        Task<ProductDto> GetAsync(int id);
 
-        Task<ProductDetailsDto> GetAsync(string name);
+        Task<ProductDto> GetAsync(string name);
 
-        Task<PagedList<ProductDetailsDto>> GetAllAsync(PaginationQuery paginationQuery);
-
-        Task<PagedList<ProductDetailsDto>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null);
+        Task<PagedList<ProductDto>> GetAllAsync(string name, string category, PaginationQuery paginationQuery);
 
         Task<int> AddAsync(string name, double calories, double proteins,
             double carbohydrates, double fats, string categoryName);

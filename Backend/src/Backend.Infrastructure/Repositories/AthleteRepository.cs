@@ -21,11 +21,14 @@ namespace Backend.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Athlete> GetAsync(int id)
-            => await _context.Athletes.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
+        public async Task<Athlete> GetAsync(int userId)
+            => await _context.Athletes.AsNoTracking().Include(a => a.CaloricDemand)
+                .SingleOrDefaultAsync(a => a.UserId == userId);
 
         public async Task<IEnumerable<Athlete>> GetAllAsync()
          => await _context.Athletes.AsNoTracking().ToListAsync();
+
+        // IIncludable enables to include any class, which is needed in query
 
         public async Task<Athlete> FindByCondition(Expression<Func<Athlete, bool>> condition,
             Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>> include = null)

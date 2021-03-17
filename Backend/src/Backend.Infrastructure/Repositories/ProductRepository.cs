@@ -28,21 +28,16 @@ namespace Backend.Infrastructure.Repositories
         public async Task<Product> GetAsync(string name)
             => await _context.Products.Include(p => p.CategoryOfProduct).AsNoTracking().SingleOrDefaultAsync(x => x.Name == name);
 
-        public async Task<PagedList<Product>> GetAllAsync(PaginationQuery paginationQuery)
-        {
-            return await PagedList<Product>.ToPagedList(_context.Products
-                    .Include(p => p.CategoryOfProduct)
-                    .AsNoTracking()
-                    .OrderBy(p => p.Name),
-                paginationQuery.PageNumber,
-                paginationQuery.PageSize);
-        }
-
-        public async Task<PagedList<Product>> SearchAsync(PaginationQuery paginationQuery, string name, string category = null)
+        public async Task<PagedList<Product>> GetAllAsync(string name, string category, PaginationQuery paginationQuery)
         {
             IQueryable<Product> query = _context.Products.Include(p => p.CategoryOfProduct)
-                                                         .AsNoTracking()
-                                                         .Where(p => p.Name.Contains(name));
+                                                         .AsNoTracking();
+                                                       
+
+            if (name is not null)
+            {
+                query = query.Where(p => p.Name.Contains(name));
+            }
 
             if (category is not null)
             {

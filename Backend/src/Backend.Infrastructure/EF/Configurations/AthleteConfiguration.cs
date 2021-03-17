@@ -11,6 +11,8 @@ namespace Backend.Infrastructure.EF.Configurations
         public override void Configure(EntityTypeBuilder<Athlete> builder)
         {
             builder.HasOne(a => a.User);
+
+            builder.HasOne(a => a.CaloricDemand);
         }
     }
 }

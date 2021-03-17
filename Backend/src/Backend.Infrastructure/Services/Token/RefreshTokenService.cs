@@ -26,6 +26,8 @@ namespace Backend.Infrastructure.Services
             _userService = userService;
         }
 
+        // Refreshing token
+
         public async Task<JwtDto> UseAsync(string refreshToken)
         {
             var token = await _refreshTokenRepository.GetAsync(refreshToken);

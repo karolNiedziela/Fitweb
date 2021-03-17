@@ -26,30 +26,28 @@ namespace Backend.Infrastructure.Repositories
 
         public async Task<Exercise> GetAsync(string name)
             => await _context.Exercises.Include(e => e.PartOfBody).AsNoTracking().SingleOrDefaultAsync(e => e.Name == name);
-
-        public async Task<PagedList<Exercise>> GetAllAsync(PaginationQuery paginationQuery)
-            => await PagedList<Exercise>.ToPagedList(_context.Exercises
-                    .Include(e => e.PartOfBody)
-                    .AsNoTracking()
-                    .OrderBy(e => e.Name),
-                    paginationQuery.PageNumber,
-                    paginationQuery.PageSize);
-
-        public async Task<PagedList<Exercise>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null)
+        
+        public async Task<PagedList<Exercise>> GetAllAsync(string name, string partOfBody, PaginationQuery paginationQuery)
         {
             IQueryable<Exercise> query = _context.Exercises.Include(e => e.PartOfBody)
-                                            .AsNoTracking()
-                                            .Where(e => e.Name.Contains(name));
+                                            .AsNoTracking();
+
+            if (name is not null)
+            {
+                query = query.Where(e => e.Name.Contains(name));
+            }
 
             if (partOfBody is not null)
             {
                 query = query.Where(e => e.PartOfBody.Name == PartOfBody.GetPart(partOfBody).Name);
             }
-            
+
             return await PagedList<Exercise>.ToPagedList(query.OrderBy(e => e.Name),
                    paginationQuery.PageNumber,
                    paginationQuery.PageSize);
         }
+
+
 
         public async Task AddAsync(Exercise exercise)
         {

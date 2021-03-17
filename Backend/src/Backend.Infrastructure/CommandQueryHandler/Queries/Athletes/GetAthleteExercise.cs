@@ -9,13 +9,13 @@ namespace Backend.Infrastructure.CommandQueryHandler.Queries.Athletes
 {
     public class GetAthleteExercise : IQuery<AthleteDto>
     {
-        public int AthleteId { get; set; }
+        public int UserId { get; set; }
 
         public int ExerciseId { get; set; }
     
-        public GetAthleteExercise(int athleteId, int exerciseId)
+        public GetAthleteExercise(int userId, int exerciseId)
         {
-            AthleteId = athleteId;
+            UserId = userId;
             ExerciseId = exerciseId;
         }
     }

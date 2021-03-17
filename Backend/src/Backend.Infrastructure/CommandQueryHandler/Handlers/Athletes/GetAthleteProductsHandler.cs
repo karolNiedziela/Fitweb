@@ -20,7 +20,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Athletes
 
         public async Task<AthleteDto> HandleAsync(GetAthleteProducts query)
         {
-            return await _athleteService.GetProductsAsync(query.AthleteId, query.Date);
+            return await _athleteService.GetProductsAsync(query.UserId, query.Date);
         }
     }
 }

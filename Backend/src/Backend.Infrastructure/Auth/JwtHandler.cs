@@ -31,7 +31,7 @@ namespace Backend.Infrastructure.Auth
                 new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, now.ToTimeStamp().ToString(), ClaimValueTypes.Integer64)
+                new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeMilliseconds().ToString(), ClaimValueTypes.Integer64)
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -53,7 +53,7 @@ namespace Backend.Infrastructure.Auth
                 AccessToken = token,
                 Username = username,
                 RefreshToken = string.Empty,
-                Expires = expires.ToTimeStamp(),
+                Expires = expires.ToUnixTimeMilliseconds(),
                 UserId = userId,
                 Role = role,               
             };

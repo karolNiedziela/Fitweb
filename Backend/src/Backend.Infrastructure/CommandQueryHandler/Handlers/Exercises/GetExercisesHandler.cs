@@ -21,11 +21,8 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Exercises
 
         public async Task<PagedList<ExerciseDto>> HandleAsync(GetExercises query)
         {
-            return await _exerciseService.GetAllAsync(new PaginationQuery
-            {
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize
-            });
+            return await _exerciseService.GetAllAsync(query.Name, query.PartOfBody, 
+                new PaginationQuery(query.PageNumber, query.PageSize));
         }
     }
 }

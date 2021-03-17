@@ -17,7 +17,7 @@ namespace Backend.Infrastructure.Auth
 {
     public static class Extensions
     {
-        public static IServiceCollection AddJwt(this IServiceCollection services)
+        public static IServiceCollection AddAuth(this IServiceCollection services)
         {
             IConfiguration configuration;
 

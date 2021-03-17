@@ -38,22 +38,10 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<Exercise, ExerciseDto>(exercise);
         }
 
-        public async Task<PagedList<ExerciseDto>> GetAllAsync(PaginationQuery paginationQuery)
+        public async Task<PagedList<ExerciseDto>> GetAllAsync(string name, string partOfBody, 
+            PaginationQuery paginationQuery)
         {
-            var exercises = await _exerciseRepository.GetAllAsync(paginationQuery);
-
-            var exercisesDto = _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises).ToList();
-
-            return new PagedList<ExerciseDto>(exercisesDto, exercises.TotalCount, exercises.CurrentPage, exercises.PageSize);
-        }
-
-        public async Task<PagedList<ExerciseDto>> SearchAsync(PaginationQuery paginationQuery, string name, string partOfBody = null)
-        {
-            if (partOfBody is not null && PartOfBody.GetPart(partOfBody) is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"{partOfBody} does not exist.");
-            }
-            var exercises = await _exerciseRepository.SearchAsync(paginationQuery, name, partOfBody);
+            var exercises = await _exerciseRepository.GetAllAsync(name, partOfBody, paginationQuery);
 
             var exercisesDto = _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises).ToList();
 

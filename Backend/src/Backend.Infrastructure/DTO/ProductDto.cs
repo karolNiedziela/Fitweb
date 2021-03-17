@@ -17,5 +17,7 @@ namespace Backend.Infrastructure.DTO
         public double Carbohydrates { get; set; }
 
         public double Fats { get; set; }
+
+        public string Category { get; set; }
     }
 }

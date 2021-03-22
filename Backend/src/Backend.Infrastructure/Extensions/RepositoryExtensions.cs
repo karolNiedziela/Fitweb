@@ -16,7 +16,7 @@ namespace Backend.Infrastructure.Extensions
             var user = await repository.GetAsync(userId);
             if (user == null)
             {
-                throw new ServiceException(ErrorCodes.UserNotFound, $"User with id: {userId} was not found.");
+                throw new UserNotFoundException(userId);
             }
 
             return user;
@@ -27,10 +27,54 @@ namespace Backend.Infrastructure.Extensions
             var athlete = await repository.GetAsync(userId);
             if (athlete == null)
             {
-                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new AthleteNotFoundException(userId);
             }
 
             return athlete;
+        }
+
+        public static async Task<Exercise> GetOrFailAsync(this IExerciseRepository repository, int exerciseId)
+        {
+            var exercise = await repository.GetAsync(exerciseId);
+            if (exercise == null)
+            {
+                throw new ExerciseNotFoundException(exerciseId);
+            }
+
+            return exercise;
+        }
+
+        public static async Task<Exercise> CheckIfExistsAsync(this IExerciseRepository repository, string name)
+        {
+            var exercise = await repository.GetAsync(name);
+            if (exercise is not null)
+            {
+                throw new NameInUseException(nameof(Exercise), name);
+            }
+
+            return exercise;
+        }
+
+        public static async Task<Product> GetOrFailAsync(this IProductRepository repository, int productId)
+        {
+            var product = await repository.GetAsync(productId);
+            if (product is null)
+            {
+                throw new ProductNotFoundException(productId);
+            }
+
+            return product;
+        }
+
+        public static async Task<Product> CheckIfExistsAsync(this IProductRepository repository, string name)
+        {
+            var product = await repository.GetAsync(name);
+            if (product is not null)
+            {
+                throw new NameInUseException(nameof(Product), name);
+            }
+
+            return product;
         }
 
         public static async Task CheckIfAthleteAsync(this IAthleteRepository repository, User user, string roleName)

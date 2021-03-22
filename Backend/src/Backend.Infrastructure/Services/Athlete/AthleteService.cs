@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Exceptions;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
@@ -103,7 +104,7 @@ namespace Backend.Infrastructure.Services
             var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId);
             if (athlete != null)
             {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Athlete with user id: {userId} already exists.");
+                throw new AthleteExistsException(userId);
             }
 
             athlete = new Athlete(user);
@@ -116,7 +117,7 @@ namespace Backend.Infrastructure.Services
         {
             var athlete = await _athleteRepository.GetOrFailAsync(userId);
 
-            _logger.LogInfo($"Athlete with user id: {userId} was removed.");
+            _logger.LogInfo($"Athlete with user id: '{userId}' was removed.");
 
             await _athleteRepository.DeleteAsync(athlete);
         }

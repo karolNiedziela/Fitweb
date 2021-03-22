@@ -1,16 +1,12 @@
 ﻿using Backend.Core.Entities;
-using Backend.Infrastructure.Exceptions;
-using Backend.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Backend.Infrastructure.Auth;
-using Backend.Core.Factories;
-using Backend.Infrastructure.DTO;
 using Backend.Core.Enums;
+using Backend.Core.Factories;
+using Backend.Core.Repositories;
+using Backend.Infrastructure.Auth;
+using Backend.Infrastructure.DTO;
+using Backend.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.Services.External
 {
@@ -41,7 +37,7 @@ namespace Backend.Infrastructure.Services.External
 
             if (!validatedTokenResult.FacebookTokenValidationData.IsValid)
             {
-                throw new ServiceException("Token_issue", "Invalid facebook token.");
+                throw new InvalidFacebookTokenException();
             }
 
             var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);

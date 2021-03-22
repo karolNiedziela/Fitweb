@@ -25,8 +25,8 @@ namespace Backend.Infrastructure.Services.AthleteCaloricDemand
 
             if (athlete.CaloricDemand is not null)
             {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, 
-                    $"Caloric demand is already set you cannot set it again, only update is available.");
+                await UpdateDemandAsync(userId, totalCalories, proteins, carbohydrates, fats);
+                return;
             }
 
             athlete.CaloricDemand = CaloricDemand.Create(totalCalories, proteins, carbohydrates, fats);
@@ -38,10 +38,10 @@ namespace Backend.Infrastructure.Services.AthleteCaloricDemand
         {
             var athlete = await _athleteRepository.GetOrFailAsync(userId);
 
-            athlete.CaloricDemand.setTotalCalories(totalCalories);
-            athlete.CaloricDemand.setProteins(proteins);
-            athlete.CaloricDemand.setCarbohydrates(carbohydrates);
-            athlete.CaloricDemand.setFats(fats);
+            athlete.CaloricDemand.SetTotalCalories(totalCalories);
+            athlete.CaloricDemand.SetProteins(proteins);
+            athlete.CaloricDemand.SetCarbohydrates(carbohydrates);
+            athlete.CaloricDemand.SetFats(fats);
 
             await _athleteRepository.UpdateAsync(athlete);
         }

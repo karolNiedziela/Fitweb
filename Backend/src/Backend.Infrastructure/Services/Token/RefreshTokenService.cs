@@ -33,7 +33,7 @@ namespace Backend.Infrastructure.Services
             var token = await _refreshTokenRepository.GetAsync(refreshToken);
             if (token is null)
             {
-                throw new ServiceException(ErrorCodes.InvalidRefreshToken, "Invalid refresh token.");
+                throw new InvalidRefreshTokenException();
             }
 
             token.Use(_dateTimeProvider.Now);
@@ -52,7 +52,7 @@ namespace Backend.Infrastructure.Services
             var token = await _refreshTokenRepository.GetAsync(refreshToken);
             if (token is null)
             {
-                throw new ServiceException(ErrorCodes.InvalidRefreshToken, "Invalid refresh token.");
+                throw new InvalidRefreshTokenException();
             }
 
             token.Revoke(_dateTimeProvider.Now);

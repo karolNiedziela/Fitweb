@@ -14,7 +14,7 @@ namespace Backend.Infrastructure.Services.File
         {
             if (file is null)
             {
-                throw new ServiceException(ErrorCodes.InvalidValue, $"No file provided.");
+                throw new Exceptions.FileNotFoundException();
             }
 
             var path = Directory.GetParent(Directory.GetCurrentDirectory());
@@ -27,7 +27,7 @@ namespace Backend.Infrastructure.Services.File
         {
             if (System.IO.File.Exists(filePath))
             {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"File with {file.FileName} already saved.");
+                throw new NameInUseException(nameof(File), file.FileName);
             }
 
             using var stream = System.IO.File.Create(filePath);

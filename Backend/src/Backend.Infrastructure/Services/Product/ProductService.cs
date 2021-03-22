@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Infrastructure.Extensions;
+using Backend.Core.Exceptions;
 
 namespace Backend.Infrastructure.Services
 {
@@ -49,12 +51,7 @@ namespace Backend.Infrastructure.Services
         public async Task<int> AddAsync(string name, double calories, double proteins,
             double carbohydrates, double fats, string categoryName)
         {
-            var product = await _productRepository.GetAsync(name);
-            if (product is not null)
-            {
-                throw new ServiceException(Exceptions.ErrorCodes.ObjectAlreadyAdded,
-                    $"Product with name: '{name}' already exists.");
-            }
+            var product = await _productRepository.CheckIfExistsAsync(name);
 
             product = new Product(name, calories, proteins, carbohydrates, fats, CategoryOfProduct.GetCategory(categoryName));
 
@@ -65,12 +62,7 @@ namespace Backend.Infrastructure.Services
 
         public async Task DeleteAsync(int id)
         {
-            var product = await _productRepository.GetAsync(id);
-            if (product is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound,
-                    $"Product with id: '{id}' was not found.");
-            }
+            var product = await _productRepository.GetOrFailAsync(id);
 
             await _productRepository.DeleteAsync(product);
         }
@@ -78,18 +70,14 @@ namespace Backend.Infrastructure.Services
         public async Task UpdateAsync(int id, string name, double calories, double proteins, 
             double carbohydrates, double fats, string categoryName)
         {
-            var product = await _productRepository.GetAsync(id);
-            if (product is null)
-            {
-                throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
-                    $"Product with name: '{name}' was not found.");
-            }
+            var product = await _productRepository.GetOrFailAsync(id);
 
+            // If product has the same name, ensure that name will be searching for product with this name 
             if (await _productRepository.AnyAsync(p => p.Name == name))
             {
                 if (product.Name != name)
                 {
-                    throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with '{name}' already exists.");
+                    throw new NameInUseException(nameof(Product), name);
                 }
             }
 

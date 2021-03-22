@@ -15,7 +15,9 @@ namespace Backend.Infrastructure.Services.Account
 
         Task<int> SignUpAsync(string username, string email, string password, string role = "User");
 
-        Task ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+        Task<IdentityResult> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+
+        Task<IdentityResult> ConfirmEmailAsync(int userId, string code);
 
         Task SendConfirmationEmailAsync(User user, string token);
 

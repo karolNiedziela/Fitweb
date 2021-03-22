@@ -8,7 +8,6 @@ using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -49,7 +48,7 @@ namespace Backend.Infrastructure.Services.Account
 
             if (!result.Succeeded)
             {
-                throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
+                throw new IdentityResultException(result.Errors.FirstOrDefault().Description);
             }
 
             await _userManager.AddToRoleAsync(user, role);
@@ -64,20 +63,20 @@ namespace Backend.Infrastructure.Services.Account
             var user = await _userRepository.GetByUsernameAsync(username);
             if (user == null)
             {
-                throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
+                throw new InvalidCredentialsException();
             }
 
             var isPasswordValid = _passwordHandler.IsValid(user.PasswordHash, password);
             if (!isPasswordValid)
             {
-                throw new ServiceException(ErrorCodes.InvalidCredentials, "Invalid credentials");
+                throw new InvalidCredentialsException();
             }
 
             if (_userManager.Options.SignIn.RequireConfirmedEmail)
             {
                 if (!user.EmailConfirmed)
                 {
-                    throw new ServiceException(ErrorCodes.EmailNotConfirmed, "Email not confirmed. Confirm email to get access.");
+                    throw new EmailNotConfirmedException();
                 }
             }
 
@@ -88,13 +87,42 @@ namespace Backend.Infrastructure.Services.Account
             return jwt;
         }
 
+        public async Task<IdentityResult> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
+        {
+            var user = await _userRepository.GetOrFailAsync(userId);
+
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+
+            if (!result.Succeeded)
+            {
+                throw new IdentityResultException(result.Errors.FirstOrDefault().Description);
+            }
+
+            return result;
+        }
+
+        public async Task<IdentityResult> ConfirmEmailAsync(int userId, string code)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
+
+            var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            return result;
+        }
+
         public async Task GenerateEmailConfirmationTokenAsync(User user)
         {
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             if (string.IsNullOrEmpty(token))
             {
-                throw new ServiceException(ErrorCodes.InvalidToken, "Invalid email confirmation token.");
+                throw new InvalidEmailTokenException();
             }
 
             await SendConfirmationEmailAsync(user, token);
@@ -109,18 +137,6 @@ namespace Backend.Infrastructure.Services.Account
             await _emailSender.SendEmailAsync(user.Email, "Email Confirmation", $"Please confirm your account by" +
                 $" <a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");
         }      
-
-        public async Task ChangePasswordAsync(int userId, string oldPassword, string newPassword)
-        {
-            var user = await _userRepository.GetOrFailAsync(userId);
-
-            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-
-            if (!result.Succeeded)
-            {
-                throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
-            }
-        }
 
         public async Task GenerateForgotPasswordTokenAsync(string email)
         {
@@ -153,7 +169,7 @@ namespace Backend.Infrastructure.Services.Account
             var result =  await _userManager.ResetPasswordAsync(user, token, newPassword);
             if (!result.Succeeded)
             {
-                throw new ServiceException(result.Errors.FirstOrDefault().Code, result.Errors.FirstOrDefault().Description);
+                throw new IdentityResultException(result.Errors.FirstOrDefault().Description);
             }
 
             return result;

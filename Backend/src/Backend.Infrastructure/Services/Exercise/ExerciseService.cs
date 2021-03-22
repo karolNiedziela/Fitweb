@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Backend.Core.Repositories;
+using Backend.Infrastructure.Extensions;
 
 namespace Backend.Infrastructure.Services
 {
@@ -50,12 +51,7 @@ namespace Backend.Infrastructure.Services
 
         public async Task<int> AddAsync(string name, string partOfBody)
         {
-            var exercise = await _exerciseRepository.GetAsync(name);
-            if (exercise is not null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded,
-                    $"Exercise with name: '{name}' already exists.");
-            }
+            var exercise = await _exerciseRepository.CheckIfExistsAsync(name);
 
             exercise = new Exercise(name, PartOfBody.GetPart(partOfBody));
 
@@ -65,30 +61,21 @@ namespace Backend.Infrastructure.Services
         }
         public async Task DeleteAsync(int id)
         {
-            var exercise = await _exerciseRepository.GetAsync(id);
-            if (exercise is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound,
-                    $"Exercise with id: '{id}' was not found.");
-            }
+            var exercise = await _exerciseRepository.GetOrFailAsync(id);
 
             await _exerciseRepository.DeleteAsync(exercise);
         }
 
         public async Task UpdateAsync(int id, string name, string partOfBody)
         {
-            var exercise = await _exerciseRepository.GetAsync(id);
-            if (exercise is null)
-            {
-                throw new ServiceException(Exceptions.ErrorCodes.ObjectNotFound,
-                    $"Exercise with name: '{name}' was not found.");
-            }
+            var exercise = await _exerciseRepository.GetOrFailAsync(id);
 
+            // If exercise has the same name, ensure that name will be searching for exercise with this name 
             if (await _exerciseRepository.AnyAsync(p => p.Name == name))
             {
                 if (exercise.Name != name)
                 {
-                    throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Exercise with '{name}' already exists.");
+                    throw new NameInUseException(nameof(Exercise), name);
                 }
             }
 

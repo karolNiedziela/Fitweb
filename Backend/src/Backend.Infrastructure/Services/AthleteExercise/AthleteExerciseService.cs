@@ -1,6 +1,8 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Exceptions;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
+using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -31,20 +33,16 @@ namespace Backend.Infrastructure.Services
 
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new AthleteNotFoundException(userId);
             }
 
             if (athlete.AthleteExercises.Any(ae => ae.ExerciseId == exerciseId && ae.DateUpdated.ToShortDateString() == DateTime.Today.ToShortDateString()))
             {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Exercise with id: {exerciseId} already added today.");
+                throw new AlreadyAddedTodayException(nameof(Exercise), exerciseId);
             }
 
-            var exercise = await _exerciseRepository.GetAsync(exerciseId);
-            if (exercise is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id: {exerciseId} was not found.");
-            }
-      
+            var exercise = await _exerciseRepository.GetOrFailAsync(exerciseId);
+
             athlete.AthleteExercises.Add(AthleteExercise.Create(athlete, exercise, weight, numberOfSets, numberOfReps, Day.GetDay(dayName)));
 
             await _athleteRepository.UpdateAsync(athlete);
@@ -60,14 +58,13 @@ namespace Backend.Infrastructure.Services
                                                         .ThenInclude(e => e.PartOfBody));
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new AthleteNotFoundException(userId);
             }
 
             var exercise = athlete.AthleteExercises.SingleOrDefault(ae => ae.ExerciseId == exerciseId);
             if (exercise is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Exercise with id {exerciseId} " +
-                    $"for athlete with user id {userId} was not found");
+                throw new ExerciseForAthleteNotFoundException(userId, exerciseId);
             }
 
             athlete.AthleteExercises.Remove(exercise);

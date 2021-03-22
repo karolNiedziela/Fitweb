@@ -1,6 +1,7 @@
 ﻿using Backend.Core.Entities;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
+using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,20 +30,16 @@ namespace Backend.Infrastructure.Services
 
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.AthleteNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new AthleteNotFoundException(userId);
             }
 
             if (athlete.AthleteProducts.Any(ap => ap.ProductId == productId && 
                 ap.DateUpdated.ToShortDateString() == DateTime.Today.ToShortDateString()))
             {
-                throw new ServiceException(ErrorCodes.ObjectAlreadyAdded, $"Product with id: {productId} already added today");
+                throw new AlreadyAddedTodayException(nameof(Product), productId);
             }
 
-            var product = await _productRepository.GetAsync(productId);
-            if (product is null)
-            {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id: {productId} was not found.");
-            }
+            var product = await _productRepository.GetOrFailAsync(productId);
 
             athlete.AthleteProducts.Add(AthleteProduct.Create(athlete, product, weight));
 
@@ -57,14 +54,13 @@ namespace Backend.Infrastructure.Services
                                                         .ThenInclude(p => p.CategoryOfProduct));
             if (athlete is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Athlete with user id: {userId} was not found.");
+                throw new AthleteNotFoundException(userId);
             }
 
             var product = athlete.AthleteProducts.SingleOrDefault(ap => ap.ProductId == productId);
             if (product is null)
             {
-                throw new ServiceException(ErrorCodes.ObjectNotFound, $"Product with id {productId} for athlete with " +
-                    $"user id {userId} was not found.");
+                throw new ProductForAthleteNotFoundException(userId, productId);
             }
 
             athlete.AthleteProducts.Remove(product);

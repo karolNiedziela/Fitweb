@@ -2,14 +2,7 @@
 using Backend.Core.Factories;
 using Backend.Core.Services;
 using Backend.Infrastructure.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.IoC.Modules
 {

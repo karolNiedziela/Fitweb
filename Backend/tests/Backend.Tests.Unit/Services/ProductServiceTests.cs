@@ -16,20 +16,25 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Backend.Infrastructure.Repositories;
-using Backend.Tests.Unit.Fixtures;
+using AutoFixture;
+using Backend.Core.Exceptions;
+using Backend.Infrastructure.Extensions;
 
 namespace Backend.Tests.Unit.Services
 {
-    public class ProductServiceTests : IClassFixture<FitwebFixture>
+    public class ProductServiceTests
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
-        private readonly IProductService _sut;
-        private readonly FitwebFixture _fixture;
+        private readonly ProductService _sut;
+        private readonly IFixture _fixture;
 
-        public ProductServiceTests(FitwebFixture fixture)
+        public ProductServiceTests()
         {
-            _fixture = fixture;
+            _fixture = new Fixture();
+            _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => _fixture.Behaviors.Remove(b));
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _productRepository = Substitute.For<IProductRepository>();
             _mapper = Substitute.For<IMapper>();
             _mapper = AutoMapperConfig.Initialize();
@@ -42,7 +47,10 @@ namespace Backend.Tests.Unit.Services
         public async Task GetAsyncById_ShouldReturnProductDetailsDto(int id)
         {
             // Arrange
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == id);
+            var product = _fixture.Build<Product>()
+                .With(p => p.Id, id)
+                .Without(p => p.AthleteProducts)
+                .Create();
             _productRepository.GetAsync(id).Returns(product);
 
             // Act
@@ -62,7 +70,10 @@ namespace Backend.Tests.Unit.Services
         public async Task GetAsyncByName_ShouldReturnProductDetailsDto(string name)
         {
             // Arrange
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Name == name);
+            var product = _fixture.Build<Product>()
+                .With(p => p.Name, name)
+                .Without(p => p.AthleteProducts)
+                .Create();
             _productRepository.GetAsync(name).Returns(product);
 
             // Act
@@ -76,87 +87,155 @@ namespace Backend.Tests.Unit.Services
             await _productRepository.Received(1).GetAsync(product.Name);
         }
 
-        [Theory]
-        [InlineData("exercise1", "Chest")]
-        [InlineData("exercise1", null)]
-        [InlineData(null, null)]
-        public async Task GetAllAsync_ShoudlReturnPagedListOfProductDetailsDto(string name, string partOfBody)
+        [Fact]
+        public async Task GetAllAsync_ShouldReturnPagedListOfAllProductsDto_WhenParametersAreNull()
         {
             // Arrange
-            var products = _fixture.FitwebContext.Products.ToList();
+            var products = _fixture.Build<Product>()
+                          .Without(p => p.AthleteProducts)
+                          .CreateMany();
+
             var paginationQuery = Substitute.For<PaginationQuery>();
-            var pageList = Substitute.For<PagedList<Product>>(products, 10, 10, 10);
-            _productRepository.GetAllAsync(name, partOfBody, paginationQuery).Returns(pageList);
+            var page = new PagedList<Product>(products.ToList(), products.ToList().Count(), 1, 10);
+            _productRepository.GetAllAsync(null, null, paginationQuery).Returns(page);
 
 
             // Act
-            var dto = await _sut.GetAllAsync(name, partOfBody, paginationQuery);
+            var dto = await _sut.GetAllAsync(null, null, paginationQuery);
 
             // Assert
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(PagedList<ProductDto>));
-            dto.Count.ShouldBe(products.Count);
+            dto.Count.ShouldBe(products.ToList().Count);
         }
+
+        //[Theory]
+        //[InlineData("product1", "Fruits")]
+        //[InlineData("product2", null)]
+        //[InlineData(null, null)]
+        //public async Task GetAllAsync_ShouldReturnPagedListOfProductDto(string name, string category)
+        //{
+        //    // Arrange
+        //    var products = _fixture.Build<Product>()
+        //                  .Without(p => p.AthleteProducts)
+        //                  .CreateMany();
+
+        //    var paginationQuery = Substitute.For<PaginationQuery>();
+        //    var page = new PagedList<Product>(products.ToList(), products.ToList().Count(), 1, 10);
+        //    _productRepository.GetAllAsync(name, category, paginationQuery).Returns(page);
+
+
+        //    // Act
+        //    var dto = await _sut.GetAllAsync(name, category, paginationQuery);
+
+        //    // Assert
+        //    dto.ShouldNotBeNull();
+        //    dto.ShouldBeOfType(typeof(PagedList<ProductDto>));
+        //    dto.Count.ShouldBe(products.ToList().Count);
+        //}
 
         [Fact]
         public async Task AddAsync_ShouldAddNewProduct()
         {
             // Arrange
+            var product = _fixture.Build<Product>()
+                .Without(p => p.AthleteProducts)
+                .Create();
 
             // Act
-            await _sut.AddAsync("blabla", 100, 10, 10, 10, "Meat");
+            var id = await _sut.AddAsync(product.Name, product.Calories, product.Proteins,
+                product.Carbohydrates, product.Fats, product.CategoryOfProduct.Name.ToString());
 
             // Assert
-            await _productRepository.Received(1).AddAsync(Arg.Any<Product>());
+            await _productRepository.Received(1).AddAsync(Arg.Is<Product>(p => 
+            p.Id == id &&
+            p.Name == product.Name &&
+            p.Proteins == product.Proteins &&
+            p.Carbohydrates == product.Carbohydrates &&
+            p.Fats == product.Fats));
         }
 
-        
+        [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenCaloriesAreLowerThanZero()
+        {
+            var product = _fixture.Build<Product>()
+               .Without(p => p.AthleteProducts)
+               .Create();
+
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(product.Name, -10, product.Proteins,
+                product.Carbohydrates, product.Fats, product.CategoryOfProduct.Name.ToString()));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidCaloriesException));
+            exception.Message.ShouldBe("Calories cannot be less than 0.");
+        }
+
+
         [Theory]
         [InlineData("product1")]
         [InlineData("product2")]
         public async Task AddAsync_ShouldThrowException_WhenProductNameIsNotUnique(string name)
         {
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Name == name);
+            var product = _fixture.Build<Product>()
+                .With(p => p.Name, name)
+                .Without(p => p.AthleteProducts)
+                .Create();
             _productRepository.GetAsync(name).Returns(product);
 
-            var exception = await Record.ExceptionAsync(() => 
-                _sut.AddAsync(name, 500, 25, 70, 5, "Meat"));
+            var exception = await Record.ExceptionAsync(() =>
+                _sut.AddAsync(product.Name, product.Calories, product.Proteins,
+                product.Carbohydrates, product.Fats, product.CategoryOfProduct.Name.ToString()));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(NameInUseException));
             exception.Message.ShouldBe($"Product with name: '{name}' already exists.");
         }
 
-        [Fact]
-        public async Task DeleteAsync_ShouldDeleteProduct_IfProductExists()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task DeleteAsync_ShouldDeleteProduct_IfProductExists(int id)
         {
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == 1);
+            var product = _fixture.Build<Product>()
+                .With(p => p.Id, id)
+                .Without(p => p.AthleteProducts)
+                .Create();
             _productRepository.GetAsync(product.Id).Returns(product);
 
-            await _sut.DeleteAsync(1);
+            await _sut.DeleteAsync(id);
 
             await _productRepository.Received(1).DeleteAsync(Arg.Is(product));
         }
 
-        [Fact]
-        public async Task DeleteAsync_ShouldThrowException_WhenProductDoesNotExist()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task DeleteAsync_ShouldThrowException_WhenProductDoesNotExist(int id)
         {
-            var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(1));
+            var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(id));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Product with id: 1 was not found.");
+            exception.ShouldBeOfType(typeof(ProductNotFoundException));
+            exception.Message.ShouldBe($"Product with id: '{id}' was not found.");
         }
 
         [Fact]
         public async Task UpdateAsync_ShouldUpdateProduct_WhenProductExistsAndDataIsValid()
         {
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == 1);
+            var product = _fixture.Build<Product>()
+                .Without(p => p.AthleteProducts)
+                .Create();
             _productRepository.GetAsync(product.Id).Returns(product);
 
-            await _sut.UpdateAsync(1, "blabla", 100, 10, 10, 10, "Meat");
+            await _sut.UpdateAsync(product.Id, product.Name, product.Calories, product.Proteins,
+                product.Carbohydrates, product.Fats, product.CategoryOfProduct.Name.ToString());
 
-            await _productRepository.Received(1).UpdateAsync(Arg.Any<Product>());
+            await _productRepository.Received(1).UpdateAsync(Arg.Is<Product>(p => 
+            p.Id == product.Id &&
+            p.Name == product.Name &&
+            p.Proteins == product.Proteins &&
+            p.Carbohydrates == product.Carbohydrates &&
+            p.Fats == product.Fats));
         }
 
         [Fact]
@@ -165,23 +244,28 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(1, "blabla", 100, 10, 10, 10, "Meat"));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Product with id: 1 was not found.");
+            exception.ShouldBeOfType(typeof(ProductNotFoundException));
+            exception.Message.ShouldBe("Product with id: '1' was not found.");
         }
 
         [Fact]
         public async Task UpdateAsync_ShouldThrowException_WhenProductExistsButNameIsNotUnique()
         {
-            var product = _fixture.FitwebContext.Products.SingleOrDefault(p => p.Id == 1);
-            _productRepository.GetAsync(product.Id).Returns(product);
+            var existing = "randomProduct";
+            var product = _fixture.Build<Product>()
+               .Without(p => p.AthleteProducts)
+               .Create();
+            _productRepository.GetAsync(Arg.Any<int>()).Returns(product);
 
-            _productRepository.AnyAsync(p => p.Name == "someName").ReturnsForAnyArgs(true);
+            _productRepository.AnyAsync(p => p.Name == existing).ReturnsForAnyArgs(true);
 
-            var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(1, "someName", 100, 10, 10, 10, "Meat"));
+            var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(product.Id, existing, 
+                product.Calories, product.Proteins, product.Carbohydrates, product.Fats, product.CategoryOfProduct.Name.ToString()));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Product with '{someName}' already exists.");
+            exception.ShouldBeOfType(typeof(NameInUseException));
+            exception.Message.ShouldBe($"Product with name: '{existing}' already exists.");
         }
+
     }
 }

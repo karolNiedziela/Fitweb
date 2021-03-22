@@ -16,7 +16,7 @@ namespace Backend.Tests.Unit.Auth
     public class PasswordHandlerTests
     {
         private readonly IPasswordHasher<IPasswordHandler> _passwordHasher;
-        private readonly IPasswordHandler _sut;
+        private readonly PasswordHandler _sut;
 
         public PasswordHandlerTests()
         {
@@ -37,26 +37,26 @@ namespace Backend.Tests.Unit.Auth
         }
 
         [Fact]
-        public void Hash_ShouldReturnException_WhenPasswordIsNull()
+        public void Hash_ShouldThrowException_WhenPasswordIsNull()
         {
             var password = string.Empty;
 
             var exception = Record.Exception(() => _sut.Hash(password));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
+            exception.ShouldBeOfType(typeof(EmptyPasswordException));
             exception.Message.ShouldBe("Password cannot be empty.");
         }
 
         [Fact]
-        public void Hash_ShouldReturnException_WhenPasswordIsShortherThan4Characters()
+        public void Hash_ShouldThrowException_WhenPasswordIsShortherThan4Characters()
         {
             var password = "pas";
 
             var exception = Record.Exception(() => _sut.Hash(password));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
+            exception.ShouldBeOfType(typeof(InvalidPasswordException));
             exception.Message.ShouldBe("Password cannot contain less than 4 characters.");
         }
 
@@ -70,7 +70,7 @@ namespace Backend.Tests.Unit.Auth
             var exception = Record.Exception(() => _sut.Hash(password));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
+            exception.ShouldBeOfType(typeof(InvalidPasswordException));
             exception.Message.ShouldBe("Password cannot contain more than 40 characters.");
         }
 

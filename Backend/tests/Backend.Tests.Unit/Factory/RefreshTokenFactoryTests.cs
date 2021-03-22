@@ -17,13 +17,13 @@ namespace Backend.Tests.Unit.Factory
 
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        private readonly IRefreshTokenFactory _refreshTokenFactory;
+        private readonly RefreshTokenFactory _sut;
 
         public RefreshTokenFactoryTests()
         {
             _rng = Substitute.For<Rng>();
             _dateTimeProvider = Substitute.For<DateTimeProvider>();
-            _refreshTokenFactory = Substitute.For<RefreshTokenFactory>(_rng, _dateTimeProvider);
+            _sut = Substitute.For<RefreshTokenFactory>(_rng, _dateTimeProvider);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace Backend.Tests.Unit.Factory
         {
             var userId = 10;
 
-            var refreshToken = _refreshTokenFactory.Create(userId);
+            var refreshToken = _sut.Create(userId);
 
             refreshToken.ShouldNotBeNull();
             refreshToken.Revoked.ShouldBeFalse();

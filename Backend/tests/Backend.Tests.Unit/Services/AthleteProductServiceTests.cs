@@ -1,4 +1,5 @@
-﻿using Backend.Core.Entities;
+﻿using AutoFixture;
+using Backend.Core.Entities;
 using Backend.Core.Exceptions;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
@@ -18,16 +19,19 @@ using Xunit;
 
 namespace Backend.Tests.Unit.Services
 {
-    public class AthleteProductServiceTests : IClassFixture<FitwebFixture>
+    public class AthleteProductServiceTests
     {
         private readonly IAthleteRepository _athleteRepository;
         private readonly IProductRepository _productRepository;
-        private readonly IAthleteProductService _sut;
-        private readonly FitwebFixture _fixture;
+        private readonly AthleteProductService _sut;
+        private readonly IFixture _fixture;
 
-        public AthleteProductServiceTests(FitwebFixture fixture)
+        public AthleteProductServiceTests()
         {
-            _fixture = fixture;
+            _fixture = new Fixture();
+            _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => _fixture.Behaviors.Remove(b));
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _athleteRepository = Substitute.For<IAthleteRepository>();
             _productRepository = Substitute.For<IProductRepository>();
             _sut = new AthleteProductService(_athleteRepository, _productRepository);
@@ -36,17 +40,16 @@ namespace Backend.Tests.Unit.Services
         [Theory]
         [InlineData(1, 3, 150)]
         [InlineData(2, 3, 500)]
-        public async Task AddAsync_ShouldAddProduct_WhenAthleteExistsAndProductExistsAndWeightIsValid(int userId, int productId, 
+        public async Task AddAsync_ShouldAddProduct_WhenAthleteExistsAndProductExistsAndWeightIsValid(int userId, int productId,
             double weight)
         {
-            var athlete = _fixture.FitwebContext.Athletes.Where(a => a.UserId == userId)
-                                                .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
-                                                    .ThenInclude(ap => ap.Product)
-                                                    .ThenInclude(p => p.CategoryOfProduct)
-                                                .AsNoTracking()
-                                                .SingleOrDefault();
+            var product = _fixture.Build<Product>().With(p => p.Id, productId).Create();
 
-            var product = _fixture.FitwebContext.Products.Include(p => p.CategoryOfProduct).SingleOrDefault(p => p.Id == productId);
+            var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, userId)
+                .Without(a => a.AthleteExercises)
+                .Create();
+
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -64,29 +67,24 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.AddAsync(10, 10, 50));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.AthleteNotFound);
-            exception.Message.ShouldBe($"Athlete with user id: {10} was not found.");
+            exception.ShouldBeOfType(typeof(AthleteNotFoundException));
+            exception.Message.ShouldBe($"Athlete with user id: '{10}' was not found.");
         }
 
         [Fact]
         public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndProductDoesNotExist()
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.Id == 1)
-                                                .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == 1))
-                                                    .ThenInclude(ap => ap.Product)
-                                                    .ThenInclude(p => p.CategoryOfProduct)
-                                                .SingleOrDefault();
-
+            var athlete = _fixture.Build<Athlete>()
+                .Without(a => a.AthleteExercises)
+                .Create();
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
              Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
 
             var exception = await Record.ExceptionAsync(() => _sut.AddAsync(10, 10, 50));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.ObjectNotFound);
-            exception.Message.ShouldBe($"Product with id: {10} was not found.");
+            exception.ShouldBeOfType(typeof(ProductNotFoundException));
+            exception.Message.ShouldBe($"Product with id: '{10}' was not found.");
         }
 
         [Theory]
@@ -95,13 +93,14 @@ namespace Backend.Tests.Unit.Services
         public async Task AddAsync_ShouldThrowException_WhenAthleteExistsAndProductExistsButWeightIsNegative(int userId, int productId,
             double weight)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.UserId == userId)
-                                               .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
-                                                   .ThenInclude(ap => ap.Product)
-                                                   .ThenInclude(p => p.CategoryOfProduct)
-                                               .SingleOrDefault();
+            var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, userId)
+                .Without(a => a.AthleteExercises)
+                .Create();
 
-            var product = _fixture.FitwebContext.Products.Include(p => p.CategoryOfProduct).SingleOrDefault(p => p.Id == productId);
+            var product = _fixture.Build<Product>()
+                .With(p => p.Id, productId)
+                .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -111,8 +110,7 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.AddAsync(userId, productId, weight));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(DomainException));
-            ((DomainException)exception).Code.ShouldBe(Core.Exceptions.ErrorCodes.InvalidValue);
+            exception.ShouldBeOfType(typeof(InvalidWeightException));
             exception.Message.ShouldBe("Weight cannot be less than or equal to 0.");
         }
 
@@ -121,20 +119,26 @@ namespace Backend.Tests.Unit.Services
         [InlineData(1, 2)]
         public async Task DeleteAsync_ShouldDeleteProduct_WhenAthleteExistsAndProductExists(int userId, int productId)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.UserId == userId)
-                                               .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
-                                                   .ThenInclude(ap => ap.Product)
-                                                   .ThenInclude(p => p.CategoryOfProduct)
-                                               .SingleOrDefault();
+
+            var athleteProducts = _fixture.Build<AthleteProduct>()
+                .With(ap => ap.ProductId, productId)
+                .With(ap => ap.AthleteId, userId)
+                .CreateMany(count: 1);
+
+             var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, userId)
+                .With(a => a.AthleteProducts, athleteProducts.ToList())
+                .Without(a => a.AthleteExercises)
+                .Create();
+
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
 
-            var product = athlete.AthleteProducts.SingleOrDefault(ap => ap.ProductId == productId);
-
+     
             await _sut.DeleteAsync(userId, productId);
 
-            await _athleteRepository.UpdateAsync(Arg.Any<Athlete>());
+            await _athleteRepository.UpdateAsync(Arg.Is(athlete));
         }
 
         [Theory]
@@ -145,9 +149,8 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(userId, productId));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.ObjectNotFound);
-            exception.Message.ShouldBe($"Athlete with user id: {userId} was not found.");
+            exception.ShouldBeOfType(typeof(AthleteNotFoundException));
+            exception.Message.ShouldBe($"Athlete with user id: '{userId}' was not found.");
         }
 
         [Theory]
@@ -155,11 +158,10 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2, 15)]
         public async Task DeleteAsync_ShouldThrowException_WhenAthleteExistsAndProductDoesNotExist(int userId, int productId)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.UserId == userId)
-                                               .Include(a => a.AthleteProducts.Where(ap => ap.ProductId == productId))
-                                                   .ThenInclude(ap => ap.Product)
-                                                   .ThenInclude(p => p.CategoryOfProduct)
-                                               .SingleOrDefault();
+             var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, userId)
+                .Without(a => a.AthleteExercises)
+                .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -167,9 +169,8 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(userId, productId));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(Infrastructure.Exceptions.ErrorCodes.ObjectNotFound);
-            exception.Message.ShouldBe($"Product with id {productId} for athlete with user id {userId} was not found.");
+            exception.ShouldBeOfType(typeof(ProductForAthleteNotFoundException));
+            exception.Message.ShouldBe($"Product with id: '{productId}' for athlete with user id: '{userId}' was not found.");
         }
     }
 }

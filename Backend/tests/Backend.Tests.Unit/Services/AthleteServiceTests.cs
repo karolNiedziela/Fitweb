@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AutoFixture;
+using AutoMapper;
 using Backend.Core.Entities;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.DTO;
@@ -22,22 +23,25 @@ using Xunit;
 
 namespace Backend.Tests.Unit.Services
 {
-    public class AthleteServiceTests : IClassFixture<FitwebFixture>
+    public class AthleteServiceTests
     {
         private readonly IAthleteRepository _athleteRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ILoggerManager _loggerManager;
-        private readonly IAthleteService _sut;
-        private readonly FitwebFixture _fixture;
+        private readonly AthleteService _sut;
+        private readonly IFixture _fixture;
 
-        public AthleteServiceTests(FitwebFixture fixture)
+        public AthleteServiceTests()
         {
+            _fixture = new Fixture();
+            _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => _fixture.Behaviors.Remove(b));
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _athleteRepository = Substitute.For<IAthleteRepository>();
             _userRepository = Substitute.For<IUserRepository>();
             _mapper = AutoMapperConfig.Initialize();
             _loggerManager = Substitute.For<ILoggerManager>();
-            _fixture = fixture;
             _sut = new AthleteService(_athleteRepository, _userRepository, _mapper, _loggerManager);
         }
 
@@ -46,7 +50,11 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2)]
         public async Task GetAsync_ShouldReturnAthleteDto(int id)
         {
-            var athlete = _fixture.FitwebContext.Athletes.SingleOrDefault(a => a.Id == id);
+            var athlete = _fixture.Build<Athlete>()
+                .Without(a => a.AthleteExercises)
+                .Without(a => a.AthleteProducts)
+                .Create();
+                
             _athleteRepository.GetAsync(id).Returns(athlete);
 
             var dto = await _sut.GetAsync(id);
@@ -57,17 +65,22 @@ namespace Backend.Tests.Unit.Services
             await _athleteRepository.Received(1).GetAsync(id);
         }
 
-        [Fact]
-        public async Task GetAllAsync_ShouldReturnAthletesDto()
+        [Theory]
+        [InlineData(2)]
+        [InlineData(5)]
+        public async Task GetAllAsync_ShouldReturnAthletesDto(int count)
         {
-            var athletes = _fixture.FitwebContext.Athletes.ToList();
+            var athletes = _fixture.Build<Athlete>()
+               .Without(a => a.AthleteExercises)
+               .Without(a => a.AthleteProducts)
+               .CreateMany(count: count);
             _athleteRepository.GetAllAsync().Returns(athletes);
 
             var dto = await _sut.GetAllAsync();
 
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(List<AthleteDto>));
-            dto.Count().ShouldBe(2);
+            dto.Count().ShouldBe(count);
         }
 
         [Theory]
@@ -75,10 +88,10 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2)]
         public async Task GetProductsAsync_ShouldReturnAthleteAndAllProductsAdded(int athleteId)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Include(a => a.AthleteProducts)
-                                                            .ThenInclude(ap => ap.Product)
-                                                                .ThenInclude(p => p.CategoryOfProduct)
-                                                          .SingleOrDefault(a => a.Id == athleteId);
+            var athlete = _fixture.Build<Athlete>()
+               .With(a => a.Id, athleteId)
+               .Without(a => a.AthleteExercises)
+               .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
             Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -92,21 +105,28 @@ namespace Backend.Tests.Unit.Services
             var athleteProduct = athlete.AthleteProducts.FirstOrDefault();
 
             dto.Products[0].Weight.ShouldBe(athleteProduct.Weight);
-            
-        }             
-        
+
+        }
+
         [Theory]
         [InlineData(1, 1)]
         [InlineData(1, 2)]
         [InlineData(2, 2)]
         public async Task GetProductAsync_ShouldReturnChosenProductByAthlete(int athleteId, int productId)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.Id == athleteId).Include(a => a.AthleteProducts
-                                                            .Where(ap => ap.ProductId == productId))
-                                                                .ThenInclude(ap => ap.Product)
-                                                                .ThenInclude(p => p.CategoryOfProduct)
-                                                            .SingleOrDefault();
+            var product = _fixture.Build<Product>().With(e => e.Id, productId).Create();
+            var athleteProducts = _fixture.Build<AthleteProduct>()
+                .With(ae => ae.AthleteId, athleteId)
+                .With(ae => ae.ProductId, productId)
+                .With(ae => ae.Product, product)
+                .CreateMany(count: 1);
 
+
+            var athlete = _fixture.Build<Athlete>()
+              .With(a => a.Id, athleteId)
+              .With(a => a.AthleteProducts, athleteProducts.ToList())
+              .Without(a => a.AthleteExercises)
+              .Create();
 
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
@@ -130,10 +150,10 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2, "Monday")]
         public async Task GetExercisesAsync_ShouldReturnAthleteAndAllExercisesAdded(int athleteId, string dayName)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Include(a => a.AthleteExercises)
-                                                            .ThenInclude(ae => ae.Exercise)
-                                                            .ThenInclude(e => e.PartOfBody)
-                                                .SingleOrDefault(a => a.Id == athleteId);
+            var athlete = _fixture.Build<Athlete>()
+              .With(a => a.Id, athleteId)
+              .Without(a => a.AthleteProducts)
+              .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -151,11 +171,18 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2, 1)]
         public async Task GetExerciseAsync_ShouldReturnChosenExerciseByAthlete(int athleteId, int exerciseId)
         {
-            var athlete = _fixture.FitwebContext.Athletes.AsNoTracking().Where(a => a.Id == athleteId)
-                                                .Include(a => a.AthleteExercises.Where(ae => ae.ExerciseId == exerciseId))
-                                                    .ThenInclude(ae => ae.Exercise)
-                                                    .ThenInclude(e => e.PartOfBody)
-                                                .SingleOrDefault();
+            var exercise = _fixture.Build<Exercise>().With(e => e.Id, exerciseId).Create();
+            var athleteExercises = _fixture.Build<AthleteExercise>()
+                .With(ae => ae.AthleteId, athleteId)
+                .With(ae => ae.ExerciseId, exerciseId)
+                .With(ae => ae.Exercise, exercise)
+                .CreateMany(count: 1);
+
+            var athlete = _fixture.Build<Athlete>()
+                .With(a => a.AthleteExercises, athleteExercises.ToList())
+                .With(a => a.Id, athleteId)
+                .Without(a => a.AthleteProducts)
+                .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
                 Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
@@ -173,11 +200,11 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task CreateAsync_ShouldCreateAthlete_WhenAthleteDoesNotExistAndUserExists()
         {
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
+            var user = _fixture.Create<User>();
 
-            _userRepository.GetOrFailAsync(1).Returns(user);
+            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
 
-            await _sut.CreateAsync(1);
+            await _sut.CreateAsync(user.Id);
 
             await _athleteRepository.Received(1).AddAsync(Arg.Any<Athlete>());
         }
@@ -188,37 +215,42 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.CreateAsync(10));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(ErrorCodes.UserNotFound);
-            exception.Message.ShouldBe($"User with id: {10} was not found.");
+            exception.ShouldBeOfType(typeof(UserNotFoundException));
+            exception.Message.ShouldBe($"User with id: '{10}' was not found.");
         }
 
         [Fact]
         public async Task CreateAsync_ShouldThrowException_WhenAthleteAlreadyExists()
         {
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == 1);
-            var athlete = _fixture.FitwebContext.Athletes.SingleOrDefault(a => a.UserId == 1);
+            var user = _fixture.Create<User>();
+            var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, user.Id)
+                .Without(a => a.AthleteExercises)
+                .Without(a => a.AthleteProducts)
+                .Create();
 
-            _userRepository.GetOrFailAsync(1).Returns(user);
+            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>()).Returns(athlete);
 
-            var exception = await Record.ExceptionAsync(() =>  _sut.CreateAsync(1));
+            var exception = await Record.ExceptionAsync(() => _sut.CreateAsync(user.Id));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"Athlete with user id: {1} already exists.");
-            ((ServiceException)exception).Code.ShouldBe(ErrorCodes.ObjectAlreadyAdded);
+            exception.ShouldBeOfType(typeof(AthleteExistsException));
+            exception.Message.ShouldBe($"Athlete with user id: '{athlete.UserId}' already exists.");
             await _athleteRepository.Received(0).AddAsync(Arg.Any<Athlete>());
         }
 
         [Fact]
         public async Task DeleteAsync_ShouldDeleteAthlete_WhenAthleteExists()
         {
-            var athlete = _fixture.FitwebContext.Athletes.SingleOrDefault(a => a.Id == 1);
+            var athlete = _fixture.Build<Athlete>()
+                .Without(a => a.AthleteExercises)
+                .Without(a => a.AthleteProducts)
+                .Create();
 
-            _athleteRepository.GetOrFailAsync(1).Returns(athlete);
+            _athleteRepository.GetOrFailAsync(Arg.Any<int>()).Returns(athlete);
 
-            await _sut.DeleteAsync(1);
+            await _sut.DeleteAsync(athlete.Id);
 
             await _athleteRepository.Received(1).DeleteAsync(Arg.Any<Athlete>());
         }
@@ -229,9 +261,8 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(50));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            ((ServiceException)exception).Code.ShouldBe(ErrorCodes.AthleteNotFound);
-            exception.Message.ShouldBe($"Athlete with user id: {50} was not found.");
+            exception.ShouldBeOfType(typeof(AthleteNotFoundException));
+            exception.Message.ShouldBe($"Athlete with user id: '{50}' was not found.");
         }
     }
 }

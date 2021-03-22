@@ -1,4 +1,5 @@
-﻿using Backend.Core.Entities;
+﻿using AutoFixture;
+using Backend.Core.Entities;
 using Backend.Core.Enums;
 using Backend.Core.Factories;
 using Backend.Core.Repositories;
@@ -11,9 +12,6 @@ using Backend.Tests.Unit.Fixtures;
 using NSubstitute;
 using Shouldly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,18 +24,20 @@ namespace Backend.Tests.Unit.Services
         private readonly IJwtHandler _jwtHandler;
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
-        private readonly IExternalLoginService _sut;
+        private readonly ExternaLoginService _sut;
         private readonly FakeUserManager _fakeUserManager;
+        private readonly IFixture _fixture;
 
         public ExternalLoginServiceTests()
         {
+            _fixture = new Fixture();
             _facebookAuthService = Substitute.For<IFacebookAuthService>();
             _userRepository = Substitute.For<IUserRepository>();
             _jwtHandler = Substitute.For<IJwtHandler>();
             _refreshTokenFactory = Substitute.For<IRefreshTokenFactory>();
             _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
             _fakeUserManager = Substitute.For<FakeUserManager>();
-            _sut = new ExternaLoginService(_facebookAuthService, _userRepository, _jwtHandler, 
+            _sut = new ExternaLoginService(_facebookAuthService, _userRepository, _jwtHandler,
                 _refreshTokenFactory, _refreshTokenRepository, _fakeUserManager);
         }
 
@@ -60,44 +60,30 @@ namespace Backend.Tests.Unit.Services
                 FirstName = "test",
                 LastName = "user",
                 Email = "testUser@email.com",
-                
+
             };
 
             _facebookAuthService.ValidateAccessTokenAsync(accessToken).Returns(facebookTokenValidationResult);
 
             _facebookAuthService.GetUserInfoAsync(accessToken).Returns(facebookInfoResult);
 
-            var user = new User
-            {
-                Id = 10,
-                UserName = facebookInfoResult.Email,
-                Email = facebookInfoResult.Email,
-            };
-            var jwtDto = new JwtDto
-            {
-                UserId = user.Id,
-                Username = user.UserName,
-                Role = RoleId.User.ToString(),
-                AccessToken = "1234.56712.12323",
-                Expires = 10000000,
-                RefreshToken = string.Empty
-            };
+            var jwtDto = _fixture.Create<JwtDto>();
 
             _jwtHandler.CreateToken(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).Returns(jwtDto);
-            var refreshToken = new RefreshToken();
+            var refreshToken = _fixture.Create<RefreshToken>();
 
             _refreshTokenFactory.Create(Arg.Any<int>()).Returns(refreshToken);
 
             var jwt = await _sut.LoginWithFacebookAsync(accessToken);
 
             jwt.ShouldNotBeNull();
+            jwt.ShouldBeOfType(typeof(JwtDto));
             jwt.UserId.ShouldBe(jwtDto.UserId);
             jwt.Username.ShouldBe(jwtDto.Username);
             jwt.Role.ShouldBe(jwtDto.Role);
             jwt.AccessToken.ShouldBe(jwtDto.AccessToken);
             jwt.Expires.ShouldBe(jwtDto.Expires);
             jwt.RefreshToken.ShouldBe(jwtDto.RefreshToken);
-            jwt.ShouldBeOfType(typeof(JwtDto));
         }
 
         [Fact]
@@ -118,7 +104,7 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.LoginWithFacebookAsync(accessToken));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(InvalidFacebookTokenException));
             exception.Message.ShouldBe("Invalid facebook token.");
         }
 
@@ -152,31 +138,23 @@ namespace Backend.Tests.Unit.Services
 
             _userRepository.GetByEmailAsync(facebookInfoResult.Email).Returns(user);
 
-            var jwtDto = new JwtDto
-            {
-                UserId = user.Id,
-                Username = user.UserName,
-                Role = RoleId.User.ToString(),
-                AccessToken = "1234.56712.12323",
-                Expires = 10000000,
-                RefreshToken = string.Empty
-            };
+            var jwtDto = _fixture.Create<JwtDto>();
 
             _jwtHandler.CreateToken(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).Returns(jwtDto);
-            var refreshToken = new RefreshToken();
+            var refreshToken = _fixture.Create<RefreshToken>();
 
             _refreshTokenFactory.Create(Arg.Any<int>()).Returns(refreshToken);
 
             var jwt = await _sut.LoginWithFacebookAsync(accessToken);
 
             jwt.ShouldNotBeNull();
+            jwt.ShouldBeOfType(typeof(JwtDto));
             jwt.UserId.ShouldBe(jwtDto.UserId);
             jwt.Username.ShouldBe(jwtDto.Username);
             jwt.Role.ShouldBe(jwtDto.Role);
             jwt.AccessToken.ShouldBe(jwtDto.AccessToken);
             jwt.Expires.ShouldBe(jwtDto.Expires);
             jwt.RefreshToken.ShouldBe(jwtDto.RefreshToken);
-            jwt.ShouldBeOfType(typeof(JwtDto));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Backend.Tests.Unit.Auth
     public class JwtHandlerTests
     {
         private readonly JwtSettings _settings;
-        private readonly IJwtHandler _sut;
+        private readonly JwtHandler _sut;
 
         public JwtHandlerTests()
         {

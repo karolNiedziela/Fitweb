@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AutoFixture;
+using AutoMapper;
 using Backend.Core.Entities;
 using Backend.Core.Exceptions;
 using Backend.Core.Factories;
@@ -22,16 +23,19 @@ using Xunit;
 
 namespace Backend.Tests.Unit.Services
 {
-    public class UserServiceTests : IClassFixture<FitwebFixture>
+    public class UserServiceTests
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IUserService _sut; // system under testing
-        private readonly FitwebFixture _fixture;
+        private readonly UserService _sut; // system under testing
+        private readonly IFixture _fixture;
 
-        public UserServiceTests(FitwebFixture fixture)
+        public UserServiceTests()
         {
-            _fixture = fixture;
+            _fixture = new Fixture();
+            _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => _fixture.Behaviors.Remove(b));
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _userRepository = Substitute.For<IUserRepository>();
             _mapper = Substitute.For<IMapper>();
             _mapper = AutoMapperConfig.Initialize();
@@ -46,7 +50,9 @@ namespace Backend.Tests.Unit.Services
         public async Task GetAsyncById_ShouldReturnUserDto(int id)
         {
             // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == id);
+            var user = _fixture.Build<User>()
+                .With(u => u.Id, id)
+                .Create();
             _userRepository.GetAsync(id).Returns(user);
 
             // Act
@@ -66,7 +72,9 @@ namespace Backend.Tests.Unit.Services
         [InlineData("user2")]
         public async Task GetAsyncByUsername_ShouldReturnUserDto(string username)
         {
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.UserName == username);
+            var user = _fixture.Build<User>()
+                .With(u => u.UserName, username)
+                .Create();
             _userRepository.GetByUsernameAsync(username).Returns(user);
 
             // Act
@@ -82,21 +90,22 @@ namespace Backend.Tests.Unit.Services
             await _userRepository.Received(1).GetByUsernameAsync(user.UserName);
         }
 
-        [Fact]
-        public async Task GetAllAsync_ShouldReturnUsersDto()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(5)]
+        public async Task GetAllAsync_ShouldReturnUsersDto(int count)
         {
             // Arrange
-            var users = _fixture.FitwebContext.Users.ToList();
+            var users = _fixture.Build<User>().CreateMany(count: count);
             _userRepository.GetAllAsync().Returns(users);
 
             // Act
-
             var dto = await _sut.GetAllAsync();
 
             // Assert
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(List<UserDto>));
-            dto.Count().ShouldBe(3);
+            dto.Count().ShouldBe(count);
 
             await _userRepository.Received(1).GetAllAsync();
         }
@@ -108,14 +117,16 @@ namespace Backend.Tests.Unit.Services
         public async Task DeleteAsync_ShouldDeleteUser_WhenUserExists(int id)
         {
             // Arrange
-            var user = _fixture.FitwebContext.Users.SingleOrDefault(u => u.Id == id);
+            var user = _fixture.Build<User>()
+                .With(u => u.Id, id)
+                .Create();
             _userRepository.GetAsync(id).Returns(user);
 
             // Act
             await _sut.DeleteAsync(id);
 
             // Assert
-            await _userRepository.Received(1).DeleteAsync(Arg.Is(user));
+            await _userRepository.Received(1).DeleteAsync(user);
         }
 
 
@@ -131,8 +142,8 @@ namespace Backend.Tests.Unit.Services
 
             // Assert
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.Message.ShouldBe($"User with id: {id} was not found.");
+            exception.ShouldBeOfType(typeof(UserNotFoundException));
+            exception.Message.ShouldBe($"User with id: '{id}' was not found.");
             await _userRepository.DidNotReceive().DeleteAsync(Arg.Any<User>());
 
         }

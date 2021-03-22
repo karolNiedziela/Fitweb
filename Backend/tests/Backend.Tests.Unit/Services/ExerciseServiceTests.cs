@@ -16,19 +16,20 @@ using System.Threading.Tasks;
 using Xunit;
 using Backend.Infrastructure.Repositories;
 using Backend.Tests.Unit.Fixtures;
+using AutoFixture;
 
 namespace Backend.Tests.Unit.Services
 {
-    public class ExerciseServiceTests : IClassFixture<FitwebFixture>
+    public class ExerciseServiceTests
     {
         private readonly IExerciseRepository _exerciseRepository;
         private readonly IMapper _mapper;
-        private readonly IExerciseService _sut;
-        private readonly FitwebFixture _fixture;
+        private readonly ExerciseService _sut;
+        private readonly IFixture _fixture;
 
-        public ExerciseServiceTests(FitwebFixture fixture)
+        public ExerciseServiceTests()
         {
-            _fixture = fixture;
+            _fixture = new Fixture();
             _exerciseRepository = Substitute.For<IExerciseRepository>();
             _mapper = Substitute.For<IMapper>();
             _mapper = AutoMapperConfig.Initialize();
@@ -40,7 +41,10 @@ namespace Backend.Tests.Unit.Services
         [InlineData(2)]
         public async Task GetAsyncById_ShouldReturnExerciseDto(int id)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == id);
+            var exercise = _fixture.Build<Exercise>()
+                .With(e => e.Id, id)
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(id).Returns(exercise);
 
             var dto = await _sut.GetAsync(id);
@@ -56,7 +60,10 @@ namespace Backend.Tests.Unit.Services
         [InlineData("exercise2")]
         public async Task GetAsyncByName_ShouldReturnExerciseDto(string name)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == name);
+            var exercise = _fixture.Build<Exercise>()
+                .With(e => e.Name, name)
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(name).Returns(exercise);
 
             var dto = await _sut.GetAsync(name);
@@ -66,80 +73,114 @@ namespace Backend.Tests.Unit.Services
             dto.ShouldBeOfType(typeof(ExerciseDto));
             await _exerciseRepository.Received(1).GetAsync(exercise.Name);
         }
-        
+
         [Theory]
-        [InlineData("product1", "Meat")]
-        [InlineData("product1", null)]
-        [InlineData(null, null)]
-        public async Task GetAllAsync_ShouldReturnIEnumerableExerciseDto(string name, string category)
+        [InlineData(5)]
+        [InlineData(10)]
+        public async Task GetAllAsync_ShouldReturnPagedListOfAllExercisesDto_WhenParametersAreNull(int count)
         {
-            var exercises = _fixture.FitwebContext.Exercises.ToList();
-            var pagedList = Substitute.For<PagedList<Exercise>>(exercises, 10, 10, 10);
+            // Arrange
+            var exercises = _fixture.Build<Exercise>()
+                          .Without(p => p.AthleteExercises)
+                          .CreateMany(count: count);
+
             var paginationQuery = Substitute.For<PaginationQuery>();
-            _exerciseRepository.GetAllAsync(name, category, paginationQuery).Returns(pagedList);
+            var page = new PagedList<Exercise>(exercises.ToList(), exercises.ToList().Count(), 1, 10);
+            _exerciseRepository.GetAllAsync(null, null, paginationQuery).Returns(page);
 
 
-            var dto = await _sut.GetAllAsync(name, category, paginationQuery);
+            // Act
+            var dto = await _sut.GetAllAsync(null, null, paginationQuery);
 
+            // Assert
             dto.ShouldNotBeNull();
             dto.ShouldBeOfType(typeof(PagedList<ExerciseDto>));
-            dto.Count().ShouldBe(exercises.Count());
+            dto.Count.ShouldBe(exercises.ToList().Count);
         }
-        
+
+        //[Theory]
+        //[InlineData("product1", "Meat")]
+        //[InlineData("product1", null)]
+        //[InlineData(null, null)]
+        //public async Task GetAllAsync_ShouldReturnIEnumerableExerciseDto(string name, string category)
+        //{
+        //    var exercises = _fixture.FitwebContext.Exercises.ToList();
+        //    var pagedList = Substitute.For<PagedList<Exercise>>(exercises, 10, 10, 10);
+        //    var paginationQuery = Substitute.For<PaginationQuery>();
+        //    _exerciseRepository.GetAllAsync(name, category, paginationQuery).Returns(pagedList);
+
+
+        //    var dto = await _sut.GetAllAsync(name, category, paginationQuery);
+
+        //    dto.ShouldNotBeNull();
+        //    dto.ShouldBeOfType(typeof(PagedList<ExerciseDto>));
+        //    dto.Count().ShouldBe(exercises.Count());
+        //}
+
         [Fact]
         public async Task AddAsync_ShouldAddNewExercise()
         {
-            await _sut.AddAsync("chest push", "Chest");
+            var exercise = _fixture.Build<Exercise>()
+                .Without(e => e.AthleteExercises)
+                .Create();
+
+            await _sut.AddAsync(exercise.Name, exercise.PartOfBody.Name.ToString());
 
             await _exerciseRepository.Received(1).AddAsync(Arg.Any<Exercise>());
         }
-        
+
         [Theory]
         [InlineData("exercise1")]
         [InlineData("exercise2")]
         public async Task AddAsync_ShouldThrowException_WhenExerciseExists(string name)
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Name == name);
+            var exercise = _fixture.Build<Exercise>()
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(name).Returns(exercise);
 
-            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, "Chest"));
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, exercise.PartOfBody.Name.ToString()));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
+            exception.ShouldBeOfType(typeof(NameInUseException));
             exception.Message.ShouldBe($"Exercise with name: '{name}' already exists.");
         }
-        
+
         [Fact]
         public async Task DeleteAsync_ShouldDeleteExercise_WhenExerciseExists()
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == 1);
+            var exercise = _fixture.Build<Exercise>()
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 
             await _sut.DeleteAsync(exercise.Id);
 
             await _exerciseRepository.Received(1).DeleteAsync(Arg.Is(exercise));
         }
-        
+
         [Fact]
         public async Task DeleteAsync_ShouldThrowException_WhenExerciseDoesNotExist()
         {
             var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(1));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Exercise with id: 1 was not found.");
+            exception.ShouldBeOfType(typeof(ExerciseNotFoundException));
+            exception.Message.ShouldBe("Exercise with id: '1' was not found.");
 
         }
 
         [Fact]
         public async Task UpdateAsync_ShouldUpdateExercise_WhenExerciseExistsAndDataIsValid()
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == 1);
+            var exercise = _fixture.Build<Exercise>()
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 
-            await _sut.UpdateAsync(1, "someName", "Chest");
+            await _sut.UpdateAsync(exercise.Id, exercise.Name, exercise.PartOfBody.Name.ToString());
 
-            await _exerciseRepository.Received(1).UpdateAsync(Arg.Any<Exercise>());
+            await _exerciseRepository.Received(1).UpdateAsync(Arg.Is(exercise));
         }
 
         [Fact]
@@ -148,23 +189,27 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(1, "someName", "Chest"));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), "Exercise with id: 1 was not found.");
+            exception.ShouldBeOfType(typeof(ExerciseNotFoundException));
+            exception.Message.ShouldBe("Exercise with id: '1' was not found.");
         }
 
         [Fact]
         public async Task UpdateAsync_ShouldThrowException_WhenExerciseExistsButNameIsNotUnique()
         {
-            var exercise = _fixture.FitwebContext.Exercises.SingleOrDefault(e => e.Id == 1);
+            var existing = "randomExercise";
+            var exercise = _fixture.Build<Exercise>()
+                .Without(e => e.AthleteExercises)
+                .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 
-            _exerciseRepository.AnyAsync(e => e.Name == exercise.Name).ReturnsForAnyArgs(true);
+            _exerciseRepository.AnyAsync(e => e.Name == existing).ReturnsForAnyArgs(true);
 
-            var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(1, "exercise2", "somePart"));
+            var exception = await Record.ExceptionAsync(() => _sut.UpdateAsync(exercise.Id, existing, 
+                exercise.PartOfBody.Name.ToString()));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(ServiceException));
-            exception.ShouldBeOfType(typeof(ServiceException), $"Exercise with 'exercise2' already exists.");
+            exception.ShouldBeOfType(typeof(NameInUseException));
+            exception.Message.ShouldBe($"Exercise with name: '{existing}' already exists.");
         }
     }
 }

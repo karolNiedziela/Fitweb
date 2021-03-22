@@ -8,6 +8,7 @@ namespace Backend.Core.Entities
 {
     public class User : IdentityUser<int>
     {
+
         public bool IsExternalLoginProvider { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
@@ -41,7 +42,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(username))
             {
-                throw new DomainException(ErrorCodes.InvalidUsername, "Username cannot be empty.");
+                throw new EmptyUsernameException();
             }
 
             if (UserName == username)
@@ -51,8 +52,7 @@ namespace Backend.Core.Entities
 
             if (username.Length < 4 || username.Length > 20)
             {
-                throw new DomainException(ErrorCodes.InvalidUsername, "Username must contain at least 6 characters " +
-                    "and at most twenty characters.");
+                throw new InvalidUsernameException();
             }
 
             UserName = username;
@@ -63,7 +63,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                throw new DomainException(ErrorCodes.InvalidEmail, "Email cannot be empty.");
+                throw new EmptyEmailException();
             }
 
             if (Email == email)
@@ -75,7 +75,7 @@ namespace Backend.Core.Entities
 
             if (!emailAddress.IsValid(email))
             {
-                throw new DomainException(ErrorCodes.InvalidEmail, "Invalid email format.");
+                throw new InvalidEmailException();
             }
 
             Email = email;

@@ -31,7 +31,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new DomainException(ErrorCodes.InvalidName, $"Name cannot be empty.");
+                throw new InvalidNameException();
             }
 
             Name = name;

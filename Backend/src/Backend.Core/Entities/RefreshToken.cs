@@ -26,7 +26,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new DomainException(ErrorCodes.EmptyRefreshToken, "Empty refresh token.");
+                throw new EmptyRefreshTokenException();
             }
 
             UserId = userId;
@@ -39,7 +39,7 @@ namespace Backend.Core.Entities
         {
             if (Revoked)
             {
-                throw new DomainException(ErrorCodes.RevokedRefreshToken, "Revoked refresh token");
+                throw new RevokedRefreshTokenException();
             }
 
             RevokedAt = dateTime;
@@ -49,7 +49,7 @@ namespace Backend.Core.Entities
         {
             if (Revoked)
             {
-                throw new DomainException(ErrorCodes.EmptyRefreshToken, "Empty refresh token");
+                throw new RevokedRefreshTokenException();
             }
 
             RevokedAt = revokedAt;

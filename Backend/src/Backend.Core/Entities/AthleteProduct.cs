@@ -34,8 +34,7 @@ namespace Backend.Core.Entities
         {
             if (weight <= 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue,
-                    "Weight cannot be less than or equal to 0.");
+                throw new InvalidWeightException();
             }
 
             Weight = weight;

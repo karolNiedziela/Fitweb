@@ -24,50 +24,50 @@ namespace Backend.Core.Entities
 
         public CaloricDemand(double totalCalories, double proteins, double carbohydrates, double fats)
         {
-            setTotalCalories(totalCalories);
-            setProteins(proteins);
-            setCarbohydrates(carbohydrates);
-            setFats(fats);
+            SetTotalCalories(totalCalories);
+            SetProteins(proteins);
+            SetCarbohydrates(carbohydrates);
+            SetFats(fats);
         }
 
-        public void setTotalCalories(double totalCalories)
+        public void SetTotalCalories(double totalCalories)
         {
             if (totalCalories <= 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, $"Total calories cannot be less or equal to 0");
+                throw new InvalidTotalCaloriesException();
             }
 
             TotalCalories = totalCalories;
             DateUpdated = DateTime.UtcNow;
         }
 
-        public void setProteins(double proteins)
+        public void SetProteins(double proteins)
         {
             if (proteins < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, $"Proteins cannot be less or equal to 0");
+                throw new InvalidProteinsException();
             }
 
             Proteins = proteins;
             DateUpdated = DateTime.UtcNow;
         }
 
-        public void setCarbohydrates(double carbohydrates)
+        public void SetCarbohydrates(double carbohydrates)
         {
             if (carbohydrates < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, $"Carbohydrates cannot be less or equal to 0");
+                throw new InvalidCarbohydratesException();
             }
 
             Carbohydrates = carbohydrates;
             DateUpdated = DateTime.UtcNow;
         }
 
-        public void setFats(double fats)
+        public void SetFats(double fats)
         {
             if (fats < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, $"Fats cannot be less or equal to 0");
+                throw new InvalidFatsException();
             }
 
             Fats = fats;

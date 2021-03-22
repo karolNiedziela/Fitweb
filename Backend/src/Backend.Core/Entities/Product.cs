@@ -42,7 +42,7 @@ namespace Backend.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException(ErrorCodes.InvalidName, "Name cannot be empty.");
+                throw new InvalidNameException();
             }
 
             Name = name;
@@ -53,7 +53,7 @@ namespace Backend.Core.Entities
         {
             if (calories < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, "Calories cannot be less than 0.");
+                throw new InvalidCaloriesException();
             }
 
             Calories = calories;
@@ -64,7 +64,7 @@ namespace Backend.Core.Entities
         {
             if (proteins < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, "Proteins cannot be less than 0.");
+                throw new InvalidProteinsException();
             }
 
             Proteins = proteins;
@@ -75,7 +75,7 @@ namespace Backend.Core.Entities
         {
             if (carbohydrates < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, "Carbohydrates cannot be less than 0.");
+                throw new InvalidCarbohydratesException();
             }
 
             Carbohydrates = carbohydrates;
@@ -86,7 +86,7 @@ namespace Backend.Core.Entities
         {
             if (fats < 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue, "Fats cannot be less than 0.");
+                throw new InvalidFatsException();
             }
 
             Fats = fats;

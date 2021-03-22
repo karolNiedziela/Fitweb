@@ -46,8 +46,7 @@ namespace Backend.Core.Entities
         {
             if (weight <= 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue,
-                    "Weight cannot be less than or equal to 0.");
+                throw new InvalidWeightException();
             }
 
             Weight = weight;
@@ -58,8 +57,7 @@ namespace Backend.Core.Entities
         {
             if (numberOfSets <= 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue,
-                    $"Number of sets cannot be less than or equal to 0.");
+                throw new InvalidNumberOfSetsException();
             }
 
             NumberOfSets = numberOfSets;
@@ -70,8 +68,7 @@ namespace Backend.Core.Entities
         {
             if (numberOfReps <= 0)
             {
-                throw new DomainException(ErrorCodes.InvalidValue,
-                    $"Number of reps cannot be less than or equal to 0.");
+                throw new InvalidNumberOfRepsException();
             }
 
             NumberOfReps = numberOfReps;

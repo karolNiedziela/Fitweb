@@ -53,7 +53,6 @@ namespace Backend.Infrastructure.Mappers
                    .ForMember(dest => dest.PartOfBody, opt => opt.MapFrom(e => e.PartOfBody.Name));
                 cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()
                    .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
-
                 cfg.CreateMap<CaloricDemand, CaloricDemandDto>();
             })
             .CreateMapper();

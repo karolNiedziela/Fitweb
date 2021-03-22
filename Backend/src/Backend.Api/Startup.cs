@@ -1,26 +1,15 @@
 using Autofac;
-using Backend.Api.Framework;
-using Backend.Infrastructure.EF;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Framework;
 using Backend.Infrastructure.IoC;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Settings;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NLog;
-using NLog.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Backend
 {
@@ -113,7 +102,7 @@ namespace Backend
             app.UseCors("FitwebOrigin");
 
 
-            app.UseMyExceptionHandler();
+            app.UseMiddleware(typeof(ErrorHandlerMiddleware));
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

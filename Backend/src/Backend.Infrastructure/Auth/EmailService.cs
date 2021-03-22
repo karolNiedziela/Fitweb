@@ -47,20 +47,5 @@ namespace Backend.Infrastructure.Auth
 
             await client.SendEmailAsync(msg);
         }
-
-        public async Task<IdentityResult> ConfirmEmailAsync(int userId, string code)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.InvalidValue, $"User with id '{userId}' not found.");
-            }
-
-            var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-
-            return result;
-        }
     }
 }

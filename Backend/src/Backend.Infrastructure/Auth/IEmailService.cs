@@ -12,7 +12,5 @@ namespace Backend.Infrastructure.Auth
         Task SendEmailAsync(string email, string subject, string message);
 
         Task Execute(string apiKey, string subject, string message, string email);
-
-        Task<IdentityResult> ConfirmEmailAsync(int userId, string code);
     }
 }

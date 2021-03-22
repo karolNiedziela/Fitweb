@@ -27,19 +27,17 @@ namespace Backend.Infrastructure.Auth
         {
             if (string.IsNullOrWhiteSpace(password))
             {
-                throw new DomainException(ErrorCodes.InvalidPassword, "Password cannot be empty.");
+                throw new EmptyPasswordException();
             }
 
             if (password.Length < 4)
             {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Password cannot contain less than 4 characters.");
+                throw new InvalidPasswordException("Password cannot contain less than 4 characters.");
             }
 
             if (password.Length > 40)
             {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Password cannot contain more than 40 characters.");
+                throw new InvalidPasswordException("Password cannot contain more than 40 characters.");
             }
         }
     }

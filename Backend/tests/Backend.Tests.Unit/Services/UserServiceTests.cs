@@ -64,7 +64,7 @@ namespace Backend.Tests.Unit.Services
             dto.UserName.ShouldBe(user.UserName);
             dto.Email.ShouldBe(user.Email);
             dto.Role.ShouldBe(user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
-            await _userRepository.Received(1).GetAsync(user.Id);
+            await _userRepository.Received(1).GetAsync(Arg.Is(id));
         }
 
         [Theory]
@@ -87,7 +87,7 @@ namespace Backend.Tests.Unit.Services
             dto.UserName.ShouldBe(user.UserName);
             dto.Email.ShouldBe(user.Email);
             dto.Role.ShouldBe(user.UserRoles.Select(ur => ur.Role.Name.ToString()).FirstOrDefault());
-            await _userRepository.Received(1).GetByUsernameAsync(user.UserName);
+            await _userRepository.Received(1).GetByUsernameAsync(username);
         }
 
         [Theory]
@@ -126,7 +126,7 @@ namespace Backend.Tests.Unit.Services
             await _sut.DeleteAsync(id);
 
             // Assert
-            await _userRepository.Received(1).DeleteAsync(user);
+            await _userRepository.Received(1).DeleteAsync(Arg.Is(user));
         }
 
 

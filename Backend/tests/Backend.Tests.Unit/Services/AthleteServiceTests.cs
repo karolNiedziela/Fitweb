@@ -202,11 +202,12 @@ namespace Backend.Tests.Unit.Services
         {
             var user = _fixture.Create<User>();
 
-            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
+            _userRepository.GetOrFailAsync(user.Id).Returns(user);
 
             await _sut.CreateAsync(user.Id);
 
-            await _athleteRepository.Received(1).AddAsync(Arg.Any<Athlete>());
+            await _athleteRepository.Received(1).AddAsync(Arg.Is<Athlete>(a => 
+            a.UserId == user.Id));
         }
 
         [Fact]
@@ -229,7 +230,7 @@ namespace Backend.Tests.Unit.Services
                 .Without(a => a.AthleteProducts)
                 .Create();
 
-            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
+            _userRepository.GetOrFailAsync(user.Id).Returns(user);
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>()).Returns(athlete);
 
             var exception = await Record.ExceptionAsync(() => _sut.CreateAsync(user.Id));
@@ -243,14 +244,16 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task DeleteAsync_ShouldDeleteAthlete_WhenAthleteExists()
         {
+            var userId = 5;
             var athlete = _fixture.Build<Athlete>()
+                .With(a => a.UserId, userId)
                 .Without(a => a.AthleteExercises)
                 .Without(a => a.AthleteProducts)
                 .Create();
 
-            _athleteRepository.GetOrFailAsync(Arg.Any<int>()).Returns(athlete);
+            _athleteRepository.GetOrFailAsync(userId).Returns(athlete);
 
-            await _sut.DeleteAsync(athlete.Id);
+            await _sut.DeleteAsync(athlete.UserId);
 
             await _athleteRepository.Received(1).DeleteAsync(Arg.Any<Athlete>());
         }

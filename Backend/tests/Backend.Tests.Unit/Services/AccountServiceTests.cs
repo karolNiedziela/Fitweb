@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -71,17 +72,102 @@ namespace Backend.Tests.Unit.Services
 
             var token = _fixture.Create<string>();
 
-            _fakeUserManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+            _fakeUserManager.CreateAsync(user, password).ReturnsForAnyArgs(IdentityResult.Success);
 
-            _fakeUserManager.GenerateEmailConfirmationTokenAsync(Arg.Any<User>()).Returns(token);
+            _fakeUserManager.GenerateEmailConfirmationTokenAsync(user).ReturnsForAnyArgs(token);
 
             // Act
-            var id = await _sut.SignUpAsync(username, email, password);
+            await _sut.SignUpAsync(username, email, password);
 
             // Assert
             await _fakeUserManager.Received(1).CreateAsync(Arg.Is<User>(u => 
             u.UserName == username &&
             u.Email == email), Arg.Is(password));
+        }
+
+        [Fact]
+        public async Task SignUp_ShouldThrowException_WhenUsernameIsEmpty()
+        {
+            var username = "";
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, Arg.Any<string>(), 
+                Arg.Any<string>()));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(EmptyUsernameException));
+            exception.Message.ShouldBe("Username cannot be empty.");
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(21)]
+        public async Task SignUp_ShouldThrowException_WhenUsernameLengthIsInvalid(int textLength)
+        {
+            var username = _fixture.Create<string>().Substring(0, textLength);
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, Arg.Any<string>(),
+                Arg.Any<string>()));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidUsernameException));
+            exception.Message.ShouldBe("Username must contain at least 4 characters and at most 20 characters.");
+        }
+
+        [Fact]
+        public async Task SignUp_ShouldThrowException_WhenEmailIsEmpty()
+        {
+            var username = "testUsername";
+            var email = "";
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email,
+                Arg.Any<string>()));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(EmptyEmailException));
+            exception.Message.ShouldBe("Email cannot be empty.");
+        }
+
+        [Fact]
+        public async Task SignUp_ShouldThrowException_WhenEmailFormatIsInvalid()
+        {
+            var username = "testUsername";
+            var email = "testEmail";
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, Arg.Any<string>()));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidEmailException));
+            exception.Message.ShouldBe("Invalid email format.");
+        }
+
+        [Fact]
+        public async Task SignUp_ShouldThrowException_WhenPasswordIsEmpty()
+        {
+            var username = "testUsername";
+            var email = "test@email.com";
+            var password = "";
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(EmptyPasswordException));
+            exception.Message.ShouldBe("Password cannot be empty.");
+        }
+
+        [Theory]
+        [InlineData(5)]
+        [InlineData(25)]
+        public async Task SignUp_ShouldThrowException_WhenPasswordLenghtIsInvalid(int passLength)
+        {
+            var username = "testUsername";
+            var email = "test@email.com";
+            var password = _fixture.Create<string>().Substring(0, length: passLength);
+
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
+
+            exception.ShouldBeOfType(typeof(InvalidPasswordException));
+            exception.Message.ShouldBe("Password cannot contain less than 6 characters and more than 20 " +
+                "characters.");
         }
          
         [Theory]
@@ -96,7 +182,7 @@ namespace Backend.Tests.Unit.Services
 
             await _fakeUserManager.CreateAsync(user, password);
 
-            _fakeUserManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Failed(new IdentityError
+            _fakeUserManager.CreateAsync(user, password).ReturnsForAnyArgs(IdentityResult.Failed(new IdentityError
             {
                 Description = $"Username '{userName}' already taken."
             }));
@@ -121,11 +207,12 @@ namespace Backend.Tests.Unit.Services
 
             var jwtDto = _fixture.Create<JwtDto>();
 
-            _jwtHandler.CreateToken(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).Returns(jwtDto);
+            _jwtHandler.CreateToken(user.Id, user.UserName, user.UserRoles.FirstOrDefault().Role.Name.ToString())
+                .Returns(jwtDto);
 
             var refreshToken = new RefreshToken();
 
-            _refreshTokenFactory.Create(Arg.Any<int>()).Returns(refreshToken);
+            _refreshTokenFactory.Create(user.Id).Returns(refreshToken);
 
             var jwt = await _sut.SignInAsync(user.UserName, user.PasswordHash);
 
@@ -159,9 +246,10 @@ namespace Backend.Tests.Unit.Services
         public async Task SignInAsync_ShouldException_WhenPasswordIsNotValid()
         {
             // Arrange
+            var password = "notMatching";
             var user = _fixture.Create<User>();
             _userRepository.GetByUsernameAsync(user.UserName).Returns(user);
-            _passwordHandler.IsValid(Arg.Any<string>(), Arg.Any<string>()).Returns(false);
+            _passwordHandler.IsValid(user.PasswordHash, password).Returns(false);
 
             // Act
             var exception = await Record.ExceptionAsync(() => _sut.SignInAsync(user.UserName, user.PasswordHash));
@@ -175,9 +263,10 @@ namespace Backend.Tests.Unit.Services
         [Fact]
         public async Task SignInAsync_ShouldThrowException_WhenEmailIsNotConfirmed()
         {
+            var password = "notMatching";
             var user = _fixture.Create<User>();
             _userRepository.GetByUsernameAsync(user.UserName).Returns(user);
-            _passwordHandler.IsValid(Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(true);
+            _passwordHandler.IsValid(user.PasswordHash, password).ReturnsForAnyArgs(true);
             _fakeUserManager.Options.SignIn.RequireConfirmedEmail = true;
 
             // Act
@@ -196,7 +285,7 @@ namespace Backend.Tests.Unit.Services
 
             var user = _fixture.Create<User>();
 
-            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
+            _userRepository.GetOrFailAsync(user.Id).Returns(user);
 
             _fakeUserManager.ChangePasswordAsync(user, oldPassword, newPassword).Returns(IdentityResult.Success);
 
@@ -227,9 +316,9 @@ namespace Backend.Tests.Unit.Services
             var oldPassword = "oldpassword";
             var newPassword = "newPassword";
 
-            _userRepository.GetOrFailAsync(Arg.Any<int>()).Returns(user);
+            _userRepository.GetOrFailAsync(user.Id).Returns(user);
 
-            _fakeUserManager.ChangePasswordAsync(Arg.Any<User>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed(
+            _fakeUserManager.ChangePasswordAsync(user, oldPassword, newPassword).Returns(IdentityResult.Failed(
                 new IdentityError
                 {
                     Description = "Current password is not valid."
@@ -243,21 +332,6 @@ namespace Backend.Tests.Unit.Services
             exception.Message.ShouldBe("Current password is not valid.");
         }
 
-        //[Fact]
-        //public async Task GenerateEmailConfirmationTokenAsync_ShouldInvokeSendConfirmationAsync_WhenTokenIsValid()
-        //{
-        //    var user = _fixture.Build<User>()
-        //        .With(u => u.EmailConfirmed, true)
-        //        .Create();
-
-        //    await _fakeUserManager.CreateAsync(user);
-        //    var token = _fixture.Create<string>();
-
-        //    _fakeUserManager.GenerateEmailConfirmationTokenAsync(user).Returns(token);
-
-        //    await _sut.GenerateEmailConfirmationTokenAsync(user);
-        //}
-
         [Fact]
         public async Task GenerateEmailConfirmationTokenAsync_ShouldThrowException_WhenTokenIsNullOrEmpty()
         {
@@ -268,6 +342,80 @@ namespace Backend.Tests.Unit.Services
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(InvalidEmailTokenException));
             exception.Message.ShouldBe("Invalid email confirmation token.");
+        }
+
+        [Fact]
+        public async Task ConfirmEmailAsync_ShouldReturnIdentityResultSuccess_WhenEmailWasConfirmed()
+        {
+            var user = _fixture.Create<User>();
+            var code = _fixture.Create<string>();
+
+            _fakeUserManager.FindByIdAsync(user.Id.ToString()).Returns(user);
+
+            _fakeUserManager.ConfirmEmailAsync(user, code).ReturnsForAnyArgs(IdentityResult.Success);
+
+            var result = await _sut.ConfirmEmailAsync(user.Id, code);
+
+            result.ShouldBe(IdentityResult.Success);
+        }
+
+        [Fact]
+        public async Task ConfirmEmailAsync_ShouldThrowException_WhenUserDoesNotExist()
+        {
+            var userId = 5;
+            var code = _fixture.Create<string>();
+
+            var exception = await Record.ExceptionAsync(() => _sut.ConfirmEmailAsync(userId, code));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(UserNotFoundException));
+            exception.Message.ShouldBe($"User with id: '{userId}' was not found.");
+        }
+
+        [Fact]
+        public async Task ResetPasswordAsync_ShouldReturnIdentityResultSuccess_WhenPasswordWasReseted()
+        {
+            var user = _fixture.Create<User>();
+            var code = _fixture.Create<string>();
+            var newPassword = "newPassword";
+
+            _fakeUserManager.FindByIdAsync(user.Id.ToString()).Returns(user);
+
+            _fakeUserManager.ResetPasswordAsync(user, code, newPassword)
+                .ReturnsForAnyArgs(IdentityResult.Success);
+
+            var result = await _sut.ResetPasswordAsync(user.Id, code, newPassword);
+
+            result.ShouldBe(IdentityResult.Success);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ShouldThrowException_WhenUserDoesNotExist()
+        {
+            var userId = 2;
+            var code = _fixture.Create<string>();
+            var newPassword = "newPassword";
+
+            var exception = await Record.ExceptionAsync(() => _sut.ResetPasswordAsync(userId, code, newPassword));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(UserNotFoundException));
+            exception.Message.ShouldBe($"User with id: '{userId}' was not found.");
+        }
+
+        [Fact]
+        public async Task GenerateForgotPasswordTokenAsync_ShouldThrowException_WhenUseruserExistsButTokenIsEmpty()
+        {
+            var email = "test@email.com";
+            var user = _fixture.Build<User>()
+                .With(u => u.Email, email)
+                .Create();
+
+            var exception = await Record.ExceptionAsync(() => _sut.GenerateForgotPasswordTokenAsync(email));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidForgotPasswordTokenException));
+            exception.Message.ShouldBe("Invalid forgot password token.");
         }
     }
 }

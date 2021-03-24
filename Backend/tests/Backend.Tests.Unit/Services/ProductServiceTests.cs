@@ -49,7 +49,6 @@ namespace Backend.Tests.Unit.Services
             // Arrange
             var product = _fixture.Build<Product>()
                 .With(p => p.Id, id)
-                .Without(p => p.AthleteProducts)
                 .Create();
             _productRepository.GetAsync(id).Returns(product);
 
@@ -72,7 +71,6 @@ namespace Backend.Tests.Unit.Services
             // Arrange
             var product = _fixture.Build<Product>()
                 .With(p => p.Name, name)
-                .Without(p => p.AthleteProducts)
                 .Create();
             _productRepository.GetAsync(name).Returns(product);
 
@@ -84,7 +82,7 @@ namespace Backend.Tests.Unit.Services
             dto.Id.ShouldBe(product.Id);
             dto.Name.ShouldBe(product.Name);
             dto.ShouldBeOfType(typeof(ProductDto));
-            await _productRepository.Received(1).GetAsync(product.Name);
+            await _productRepository.Received(1).GetAsync(Arg.Is(name));
         }
 
         [Fact]
@@ -92,10 +90,9 @@ namespace Backend.Tests.Unit.Services
         {
             // Arrange
             var products = _fixture.Build<Product>()
-                          .Without(p => p.AthleteProducts)
                           .CreateMany();
 
-            var paginationQuery = Substitute.For<PaginationQuery>();
+            var paginationQuery = new PaginationQuery();
             var page = new PagedList<Product>(products.ToList(), products.ToList().Count(), 1, 10);
             _productRepository.GetAllAsync(null, null, paginationQuery).Returns(page);
 
@@ -109,37 +106,11 @@ namespace Backend.Tests.Unit.Services
             dto.Count.ShouldBe(products.ToList().Count);
         }
 
-        //[Theory]
-        //[InlineData("product1", "Fruits")]
-        //[InlineData("product2", null)]
-        //[InlineData(null, null)]
-        //public async Task GetAllAsync_ShouldReturnPagedListOfProductDto(string name, string category)
-        //{
-        //    // Arrange
-        //    var products = _fixture.Build<Product>()
-        //                  .Without(p => p.AthleteProducts)
-        //                  .CreateMany();
-
-        //    var paginationQuery = Substitute.For<PaginationQuery>();
-        //    var page = new PagedList<Product>(products.ToList(), products.ToList().Count(), 1, 10);
-        //    _productRepository.GetAllAsync(name, category, paginationQuery).Returns(page);
-
-
-        //    // Act
-        //    var dto = await _sut.GetAllAsync(name, category, paginationQuery);
-
-        //    // Assert
-        //    dto.ShouldNotBeNull();
-        //    dto.ShouldBeOfType(typeof(PagedList<ProductDto>));
-        //    dto.Count.ShouldBe(products.ToList().Count);
-        //}
-
         [Fact]
         public async Task AddAsync_ShouldAddNewProduct()
         {
             // Arrange
             var product = _fixture.Build<Product>()
-                .Without(p => p.AthleteProducts)
                 .Create();
 
             // Act
@@ -156,10 +127,27 @@ namespace Backend.Tests.Unit.Services
         }
 
         [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenNameIsInvalid()
+        {
+            var name = "";
+            var calories = 100;
+            var proteins = 10;
+            var carbo = 20;
+            var fats = 5;
+            var category = "Fruits";
+
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, calories, proteins,
+                carbo, fats, category));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidNameException));
+            exception.Message.ShouldBe("Name cannot be empty.");
+        }
+
+        [Fact]
         public async Task AddAsync_ShouldThrowException_WhenCaloriesAreLowerThanZero()
         {
             var product = _fixture.Build<Product>()
-               .Without(p => p.AthleteProducts)
                .Create();
 
             var exception = await Record.ExceptionAsync(() => _sut.AddAsync(product.Name, -10, product.Proteins,
@@ -170,6 +158,60 @@ namespace Backend.Tests.Unit.Services
             exception.Message.ShouldBe("Calories cannot be less than 0.");
         }
 
+        [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenProteinsAreInvalid()
+        {
+            var name = "name";
+            var calories = 100;
+            var proteins = -10;
+            var carbo = 20;
+            var fats = 5;
+            var category = "Fruits";
+
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, calories, proteins,
+                carbo, fats, category));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidProteinsException));
+            exception.Message.ShouldBe("Proteins cannot be less than 0.");
+        }
+
+        [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenCarbohydratesAreInvalid()
+        {
+            var name = "name";
+            var calories = 100;
+            var proteins = 10;
+            var carbo = -20;
+            var fats = 5;
+            var category = "Fruits";
+
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, calories, proteins,
+                carbo, fats, category));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidCarbohydratesException));
+            exception.Message.ShouldBe("Carbohydrates cannot be less than 0.");
+        }
+
+        [Fact]
+        public async Task AddAsync_ShouldThrowException_WhenFatsAreInvalid()
+        {
+            var name = "name";
+            var calories = 100;
+            var proteins = 10;
+            var carbo = 20;
+            var fats = -5;
+            var category = "Fruits";
+
+            var exception = await Record.ExceptionAsync(() => _sut.AddAsync(name, calories, proteins,
+                carbo, fats, category));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidFatsException));
+            exception.Message.ShouldBe("Fats cannot be less than 0.");
+        }
+
 
         [Theory]
         [InlineData("product1")]
@@ -178,7 +220,6 @@ namespace Backend.Tests.Unit.Services
         {
             var product = _fixture.Build<Product>()
                 .With(p => p.Name, name)
-                .Without(p => p.AthleteProducts)
                 .Create();
             _productRepository.GetAsync(name).Returns(product);
 
@@ -198,9 +239,8 @@ namespace Backend.Tests.Unit.Services
         {
             var product = _fixture.Build<Product>()
                 .With(p => p.Id, id)
-                .Without(p => p.AthleteProducts)
                 .Create();
-            _productRepository.GetAsync(product.Id).Returns(product);
+            _productRepository.GetAsync(id).Returns(product);
 
             await _sut.DeleteAsync(id);
 
@@ -223,7 +263,6 @@ namespace Backend.Tests.Unit.Services
         public async Task UpdateAsync_ShouldUpdateProduct_WhenProductExistsAndDataIsValid()
         {
             var product = _fixture.Build<Product>()
-                .Without(p => p.AthleteProducts)
                 .Create();
             _productRepository.GetAsync(product.Id).Returns(product);
 
@@ -253,9 +292,8 @@ namespace Backend.Tests.Unit.Services
         {
             var existing = "randomProduct";
             var product = _fixture.Build<Product>()
-               .Without(p => p.AthleteProducts)
                .Create();
-            _productRepository.GetAsync(Arg.Any<int>()).Returns(product);
+            _productRepository.GetAsync(product.Id).Returns(product);
 
             _productRepository.AnyAsync(p => p.Name == existing).ReturnsForAnyArgs(true);
 

@@ -17,6 +17,7 @@ using Xunit;
 using Backend.Infrastructure.Repositories;
 using Backend.Tests.Unit.Fixtures;
 using AutoFixture;
+using Backend.Core.Exceptions;
 
 namespace Backend.Tests.Unit.Services
 {
@@ -43,7 +44,6 @@ namespace Backend.Tests.Unit.Services
         {
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Id, id)
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(id).Returns(exercise);
 
@@ -62,7 +62,6 @@ namespace Backend.Tests.Unit.Services
         {
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Name, name)
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(name).Returns(exercise);
 
@@ -81,10 +80,9 @@ namespace Backend.Tests.Unit.Services
         {
             // Arrange
             var exercises = _fixture.Build<Exercise>()
-                          .Without(p => p.AthleteExercises)
                           .CreateMany(count: count);
 
-            var paginationQuery = Substitute.For<PaginationQuery>();
+            var paginationQuery = new PaginationQuery();
             var page = new PagedList<Exercise>(exercises.ToList(), exercises.ToList().Count(), 1, 10);
             _exerciseRepository.GetAllAsync(null, null, paginationQuery).Returns(page);
 
@@ -98,35 +96,28 @@ namespace Backend.Tests.Unit.Services
             dto.Count.ShouldBe(exercises.ToList().Count);
         }
 
-        //[Theory]
-        //[InlineData("product1", "Meat")]
-        //[InlineData("product1", null)]
-        //[InlineData(null, null)]
-        //public async Task GetAllAsync_ShouldReturnIEnumerableExerciseDto(string name, string category)
-        //{
-        //    var exercises = _fixture.FitwebContext.Exercises.ToList();
-        //    var pagedList = Substitute.For<PagedList<Exercise>>(exercises, 10, 10, 10);
-        //    var paginationQuery = Substitute.For<PaginationQuery>();
-        //    _exerciseRepository.GetAllAsync(name, category, paginationQuery).Returns(pagedList);
-
-
-        //    var dto = await _sut.GetAllAsync(name, category, paginationQuery);
-
-        //    dto.ShouldNotBeNull();
-        //    dto.ShouldBeOfType(typeof(PagedList<ExerciseDto>));
-        //    dto.Count().ShouldBe(exercises.Count());
-        //}
-
         [Fact]
         public async Task AddAsync_ShouldAddNewExercise()
         {
             var exercise = _fixture.Build<Exercise>()
-                .Without(e => e.AthleteExercises)
                 .Create();
 
             await _sut.AddAsync(exercise.Name, exercise.PartOfBody.Name.ToString());
 
             await _exerciseRepository.Received(1).AddAsync(Arg.Any<Exercise>());
+        }
+
+        [Fact]
+        public async Task AddAsync_ShouldThrowException_WheNameIsInvalid()
+        {
+            var name = "";
+            var partOfBody = "Chest";
+
+            var exception = await Record.ExceptionAsync(() =>  _sut.AddAsync(name, partOfBody));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(InvalidNameException));
+            exception.Message.ShouldBe("Name cannot be empty.");
         }
 
         [Theory]
@@ -135,7 +126,6 @@ namespace Backend.Tests.Unit.Services
         public async Task AddAsync_ShouldThrowException_WhenExerciseExists(string name)
         {
             var exercise = _fixture.Build<Exercise>()
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(name).Returns(exercise);
 
@@ -150,7 +140,6 @@ namespace Backend.Tests.Unit.Services
         public async Task DeleteAsync_ShouldDeleteExercise_WhenExerciseExists()
         {
             var exercise = _fixture.Build<Exercise>()
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 
@@ -174,7 +163,6 @@ namespace Backend.Tests.Unit.Services
         public async Task UpdateAsync_ShouldUpdateExercise_WhenExerciseExistsAndDataIsValid()
         {
             var exercise = _fixture.Build<Exercise>()
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 
@@ -198,7 +186,6 @@ namespace Backend.Tests.Unit.Services
         {
             var existing = "randomExercise";
             var exercise = _fixture.Build<Exercise>()
-                .Without(e => e.AthleteExercises)
                 .Create();
             _exerciseRepository.GetAsync(exercise.Id).Returns(exercise);
 

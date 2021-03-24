@@ -51,7 +51,6 @@ namespace Backend.Tests.Unit.Services
 
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Id, exerciseId)
-                .Without(e => e.AthleteExercises)
                 .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
@@ -110,7 +109,7 @@ namespace Backend.Tests.Unit.Services
 
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Id, exerciseId)
-                .Without(e => e.AthleteExercises)
+               // .Without(e => e.AthleteExercises)
                 .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
@@ -139,7 +138,6 @@ namespace Backend.Tests.Unit.Services
 
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Id, exerciseId)
-                .Without(e => e.AthleteExercises)
                 .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
@@ -168,7 +166,6 @@ namespace Backend.Tests.Unit.Services
 
             var exercise = _fixture.Build<Exercise>()
                 .With(e => e.Id, exerciseId)
-                .Without(e => e.AthleteExercises)
                 .Create();
 
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),

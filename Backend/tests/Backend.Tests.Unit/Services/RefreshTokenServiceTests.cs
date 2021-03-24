@@ -1,12 +1,12 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Exceptions;
 using Backend.Core.Factories;
 using Backend.Core.Repositories;
 using Backend.Core.Services;
 using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
-using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Mappers;
 using Backend.Infrastructure.Repositories;
 using Backend.Infrastructure.Services;
@@ -28,11 +28,9 @@ namespace Backend.Tests.Unit.Services
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IRng _rng;
         private readonly IJwtHandler _jwtHandler;
         private readonly IUserService _userService;
         private readonly RefreshTokenService _sut;
-        private readonly JwtSettings _settings;
         private readonly IFixture _fixture;
 
         public RefreshTokenServiceTests()
@@ -42,15 +40,9 @@ namespace Backend.Tests.Unit.Services
                .ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
-            _rng = Substitute.For<Rng>();
-            _refreshTokenFactory = Substitute.For<RefreshTokenFactory>(_rng, _dateTimeProvider);
+            _refreshTokenFactory = Substitute.For<RefreshTokenFactory>(new Rng(), _dateTimeProvider);
             _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
-            _settings = Substitute.For<JwtSettings>();
-            _settings.IssuerSigningKey = "some_random_key_123";
-            _settings.ExpiryMinutes = 10;
-            _settings.Issuer = "fitweb";
-            _settings.Algorithm = "HS256";
-            _jwtHandler = Substitute.For<JwtHandler>(_settings);
+            _jwtHandler = Substitute.For<IJwtHandler>();
             _userService = Substitute.For<IUserService>();
             _sut = new RefreshTokenService(_refreshTokenRepository, _userService, _refreshTokenFactory, 
                 _dateTimeProvider, _jwtHandler);
@@ -62,29 +54,38 @@ namespace Backend.Tests.Unit.Services
         [InlineData(20, "testUser2", "User")]
         public async Task UseAsync_ShouldReturnJwtDto_WhenRefreshTokenExists(int id, string userName, string role)
         {
-            var token = _fixture.Build<RefreshToken>()
-                .With(t => t.UserId, id) 
+
+            var token = "randomTestToken";
+            var refreshToken = _fixture.Build<RefreshToken>()
+                .With(t => t.UserId, id)            
                 .Create();
-            _refreshTokenRepository.GetAsync(Arg.Any<string>()).Returns(token);
+
             var user = _fixture.Build<UserDto>()
                 .With(u => u.Id, id)
                 .With(u => u.UserName, userName)
                 .With(u => u.Role, role)
                 .Create();
+
+            var jwtDto = _fixture.Build<JwtDto>()
+                .With(j => j.UserId, id)
+                .With(j => j.Username, userName)
+                .With(j => j.Role, role)
+                .Create();
+
+            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
+            
             _userService.GetAsync(id).Returns(user);
 
-            var jwt = await _sut.UseAsync(token.Token);
+            _jwtHandler.CreateToken(id, userName, role).Returns(jwtDto);
+
+            var jwt = await _sut.UseAsync(token);
 
             jwt.ShouldNotBeNull();
-            jwt.UserId.ShouldBe(user.Id);
-            jwt.Username.ShouldBe(user.UserName);
-            jwt.Role.ShouldBe(user.Role);
-            await _refreshTokenRepository.Received(1).GetAsync(token.Token);
-            await _userService.Received(1).GetAsync(id);
-            _jwtHandler.Received(1).CreateToken(token.UserId, user.UserName, user.Role);
-            _refreshTokenFactory.Received(1).Create(id);
+            jwt.UserId.ShouldBe(id);
+            jwt.Username.ShouldBe(userName);
+            jwt.Role.ShouldBe(role);
             await _refreshTokenRepository.Received(1).AddAsync(Arg.Any<RefreshToken>());
-            await _refreshTokenRepository.Received(1).UpdateAsync(token);
+            await _refreshTokenRepository.Received(1).UpdateAsync(Arg.Any<RefreshToken>());
         }
 
 
@@ -96,23 +97,59 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.UseAsync(refreshToken));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(InvalidRefreshTokenException));
+            exception.ShouldBeOfType(typeof(Infrastructure.Exceptions.InvalidRefreshTokenException));
             exception.Message.ShouldBe("Invalid refresh token.");
+        }
+
+        [Fact]
+        public async Task UseAsync_ShouldThrowException_WhenRefreshTokenIsRevoked()
+        {
+            var refreshToken = _fixture.Build<RefreshToken>()
+                .Create();
+            var token = "randomTestToken";
+
+            refreshToken.Revoke(DateTime.Now);
+
+            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
+
+            var exception = await Record.ExceptionAsync(() => _sut.UseAsync(token));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(Core.Exceptions.RevokedRefreshTokenException));
+            exception.Message.ShouldBe("Revoked refresh token.");
         }
 
         [Fact]
         public async Task RevokeAsync_ShouldRevokeToken_WhenRefreshTokenExists()
         {
             var refreshToken = _fixture.Create<RefreshToken>();
+            var token = "randomTestToken";
             
-            _refreshTokenRepository.GetAsync(Arg.Any<string>()).Returns(refreshToken);
+            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
 
-            await _sut.RevokeAsync(refreshToken.Token);
+            await _sut.RevokeAsync(token);
 
             refreshToken.Revoked.ShouldBeTrue();
             await _refreshTokenRepository.Received(1).UpdateAsync(refreshToken);
         }
 
+        [Fact]
+        public async Task RevokeAsync_ShouldThrowException_WhenTokenIsAlreadyRevoked()
+        {
+            var refreshToken = _fixture.Build<RefreshToken>()
+                .Create();
+            var token = "randomTestToken";
+
+            refreshToken.Revoke(DateTime.Now);
+
+            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
+
+            var exception = await Record.ExceptionAsync(() => _sut.RevokeAsync(token));
+
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType(typeof(RevokedRefreshTokenException));
+            exception.Message.ShouldBe("Revoked refresh token.");
+        }
 
         [Fact]
         public async Task RevokeAsync_ShouldThrowException_WhenRefreshTokenIsNull()
@@ -122,7 +159,7 @@ namespace Backend.Tests.Unit.Services
             var exception = await Record.ExceptionAsync(() => _sut.RevokeAsync(refreshToken));
 
             exception.ShouldNotBeNull();
-            exception.ShouldBeOfType(typeof(InvalidRefreshTokenException));
+            exception.ShouldBeOfType(typeof(Infrastructure.Exceptions.InvalidRefreshTokenException));
             exception.Message.ShouldBe("Invalid refresh token.");
         }
     }

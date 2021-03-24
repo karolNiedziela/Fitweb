@@ -8,6 +8,7 @@ using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -61,7 +62,7 @@ namespace Backend.Infrastructure.Services.Account
         public async Task<JwtDto> SignInAsync(string username, string password)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
-            if (user == null)
+            if (user is null)
             {
                 throw new InvalidCredentialsException();
             }
@@ -109,7 +110,7 @@ namespace Backend.Infrastructure.Services.Account
                 throw new UserNotFoundException(userId);
             }
 
-            var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var token = Decode(code);
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
 
@@ -130,7 +131,7 @@ namespace Backend.Infrastructure.Services.Account
 
         public async Task SendConfirmationEmailAsync(User user, string token)
         {
-            var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var code = Encode(token);
 
             var url = string.Format(_generalSettings.AppDomain + _generalSettings.EmailConfirmation, user.Id, code);
 
@@ -144,15 +145,17 @@ namespace Backend.Infrastructure.Services.Account
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            if (!string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
-                await SendForgotPasswordEmailAsync(user, token);
+                throw new InvalidForgotPasswordTokenException();
             }
+
+            await SendForgotPasswordEmailAsync(user, token);
         }
 
         public async Task SendForgotPasswordEmailAsync(User user, string token)
         {
-            var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var code = Encode(token);
 
             var url = string.Format(_generalSettings.AppDomain + _generalSettings.ForgotPassword, user.Id, code);
 
@@ -164,8 +167,12 @@ namespace Backend.Infrastructure.Services.Account
         public async Task<IdentityResult> ResetPasswordAsync(int userId, string code, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user is null)
+            {
+                throw new UserNotFoundException(userId);
+            }
 
-            var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var token = Decode(code);
             var result =  await _userManager.ResetPasswordAsync(user, token, newPassword);
             if (!result.Succeeded)
             {
@@ -181,6 +188,16 @@ namespace Backend.Infrastructure.Services.Account
             await _refreshTokenRepository.AddAsync(refreshToken);
 
             return refreshToken.Token;
+        }
+
+        private string Encode(string token)
+        {
+            return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        }
+
+        private string Decode(string code)
+        {
+            return Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         }
     }
 }

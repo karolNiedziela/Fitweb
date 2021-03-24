@@ -17,10 +17,6 @@ namespace Backend.Infrastructure.EF.Configurations
                    .WithMany(a => a.AthleteProducts)
                    .HasForeignKey(ap => ap.AthleteId);
 
-            builder.HasOne(ap => ap.Product)
-                   .WithMany(p => p.AthleteProducts)
-                   .HasForeignKey(ap => ap.ProductId);
-
             builder.Ignore(ap => ap.Id);
 
             builder.Property(up => up.Weight).IsRequired().HasColumnType("float");

@@ -15,8 +15,6 @@ namespace Backend.Infrastructure.EF.Configurations
         public void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey(ur => new { ur.UserId, ur.RoleId });
-
-
         }
     }
 }

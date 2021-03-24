@@ -17,10 +17,6 @@ namespace Backend.Infrastructure.EF.Configurations
                    .WithMany(a => a.AthleteExercises)
                    .HasForeignKey(ae => ae.AthleteId);
 
-            builder.HasOne(ae => ae.Exercise)
-                   .WithMany(e => e.AthleteExercises)
-                   .HasForeignKey(ae => ae.ExerciseId);
-
             builder.Ignore(ae => ae.Id);
 
             builder.Property(ue => ue.Weight).IsRequired().HasColumnType("float");

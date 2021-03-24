@@ -18,23 +18,7 @@ namespace Backend.Infrastructure.EF.Configurations
             builder.HasMany(u => u.UserRoles)
                .WithOne(ur => ur.Role)
                .HasForeignKey(ur => ur.RoleId)
-               .IsRequired();
-
-            //builder.Property(r => r.Name)
-            //       .HasConversion(new EnumToStringConverter<RoleId>());
-            ///*r => r.ToString(),
-            //r => (RoleId)Enum.Parse(typeof(RoleId), r));*/
-
-            //builder.HasData(
-            //    Enum.GetValues(typeof(RoleId))
-            //        .Cast<RoleId>()
-            //        .Select(r => new Role()
-            //        {
-            //            Id = (int)r,
-            //            Name = r.ToString(),
-            //            NormalizedName = r.ToString().ToUpper()
-            //        }));
-                        
+               .IsRequired();                 
         }
     }
 }

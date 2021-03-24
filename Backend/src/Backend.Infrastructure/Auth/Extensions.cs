@@ -37,7 +37,7 @@ namespace Backend.Infrastructure.Auth
 
                 // Password settings.
                 options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 4;
+                options.Password.RequiredLength = 6;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;

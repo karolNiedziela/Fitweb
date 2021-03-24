@@ -7,8 +7,6 @@ namespace Backend.Infrastructure.Auth
 {
     public interface IPasswordHandler 
     {
-        string Hash(string password);
-
         bool IsValid(string hash, string password);
     }
 }

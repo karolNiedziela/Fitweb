@@ -29,7 +29,6 @@ namespace Backend.Infrastructure.Utilities.Csv
             Map(p => p.Id).Ignore();
             Map(p => p.DateCreated).Ignore();
             Map(p => p.DateUpdated).Ignore();
-            Map(p => p.AthleteProducts).Ignore();
         }
     }
 }

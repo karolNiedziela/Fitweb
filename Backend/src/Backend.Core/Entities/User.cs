@@ -45,11 +45,6 @@ namespace Backend.Core.Entities
                 throw new EmptyUsernameException();
             }
 
-            if (UserName == username)
-            {
-                return;
-            }
-
             if (username.Length < 4 || username.Length > 20)
             {
                 throw new InvalidUsernameException();
@@ -66,11 +61,6 @@ namespace Backend.Core.Entities
                 throw new EmptyEmailException();
             }
 
-            if (Email == email)
-            {
-                return;
-            }
-
             EmailAddressAttribute emailAddress = new EmailAddressAttribute();
 
             if (!emailAddress.IsValid(email))
@@ -84,8 +74,15 @@ namespace Backend.Core.Entities
 
         public void SetPassword(string password)
         {
-            if (PasswordHash == password)
-                return;
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new EmptyPasswordException();
+            }
+
+            if (password.Length < 6 || password.Length > 20)
+            {
+                throw new InvalidPasswordException();
+            }
 
             PasswordHash = password;
         }

@@ -17,8 +17,6 @@ namespace Backend.Core.Entities
 
         public double Fats { get; set; }
 
-        public ICollection<AthleteProduct> AthleteProducts { get; set; }
-
         public int CategoryOfProductId { get; set; }
 
         public CategoryOfProduct CategoryOfProduct { get; set; }

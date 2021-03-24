@@ -14,7 +14,6 @@ namespace Backend.Core.Entities
 
         public PartOfBody PartOfBody { get; set; }
 
-        public ICollection<AthleteExercise> AthleteExercises { get; set; }
 
         public Exercise()
         {

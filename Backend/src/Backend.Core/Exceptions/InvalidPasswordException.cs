@@ -2,7 +2,8 @@
 {
     public class InvalidPasswordException : CoreException
     {
-        public InvalidPasswordException(string message) : base(message)
+        public InvalidPasswordException() : base("Password cannot contain less than 6 characters and " +
+                    "more than 20 characters.")
         {
         }
     }

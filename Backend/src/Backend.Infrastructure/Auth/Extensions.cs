@@ -98,7 +98,11 @@ namespace Backend.Infrastructure.Auth
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PolicyNames.AdminOnly, policy => policy.RequireRole(RoleId.Admin.ToString()));
+                options.AddPolicy(PolicyNames.AdminOnly, policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleId.Admin.ToString());
+                    }
+                );
             });
 
             return services;

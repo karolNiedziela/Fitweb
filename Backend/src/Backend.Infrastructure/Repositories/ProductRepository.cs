@@ -33,7 +33,6 @@ namespace Backend.Infrastructure.Repositories
             IQueryable<Product> query = _context.Products.Include(p => p.CategoryOfProduct)
                                                          .AsNoTracking();
                                                        
-
             if (name is not null)
             {
                 query = query.Where(p => p.Name.Contains(name));

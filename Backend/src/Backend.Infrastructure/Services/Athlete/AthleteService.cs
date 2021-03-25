@@ -47,7 +47,6 @@ namespace Backend.Infrastructure.Services
 
         public async Task<AthleteDto> GetProductsAsync(int userId, DateTime? date)
         {
-
             if (date is null)
             {
                 date = DateTime.Today;

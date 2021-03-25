@@ -90,7 +90,11 @@ namespace Backend.Infrastructure.Services.Account
 
         public async Task<IdentityResult> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
         {
-            var user = await _userRepository.GetOrFailAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user is null)
+            {
+                throw new UserNotFoundException(userId);
+            }
 
             var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
 
@@ -142,6 +146,11 @@ namespace Backend.Infrastructure.Services.Account
         public async Task GenerateForgotPasswordTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+            {
+                throw new UserWithEmailNotFoundException(email);
+            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 

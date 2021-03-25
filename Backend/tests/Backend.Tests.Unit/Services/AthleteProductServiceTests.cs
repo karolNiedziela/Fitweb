@@ -78,7 +78,7 @@ namespace Backend.Tests.Unit.Services
                 .Without(a => a.AthleteExercises)
                 .Create();
             _athleteRepository.FindByCondition(Arg.Any<Expression<Func<Athlete, bool>>>(),
-             Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
+                Arg.Any<Func<IQueryable<Athlete>, IIncludableQueryable<Athlete, object>>>()).Returns(athlete);
 
             var exception = await Record.ExceptionAsync(() => _sut.AddAsync(10, 10, 50));
 
@@ -143,7 +143,6 @@ namespace Backend.Tests.Unit.Services
 
         [Theory]
         [InlineData(10, 5)]
-        [InlineData(8, 4)]
         public async Task DeleteAsync_ShouldThrowException_WhenAthleteDoesNotExist(int userId, int productId)
         {
             var exception = await Record.ExceptionAsync(() => _sut.DeleteAsync(userId, productId));

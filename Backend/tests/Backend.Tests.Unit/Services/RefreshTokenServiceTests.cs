@@ -107,10 +107,10 @@ namespace Backend.Tests.Unit.Services
             var refreshToken = _fixture.Build<RefreshToken>()
                 .Create();
             var token = "randomTestToken";
+            
+            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
 
             refreshToken.Revoke(DateTime.Now);
-
-            _refreshTokenRepository.GetAsync(token).Returns(refreshToken);
 
             var exception = await Record.ExceptionAsync(() => _sut.UseAsync(token));
 

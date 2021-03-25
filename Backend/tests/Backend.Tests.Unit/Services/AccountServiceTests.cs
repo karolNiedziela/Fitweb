@@ -89,9 +89,11 @@ namespace Backend.Tests.Unit.Services
         public async Task SignUp_ShouldThrowException_WhenUsernameIsEmpty()
         {
             var username = "";
+            var email = "test@email.com";
+            var role = "role";
 
-            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, Arg.Any<string>(), 
-                Arg.Any<string>()));
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, 
+               role));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(EmptyUsernameException));
@@ -100,17 +102,18 @@ namespace Backend.Tests.Unit.Services
 
         [Theory]
         [InlineData(3)]
-        [InlineData(21)]
+        [InlineData(45)]
         public async Task SignUp_ShouldThrowException_WhenUsernameLengthIsInvalid(int textLength)
         {
-            var username = _fixture.Create<string>().Substring(0, textLength);
+            var username = new string('a', textLength);
+            var email = "test@email.com";
+            var password = "password";
 
-            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, Arg.Any<string>(),
-                Arg.Any<string>()));
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(InvalidUsernameException));
-            exception.Message.ShouldBe("Username must contain at least 4 characters and at most 20 characters.");
+            exception.Message.ShouldBe("Username must contain at least 4 characters and at most 40 characters.");
         }
 
         [Fact]
@@ -118,9 +121,10 @@ namespace Backend.Tests.Unit.Services
         {
             var username = "testUsername";
             var email = "";
+            var password = "passsword";
 
             var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email,
-                Arg.Any<string>()));
+               password));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(EmptyEmailException));
@@ -132,8 +136,9 @@ namespace Backend.Tests.Unit.Services
         {
             var username = "testUsername";
             var email = "testEmail";
+            var password = "passsword";
 
-            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, Arg.Any<string>()));
+            var exception = await Record.ExceptionAsync(() => _sut.SignUpAsync(username, email, password));
 
             exception.ShouldNotBeNull();
             exception.ShouldBeOfType(typeof(InvalidEmailException));
@@ -285,7 +290,7 @@ namespace Backend.Tests.Unit.Services
 
             var user = _fixture.Create<User>();
 
-            _userRepository.GetOrFailAsync(user.Id).Returns(user);
+            _fakeUserManager.FindByIdAsync(user.Id.ToString()).Returns(user);
 
             _fakeUserManager.ChangePasswordAsync(user, oldPassword, newPassword).Returns(IdentityResult.Success);
 
@@ -316,7 +321,7 @@ namespace Backend.Tests.Unit.Services
             var oldPassword = "oldpassword";
             var newPassword = "newPassword";
 
-            _userRepository.GetOrFailAsync(user.Id).Returns(user);
+            _fakeUserManager.FindByIdAsync(user.Id.ToString()).Returns(user);
 
             _fakeUserManager.ChangePasswordAsync(user, oldPassword, newPassword).Returns(IdentityResult.Failed(
                 new IdentityError
@@ -410,6 +415,8 @@ namespace Backend.Tests.Unit.Services
             var user = _fixture.Build<User>()
                 .With(u => u.Email, email)
                 .Create();
+
+            _fakeUserManager.FindByEmailAsync(email).Returns(user);
 
             var exception = await Record.ExceptionAsync(() => _sut.GenerateForgotPasswordTokenAsync(email));
 

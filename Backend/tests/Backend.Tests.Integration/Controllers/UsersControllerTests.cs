@@ -38,20 +38,19 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnNotFound_WhenUserDoesNotExist()
         {
-            var client = FreshClient();
-
             // 1 is tesAdmin
             // 2 is testUser
             var userId = 3;
 
-            var response = await client.GetAsync($"/api/users/{userId}");
+            var response = await _client.GetAsync($"/api/users/{userId}");
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
         [Fact]
         public async Task Get_ShouldReturnUserDto_WhenUserExists()
         {
-            var user = await _client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
+            var client = FreshClient();
+            var user = await client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
             {
                 Username = "test",
                 Email = "test@email.com",
@@ -59,7 +58,7 @@ namespace Backend.Tests.Integration.Controllers
                 Role = RoleId.User.ToString()
             });
 
-            var response = await _client.GetAsync($"/api/users/{user.Id}");
+            var response = await client.GetAsync($"/api/users/{user.Id}");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -71,9 +70,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task GetAll_ShouldReturnIEnumerableUserDto()
         {
-            var client = FreshClient();
-
-            var response = await client.GetAsync("/api/users");
+            var response = await _client.GetAsync("/api/users");
 
             response.EnsureSuccessStatusCode();
 
@@ -110,12 +107,13 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
+            var client = FreshClient();
             var deleteUser = new DeleteUser
             {
                 Id = 1
             };
 
-            var response = await _client.DeleteAsJsonAsync("/api/users", deleteUser);
+            var response = await client.DeleteAsJsonAsync("/api/users", deleteUser);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -139,7 +137,7 @@ namespace Backend.Tests.Integration.Controllers
 
             await client.AuthenticateUserAsync();
 
-            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 0 });
+            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 3 });
 
             response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         }

@@ -1,5 +1,4 @@
-﻿using Backend.Infrastructure.Auth;
-using Backend.Infrastructure.CommandQueryHandler;
+﻿using Backend.Infrastructure.CommandQueryHandler;
 using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries;
 using Backend.Infrastructure.DTO;
@@ -7,15 +6,9 @@ using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
@@ -39,14 +32,9 @@ namespace Backend.Api.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserDto>> Get()
         {
             var user = await QueryAsync(new Me(UserId));
-            if (user is null)
-            {
-                return NotFound();
-            }
 
             return Ok(user);
         }
@@ -68,7 +56,7 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //POST : /api/account/signup
-        public async Task<IActionResult> SingUp([FromBody] SignUp command)
+        public async Task<IActionResult> SignUp([FromBody] SignUp command)
         {
             await DispatchAsync(command);
 
@@ -93,6 +81,8 @@ namespace Backend.Api.Controllers
 
         [HttpPost]
         [Route("forgotpassword")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody]ForgotPassword command) 
         {
             await DispatchAsync(command);

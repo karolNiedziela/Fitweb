@@ -45,7 +45,7 @@ namespace Backend.Core.Entities
                 throw new EmptyUsernameException();
             }
 
-            if (username.Length < 4 || username.Length > 20)
+            if (username.Length < 4 || username.Length > 40)
             {
                 throw new InvalidUsernameException();
             }

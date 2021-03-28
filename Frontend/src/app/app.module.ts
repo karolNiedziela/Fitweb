@@ -1,3 +1,4 @@
+import { environment } from './../environments/environment';
 import { ErrorInterceptor } from './_helpers/error.interceptor';
 import { BasicAuthInterceptor } from './_helpers/basic-auth.interceptor';
 import { RouterModule } from '@angular/router';
@@ -15,6 +16,11 @@ import { SignUpComponent } from './sign/sign-up/sign-up.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UsersComponent } from './users/users.component';
+import {
+  SocialLoginModule,
+  SocialAuthServiceConfig,
+  FacebookLoginProvider,
+} from 'angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -33,10 +39,25 @@ import { UsersComponent } from './users/users.component';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    SocialLoginModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider(
+              `${environment.FACEBOOK_APP_ID}`
+            ),
+          },
+        ],
+      } as SocialAuthServiceConfig,
+    },
   ],
   bootstrap: [AppComponent],
 })

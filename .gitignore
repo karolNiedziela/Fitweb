@@ -435,7 +435,7 @@ $RECYCLE.BIN/
 ##
 ## Visual Studio Code
 ##
-.vscode/*
+**.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -446,59 +446,53 @@ $RECYCLE.BIN/
 ## Angular
 ##
 
-.DS_STORE
+# Outputs
+bazel-*
+test-project-host-*
+dist/
+dist-schema/
 
-/dist/
-/bazel-out
-/integration/bazel/bazel-*
-*.log
-node_modules
+# IDEs
+jsconfig.json
 
-# Include when developing application packages.
-pubspec.lock
-.c9
-.idea/
-.devcontainer/*
-!.devcontainer/README.md
-!.devcontainer/recommended-devcontainer.json
-!.devcontainer/recommended-Dockerfile
-.settings/
-.vscode/launch.json
-.vscode/settings.json
-.vscode/tasks.json
-*.swo
-*.swp
-modules/.settings
-modules/.vscode
-.vimrc
-.nvimrc
+# Intellij IDEA/WebStorm
+# https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+.idea/inspectionProfiles/
+.idea/**/compiler.xml
+.idea/**/encodings.xml
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
 
-# Don't check in secret files
-*secret.js
+# Also ignore code styles because .editorconfig is used instead.
+.idea/codeStyles/
 
-# Ignore npm/yarn debug log
-npm-debug.log
-yarn-error.log
+# VSCode
+# https://github.com/github/gitignore/blob/master/Global/VisualStudioCode.gitignore
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+**/*.code-workspace
 
-# build-analytics
-.build-analytics
+# Typings file.
+typings/
 
-# rollup-test output
-/modules/rollup-test/dist/
-
-# User specific bazel settings
+# Misc
+coverage/
+node_modules/
+tmp/
+npm-debug.log*
+yarn-error.log*
+.ng_pkg_build/
+.ng-dev.log
+.ng-dev.user*
+.husky/_
 .bazelrc.user
 
-# User specific ng-dev settings
-.ng-dev.user*
-
-.notes.md
-baseline.json
-
-# Ignore .history for the xyz.local-history VSCode extension
-.history
-
-# CLDR data
-tools/gulp-tasks/cldr/cldr-data/
-
-# Husky
+# Mac OSX Finder files.
+**/.DS_Store
+.DS_Store

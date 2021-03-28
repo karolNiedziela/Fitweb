@@ -43,7 +43,7 @@ export class SignInComponent implements OnInit {
     return this.signInForm.controls;
   }
 
-  onSubmit(): void {
+  onSubmit() {
     this.submitted = true;
     if (this.signInForm.invalid) {
       return;

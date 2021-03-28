@@ -7,20 +7,22 @@
   <div class="form-group required">
     <label class="control-label" for="username">Username</label>
     <input class="form-control" formControlName="username" />
-    <div *ngIf="submitted && form.password.errors">
-      <label class="text-danger" *ngIf="form.username.errors?.required">
-        Username is required.
-      </label>
-    </div>
+    <label
+      class="text-danger"
+      *ngIf="submitted && form.password.errors?.required"
+    >
+      Username is required.
+    </label>
   </div>
   <div class="form-group required">
     <label class="control-label">Password</label>
     <input type="password" class="form-control" formControlName="password" />
-    <div *ngIf="submitted && form.password.errors">
-      <label class="text-danger" *ngIf="form.password.errors?.required"
-        >Password is required.</label
-      >
-    </div>
+    <label
+      class="text-danger"
+      *ngIf="submitted && form.password.errors?.required"
+      >Password is required.</label
+    >
+    <label class="text-danger" *ngIf="submitted && error">{{ error }}</label>
   </div>
   <div class="form-group">
     <span class="forgot-password">Forgot password? </span>

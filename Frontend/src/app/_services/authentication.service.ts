@@ -1,3 +1,4 @@
+import { FormGroup } from '@angular/forms';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -48,6 +49,26 @@ export class AuthenticationService {
           return jwt;
         })
       );
+  }
+
+  signInWithFb(token: string): Observable<Jwt> {
+    return this.http
+      .post<any>(`${environment.API_URL}/facebook`, { accessToken: token })
+      .pipe(
+        map((jwt) => {
+          localStorage.setItem('jwt', JSON.stringify(jwt));
+          this.jwtSubject.next(jwt);
+          return jwt;
+        })
+      );
+  }
+
+  signUp(username: string, email: string, password: string) {
+    return this.http.post<any>(`${environment.API_URL}/account/signup`, {
+      username,
+      email,
+      password,
+    });
   }
 
   logout(): void {

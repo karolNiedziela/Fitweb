@@ -26,7 +26,7 @@ namespace Backend.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CaloricDemandId")
+                    b.Property<int>("CaloricDemandId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
@@ -625,7 +625,9 @@ namespace Backend.Infrastructure.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.CaloricDemand", "CaloricDemand")
                         .WithMany()
-                        .HasForeignKey("CaloricDemandId");
+                        .HasForeignKey("CaloricDemandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Core.Entities.User", "User")
                         .WithMany()
@@ -653,7 +655,7 @@ namespace Backend.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Backend.Core.Entities.Exercise", "Exercise")
-                        .WithMany("AthleteExercises")
+                        .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -674,7 +676,7 @@ namespace Backend.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Backend.Core.Entities.Product", "Product")
-                        .WithMany("AthleteProducts")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -765,16 +767,6 @@ namespace Backend.Infrastructure.Migrations
                 {
                     b.Navigation("AthleteExercises");
 
-                    b.Navigation("AthleteProducts");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Exercise", b =>
-                {
-                    b.Navigation("AthleteExercises");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Product", b =>
-                {
                     b.Navigation("AthleteProducts");
                 });
 

@@ -11,6 +11,24 @@ namespace Backend.Infrastructure.Migrations
                 name: "dbo");
 
             migrationBuilder.CreateTable(
+                name: "CaloricDemand",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TotalCalories = table.Column<double>(type: "float", nullable: false),
+                    Proteins = table.Column<double>(type: "float", nullable: false),
+                    Carbohydrates = table.Column<double>(type: "float", nullable: false),
+                    Fats = table.Column<double>(type: "float", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaloricDemand", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CategoriesOfProduct",
                 columns: table => new
                 {
@@ -251,12 +269,19 @@ namespace Backend.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    CaloricDemandId = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Athletes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Athletes_CaloricDemand_CaloricDemandId",
+                        column: x => x.CaloricDemandId,
+                        principalTable: "CaloricDemand",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Athletes_Users_UserId",
                         column: x => x.UserId,
@@ -272,8 +297,7 @@ namespace Backend.Infrastructure.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -435,6 +459,11 @@ namespace Backend.Infrastructure.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Athletes_CaloricDemandId",
+                table: "Athletes",
+                column: "CaloricDemandId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Athletes_UserId",
                 table: "Athletes",
                 column: "UserId");
@@ -539,6 +568,9 @@ namespace Backend.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "PartOfBodies");
+
+            migrationBuilder.DropTable(
+                name: "CaloricDemand");
 
             migrationBuilder.DropTable(
                 name: "Users",

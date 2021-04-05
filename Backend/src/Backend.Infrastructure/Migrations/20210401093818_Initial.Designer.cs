@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(FitwebContext))]
-    [Migration("20210310112531_IdentityChanges")]
-    partial class IdentityChanges
+    [Migration("20210401093818_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace Backend.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("CaloricDemandId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -38,6 +41,8 @@ namespace Backend.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CaloricDemandId");
 
                     b.HasIndex("UserId");
 
@@ -101,6 +106,36 @@ namespace Backend.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("AthleteProducts");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.CaloricDemand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Carbohydrates")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Fats")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Proteins")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotalCalories")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CaloricDemand");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.CategoryOfProduct", b =>
@@ -590,11 +625,19 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Athlete", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.CaloricDemand", "CaloricDemand")
+                        .WithMany()
+                        .HasForeignKey("CaloricDemandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Backend.Core.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CaloricDemand");
 
                     b.Navigation("User");
                 });
@@ -614,7 +657,7 @@ namespace Backend.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Backend.Core.Entities.Exercise", "Exercise")
-                        .WithMany("AthleteExercises")
+                        .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -635,7 +678,7 @@ namespace Backend.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Backend.Core.Entities.Product", "Product")
-                        .WithMany("AthleteProducts")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -726,16 +769,6 @@ namespace Backend.Infrastructure.Migrations
                 {
                     b.Navigation("AthleteExercises");
 
-                    b.Navigation("AthleteProducts");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Exercise", b =>
-                {
-                    b.Navigation("AthleteExercises");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Product", b =>
-                {
                     b.Navigation("AthleteProducts");
                 });
 

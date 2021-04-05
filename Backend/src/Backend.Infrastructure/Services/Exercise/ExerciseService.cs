@@ -39,14 +39,13 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<Exercise, ExerciseDto>(exercise);
         }
 
-        public async Task<PagedList<ExerciseDto>> GetAllAsync(string name, string partOfBody, 
+        public async Task<PageResultDto<ExerciseDto>> GetAllAsync(string name, string partOfBody, 
             PaginationQuery paginationQuery)
         {
             var exercises = await _exerciseRepository.GetAllAsync(name, partOfBody, paginationQuery);
 
-            var exercisesDto = _mapper.Map<IEnumerable<Exercise>, IEnumerable<ExerciseDto>>(exercises).ToList();
 
-            return new PagedList<ExerciseDto>(exercisesDto, exercises.TotalCount, exercises.CurrentPage, exercises.PageSize);
+            return _mapper.Map<PageResultDto<ExerciseDto>>(exercises);
         }
 
         public async Task<int> AddAsync(string name, string partOfBody)

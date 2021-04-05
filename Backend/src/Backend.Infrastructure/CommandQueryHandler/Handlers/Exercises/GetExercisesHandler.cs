@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Exercises
 {
-    public class GetExercisesHandler : IQueryHandler<GetExercises, PagedList<ExerciseDto>>
+    public class GetExercisesHandler : IQueryHandler<GetExercises, PageResultDto<ExerciseDto>>
     {
         private readonly IExerciseService _exerciseService;
 
@@ -19,7 +19,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers.Exercises
             _exerciseService = exerciseService;
         }
 
-        public async Task<PagedList<ExerciseDto>> HandleAsync(GetExercises query)
+        public async Task<PageResultDto<ExerciseDto>> HandleAsync(GetExercises query)
         {
             return await _exerciseService.GetAllAsync(query.Name, query.PartOfBody, 
                 new PaginationQuery(query.PageNumber, query.PageSize));

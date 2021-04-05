@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Backend.Infrastructure.DTO;
 using System.Collections.Generic;
 using Backend.Infrastructure.Auth;
+using Backend.Core.Helpers;
 
 namespace Backend.Api.Controllers
 {
@@ -60,21 +61,9 @@ namespace Backend.Api.Controllers
         [HttpGet]
         //GET : /api/products
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll([FromQuery]GetProducts query)
+        public async Task<ActionResult<PageResultDto<ProductDto>>> GetAll([FromQuery]GetProducts query)
         {
             var products = await QueryAsync(query);
-
-            var metadata = new
-            {
-                products.TotalCount,
-                products.PageSize,
-                products.CurrentPage,
-                products.TotalPages,
-                products.HasNext,
-                products.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             return Ok(products);
         }
@@ -111,13 +100,14 @@ namespace Backend.Api.Controllers
             return NoContent();
         }
 
-        //PUT: /api/products
+
         [HttpPut]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        //PUT: /api/products
         public async Task<ActionResult> Put([FromBody] UpdateProduct command)
         {
             await DispatchAsync(command);

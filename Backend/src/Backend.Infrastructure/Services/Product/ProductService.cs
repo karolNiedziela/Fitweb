@@ -38,14 +38,12 @@ namespace Backend.Infrastructure.Services
             return _mapper.Map<Product, ProductDto>(product);
         }
 
-        public async Task<PagedList<ProductDto>> GetAllAsync(string name, string category, 
+        public async Task<PageResultDto<ProductDto>> GetAllAsync(string name, string category, 
             PaginationQuery paginationQuery)
         {
             var products = await _productRepository.GetAllAsync(name, category, paginationQuery);
 
-            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
-
-            return new PagedList<ProductDto>(productsDto, products.TotalCount, products.CurrentPage, products.PageSize);
+            return _mapper.Map<PagedList<Product>, PageResultDto<ProductDto>>(products);
         }
 
         public async Task<int> AddAsync(string name, double calories, double proteins,

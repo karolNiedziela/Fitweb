@@ -12,7 +12,7 @@ namespace Backend.Infrastructure.Services
 
         Task<ProductDto> GetAsync(string name);
 
-        Task<PagedList<ProductDto>> GetAllAsync(string name, string category, PaginationQuery paginationQuery);
+        Task<PageResultDto<ProductDto>> GetAllAsync(string name, string category, PaginationQuery paginationQuery);
 
         Task<int> AddAsync(string name, double calories, double proteins,
             double carbohydrates, double fats, string categoryName);

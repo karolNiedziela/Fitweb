@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Queries
 {
-    public class GetProducts : IQuery<PagedList<ProductDto>>
+    public class GetProducts : IQuery<PageResultDto<ProductDto>>
     {
         public string Name { get; set; }
 

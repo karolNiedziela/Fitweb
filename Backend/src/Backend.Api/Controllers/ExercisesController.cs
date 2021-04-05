@@ -57,21 +57,9 @@ namespace Backend.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ExerciseDto>>> GetAll([FromQuery]GetExercises query)
+        public async Task<ActionResult<PageResultDto<ExerciseDto>>> GetAll([FromQuery]GetExercises query)
         {
             var results = await QueryAsync(query);
-
-            var metadata = new
-            {
-                results.TotalCount,
-                results.PageSize,
-                results.CurrentPage,
-                results.TotalPages,
-                results.HasNext,
-                results.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             return Ok(results);
         }   

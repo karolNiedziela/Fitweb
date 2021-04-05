@@ -13,7 +13,7 @@ namespace Backend.Infrastructure.Services
 
         Task<ExerciseDto> GetAsync(string name);
 
-        Task<PagedList<ExerciseDto>> GetAllAsync(string name, string partOfBody, PaginationQuery paginationQuery);
+        Task<PageResultDto<ExerciseDto>> GetAllAsync(string name, string partOfBody, PaginationQuery paginationQuery);
 
         Task<int> AddAsync(string name, string partOfBody);
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.CommandQueryHandler.Queries
 {
-    public class GetExercises : IQuery<PagedList<ExerciseDto>>
+    public class GetExercises : IQuery<PageResultDto<ExerciseDto>>
     {
         public string Name { get; set; } 
 

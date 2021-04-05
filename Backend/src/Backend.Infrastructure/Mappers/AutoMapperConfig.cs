@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.Core.Entities;
+using Backend.Core.Helpers;
 using Backend.Infrastructure.DTO;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,7 @@ namespace Backend.Infrastructure.Mappers
                 cfg.CreateMap<AthleteExercise, AthleteExerciseDto>()
                    .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
                 cfg.CreateMap<CaloricDemand, CaloricDemandDto>();
+                cfg.CreateMap(typeof(PagedList<>), typeof(PageResultDto<>)).ConvertUsing(typeof(PagedListToPageResultDtoConverter<,>));
             })
             .CreateMapper();
     }

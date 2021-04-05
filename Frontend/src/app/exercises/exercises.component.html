@@ -1,0 +1,67 @@
+<div class="exercises">
+  <h1 class="text-center">Exercises</h1>
+
+  <div class="search-bar">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search exercise"
+        [ngModel]="searchText"
+        (ngModelChange)="onSearchChanged.next($event)"
+      />
+    </div>
+
+    <div class="input-group">
+      <select
+        class="form-control select-categories mb-3"
+        (change)="onPartChange($event)"
+      >
+        <option value="">All parts</option>
+        <option *ngFor="let part of parts">{{ part.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Part of body</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="
+            let exercise of exercises
+              | paginate
+                : {
+                    itemsPerPage: this.paginationQuery.pageSize,
+                    currentPage: this.paginationQuery.pageNumber,
+                    totalItems: this.totalItems
+                  };
+            let i = index
+          "
+        >
+          <td>{{ exercise.name }}</td>
+          <td>{{ exercise.partOfBody }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <pagination-controls (pageChange)="onPageChange($event)">
+    </pagination-controls>
+  </div>
+
+  <div class="page-size">
+    <span class="mr-2">Item per page: </span>
+    <select (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of sizes">
+        {{ size }}
+      </option>
+    </select>
+  </div>
+</div>

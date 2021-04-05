@@ -134,14 +134,10 @@ namespace Backend.Tests.Integration.Controllers
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var pagination = response.Headers.GetValues("X-Pagination");
-
-            pagination.ShouldNotBeNull();
-
-            var exercisesDto = await response.ReadAsString<IEnumerable<ExerciseDto>>();
+            var exercisesDto = await response.ReadAsString<PageResultDto<ExerciseDto>>();
 
             exercisesDto.ShouldNotBeNull();
-            exercisesDto.Count().ShouldBe(2);
+            exercisesDto.Items.Count().ShouldBe(2);
         }
 
         [Fact]

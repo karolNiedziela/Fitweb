@@ -140,12 +140,8 @@ namespace Backend.Tests.Integration.Controllers
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var pagination = response.Headers.GetValues("X-Pagination");
-
-            pagination.ShouldNotBeNull();
-
-            var products = await response.ReadAsString<IEnumerable<ProductDto>>();
-            products.Count().ShouldBe(1);
+            var products = await response.ReadAsString<PageResultDto<ProductDto>>();
+            products.Items.Count().ShouldBe(1);
         }
 
         [Fact]

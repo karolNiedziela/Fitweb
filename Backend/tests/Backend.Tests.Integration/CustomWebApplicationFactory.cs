@@ -70,7 +70,6 @@ namespace Backend.Tests.Integration
                         userManager.CreateAsync(testUser, "testUserSecret");
                         userManager.AddToRoleAsync(testUser, RoleId.User.ToString());
                     }
-
                     if (!db.CategoriesOfProduct.Any())
                     {
                         db.CategoriesOfProduct.Add(new CategoryOfProduct

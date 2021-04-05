@@ -40,9 +40,10 @@ namespace Backend.Tests.Integration.Controllers
         {
             // 1 is tesAdmin
             // 2 is testUser
+            var client = FreshClient();
             var userId = 3;
 
-            var response = await _client.GetAsync($"/api/users/{userId}");
+            var response = await client.GetAsync($"/api/users/{userId}");
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 

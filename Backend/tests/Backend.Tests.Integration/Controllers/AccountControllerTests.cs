@@ -37,9 +37,10 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnOk_WhenUserIsAuthorized()
         {
-            await _client.AuthenticateUserAsync();
+            var client = FreshClient();
+            await client.AuthenticateUserAsync();
 
-            var response = await _client.GetAsync("/api/account/me");
+            var response = await client.GetAsync("/api/account/me");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);

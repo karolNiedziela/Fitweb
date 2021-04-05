@@ -50,7 +50,7 @@ namespace Backend.Core.Entities
             }
 
             Weight = weight;
-            DateUpdated = DateTime.UtcNow;
+            DateUpdated = DateTime.Now;
         }
 
         public void SetNumberOfSets(int numberOfSets)
@@ -61,7 +61,7 @@ namespace Backend.Core.Entities
             }
 
             NumberOfSets = numberOfSets;
-            DateUpdated = DateTime.UtcNow;
+            DateUpdated = DateTime.Now;
         }
 
         public void SetNumberOfReps(int numberOfReps)
@@ -72,7 +72,7 @@ namespace Backend.Core.Entities
             }
 
             NumberOfReps = numberOfReps;
-            DateUpdated = DateTime.UtcNow;
+            DateUpdated = DateTime.Now;
         }
 
         public static AthleteExercise Create(Athlete athlete, Exercise exercise, double weight,

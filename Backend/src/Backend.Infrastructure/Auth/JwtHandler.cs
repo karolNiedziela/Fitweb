@@ -21,7 +21,7 @@ namespace Backend.Infrastructure.Auth
 
         public JwtDto CreateToken(int userId, string username, string role)
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
 
             var expires = now.AddMinutes(_settings.ExpiryMinutes);
 

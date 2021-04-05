@@ -8,6 +8,6 @@ namespace Backend.Core.Services
 
     public class DateTimeProvider : IDateTimeProvider
     {
-        public DateTime Now => DateTime.UtcNow;
+        public DateTime Now => DateTime.Now;
     }
 }

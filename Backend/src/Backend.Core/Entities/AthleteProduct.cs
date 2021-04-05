@@ -38,7 +38,7 @@ namespace Backend.Core.Entities
             }
 
             Weight = weight;
-            DateUpdated = DateTime.UtcNow;
+            DateUpdated = DateTime.Now;
         }
 
         public static AthleteProduct Create(Athlete athlete, Product product, double weight)

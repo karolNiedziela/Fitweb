@@ -34,7 +34,7 @@ namespace Backend.Core.Entities
             }
 
             Name = name;
-            DateUpdated = DateTime.UtcNow;
+            DateUpdated = DateTime.Now;
         }
 
         public static Exercise Create(string name, PartOfBody partOfBody)

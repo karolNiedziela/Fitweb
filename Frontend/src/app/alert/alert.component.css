@@ -1,0 +1,21 @@
+.alert {
+  display: flex;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.alert span {
+  justify-content: left;
+  width: 100%;
+}
+
+.alert i {
+  cursor: pointer;
+}
+
+i .fas {
+  transform: scale(1.4, 1.4);
+}
+
+.close {
+  color: black;
+}

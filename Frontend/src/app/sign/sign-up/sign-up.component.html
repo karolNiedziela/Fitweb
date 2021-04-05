@@ -1,24 +1,34 @@
-<form [formGroup]="signUpForm" autocomplete="disabled" (ngSubmit)="onSubmit()">
+<form [formGroup]="signUpForm" autocomplete="off" (ngSubmit)="onSubmit()">
   <div class="form-group required">
     <label class="control-label">Username</label>
-    <input class="form-control" formControlName="userName" />
+    <input class="form-control" formControlName="username" />
     <label
       class="text-danger"
-      *ngIf="submitted && form.userName.errors?.required"
+      *ngIf="submitted && form.username.errors?.required"
       >Username is required.</label
     >
     <label
       class="text-danger"
-      *ngIf="submitted && form.userName.errors"
-    ></label>
+      *ngIf="
+        submitted &&
+        (form.username.errors?.minlength || form.username.errors?.maxlength)
+      "
+    >
+      Username must contain min. 4 characters and max. 40characters.
+    </label>
+    <!-- <label
+      class="text-danger"
+      *ngIf="submitted && !form.username.errors?.pattern"
+      >
+    </label> -->
   </div>
   <div class="form-group required">
     <label class="control-label">Email</label>
-    <input class="form-control" formControlName="email" autocomplete="email" />
+    <input class="form-control" formControlName="email" />
     <label class="text-danger" *ngIf="submitted && form.email.errors?.required"
       >Email is required.</label
     >
-    <label class="text-danger" *ngIf="submitted && form.email.errors?.email"
+    <label class="text-danger" *ngIf="form.email.errors?.email"
       >Bad email format.</label
     >
   </div>
@@ -31,6 +41,12 @@
         *ngIf="submitted && form.passwords.get('password').errors?.required"
         >Password is required.</label
       >
+      <!-- <label
+        class="text-danger"
+        *ngIf="submitted && form.passwords.get('password').errors?.pattern"
+        >Password must contain min. 6 characters and max. 20characters, 1
+        uppercase letter, 1 lowercase letter and 1 number.
+      </label> -->
     </div>
     <div class="form-group required">
       <label class="control-label">Confirm Password</label>

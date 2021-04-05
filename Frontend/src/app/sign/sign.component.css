@@ -18,7 +18,7 @@
   flex-flow: row wrap;
   justify-content: space-around;
   margin: 0 auto;
-  padding-top: 8rem;
+  padding: 8rem 1rem 0 1rem;
   align-items: center;
 }
 
@@ -116,6 +116,11 @@ input.form-control:focus {
   border: 1px solid white;
 }
 
+div.form-group label:not(.text-danger) {
+  color: #868f9c;
+  font-weight: 700;
+}
+
 /*
 
       Form submit 
@@ -128,25 +133,10 @@ button[type="submit"].btn {
   color: #fff;
 }
 
-/*
-
-      Form validation
-
-*/
-
-div.form-group label:not(.text-danger) {
-  color: #868f9c;
-  font-weight: 700;
-}
-
 div.form-group.required > label:first-child:after {
   content: "*";
   color: #fff;
   padding-left: 5px;
-}
-
-div.form-group input.invalid {
-  border: 1px solid #dc3545;
 }
 
 /* 

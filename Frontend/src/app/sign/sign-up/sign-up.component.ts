@@ -1,3 +1,4 @@
+import { AlertService } from './../../_services/alert.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from './../../_services/authentication.service';
 import {
@@ -21,22 +22,35 @@ export class SignUpComponent implements OnInit {
   returnUrl: string;
   error = '';
 
+  usernameRegex = /^[a-z0-9]{4, 40}$/;
+  // 6 characters, 1 uppercase letter, 1 lowercase and 1 number
+  passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}/;
+
   constructor(
     private titleService: Title,
     private authenticationService: AuthenticationService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private alert: AlertService
   ) {
     this.titleService.setTitle('Fitweb - Sign up');
   }
 
   ngOnInit(): void {
     this.signUpForm = new FormGroup({
-      userName: new FormControl('', Validators.required),
+      username: new FormControl('', [
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(40),
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
       passwords: new FormGroup(
         {
-          password: new FormControl('', [Validators.required]),
+          password: new FormControl('', [
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20),
+          ]),
           confirmPassword: new FormControl('', [Validators.required]),
         },
         { validators: ComparePasswords }
@@ -56,17 +70,20 @@ export class SignUpComponent implements OnInit {
       return;
     }
 
-    console.log(this.signUpForm.value.userName);
-    console.log(this.signUpForm.value.email);
-    console.log(this.signUpForm.value.passwords.password);
     this.authenticationService
       .signUp(
-        this.signUpForm.value.userName,
+        this.signUpForm.value.username,
         this.signUpForm.value.email,
         this.signUpForm.value.passwords.password
       )
       .subscribe(
         () => {
+          this.alert.success(
+            'Registration succesful. To get full access confirm email.',
+            {
+              keepAfterRouteChange: true,
+            }
+          );
           this.router.navigate([this.returnUrl]);
         },
         (error) => {

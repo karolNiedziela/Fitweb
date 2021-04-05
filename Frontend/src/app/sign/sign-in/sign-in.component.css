@@ -1,8 +1,9 @@
-.forgot-password {
+.forgot-password a {
+  text-decoration: none;
   color: white;
 }
 
-.forgot-password:hover {
+.forgot-password a:hover {
   color: #16caaf;
   cursor: pointer;
 }

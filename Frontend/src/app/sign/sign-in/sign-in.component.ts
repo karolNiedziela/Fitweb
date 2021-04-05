@@ -2,7 +2,12 @@ import { AuthenticationService } from './../../_services/authentication.service'
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -18,7 +23,6 @@ export class SignInComponent implements OnInit {
 
   constructor(
     private titleService: Title,
-    private formBuilder: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService
@@ -31,9 +35,9 @@ export class SignInComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.signInForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
+    this.signInForm = new FormGroup({
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
     });
 
     this.returnUrl = this.route.snapshot.queryParams.returnUrl || '';

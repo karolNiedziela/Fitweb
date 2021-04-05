@@ -34,7 +34,7 @@ namespace Backend.Api.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResetPassword([FromBody]ResetPassword command)
+        public async Task<IActionResult> Post([FromBody]ResetPassword command)
         {
             await DispatchAsync(command);
 

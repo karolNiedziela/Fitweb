@@ -60,7 +60,7 @@ namespace Backend.Api.Controllers
         {
             await DispatchAsync(command);
 
-            _logger.LogInfo($"User with username {command.UserName}.");
+            _logger.LogInfo($"User with username {command.Username}.");
 
             return CreatedAtAction("Get", "Users", new { id = command.Id }, command);
         }

@@ -140,7 +140,6 @@ namespace Backend.Tests.Unit.Services
                .With(a => a.UserId, userId)
                .Without(a => a.AthleteExercises)
                .Without(a => a.AthleteProducts)
-               .Without(a => a.CaloricDemand)
            .Create();
 
             _athleteRepository.GetOrFailAsync(userId).Returns(athlete);

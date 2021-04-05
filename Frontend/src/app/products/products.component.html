@@ -1,0 +1,82 @@
+<div class="products">
+  <h1 class="text-center">Products</h1>
+
+  <div class="search-bar">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control search-input"
+        placeholder="Search product"
+        [ngModel]="searchText"
+        (ngModelChange)="onSearchChanged.next($event)"
+      />
+    </div>
+    <div class="input-group">
+      <select
+        class="form-control select-categories mb-3"
+        (change)="onCategoryChange($event)"
+      >
+        <option value="">All categories</option>
+        <option *ngFor="let category of categories">
+          {{ category.categoryName }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <table class="table table-responsive-md">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Calories</th>
+          <th>Proteins</th>
+          <th>Carbohydrates</th>
+          <th>Fats</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="
+            let product of products
+              | paginate
+                : {
+                    itemsPerPage: this.paginationQuery.pageSize,
+                    currentPage: this.paginationQuery.pageNumber,
+                    totalItems: this.totalItems
+                  };
+            let i = index
+          "
+        >
+          <td>
+            {{ product.name }}
+          </td>
+          <td>
+            {{ product.calories }}
+          </td>
+          <td>
+            {{ product.proteins }}
+          </td>
+          <td>
+            {{ product.carbohydrates }}
+          </td>
+          <td>
+            {{ product.fats }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination">
+    <pagination-controls (pageChange)="onPageChange($event)">
+    </pagination-controls>
+  </div>
+  <div class="page-size">
+    <span class="mr-2">Item per page:</span>
+    <select (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of sizes" [ngValue]="size">
+        {{ size }}
+      </option>
+    </select>
+  </div>
+</div>

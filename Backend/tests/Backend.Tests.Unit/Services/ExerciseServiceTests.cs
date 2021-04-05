@@ -92,8 +92,8 @@ namespace Backend.Tests.Unit.Services
 
             // Assert
             dto.ShouldNotBeNull();
-            dto.ShouldBeOfType(typeof(PagedList<ExerciseDto>));
-            dto.Count.ShouldBe(exercises.ToList().Count);
+            dto.ShouldBeOfType(typeof(PageResultDto<ExerciseDto>));
+            dto.Items.Count.ShouldBe(exercises.ToList().Count);
         }
 
         [Fact]

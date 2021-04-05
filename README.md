@@ -8,4 +8,4 @@
  * AutoMapper
  * NLog 
  * XUnit 
- * Angular 11
+ * Angular 10

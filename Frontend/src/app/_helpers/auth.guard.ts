@@ -23,12 +23,12 @@ export class AuthGuard implements CanActivate {
   ): boolean {
     // get jwt
     const jwt = this.authenticationService.jwtValue;
-
     // if jwt exists -> activate
-    // else -> redirect to sign in form
     if (jwt) {
       return true;
     }
+
+    // else -> redirect to sign in form
 
     this.router.navigate(['sign/in'], {
       queryParams: { returnUrl: state.url },

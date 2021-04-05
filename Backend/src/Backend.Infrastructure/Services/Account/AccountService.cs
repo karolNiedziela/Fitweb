@@ -51,7 +51,7 @@ namespace Backend.Infrastructure.Services.Account
             {
                 throw new IdentityResultException(result.Errors.FirstOrDefault().Description);
             }
-
+            
             await _userManager.AddToRoleAsync(user, role);
 
             await GenerateEmailConfirmationTokenAsync(user);
@@ -137,7 +137,7 @@ namespace Backend.Infrastructure.Services.Account
         {
             var code = Encode(token);
 
-            var url = string.Format(_generalSettings.AppDomain + _generalSettings.EmailConfirmation, user.Id, code);
+            var url = string.Format(_generalSettings.ClientURL + _generalSettings.EmailConfirmation, user.Id, code);
 
             await _emailSender.SendEmailAsync(user.Email, "Email Confirmation", $"Please confirm your account by" +
                 $" <a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");
@@ -166,7 +166,7 @@ namespace Backend.Infrastructure.Services.Account
         {
             var code = Encode(token);
 
-            var url = string.Format(_generalSettings.AppDomain + _generalSettings.ForgotPassword, user.Id, code);
+            var url = string.Format(_generalSettings.ClientURL + _generalSettings.ForgotPassword, user.Id, code);
 
             await _emailSender.SendEmailAsync(user.Email, "Forgot password", $"Reset password by" +
                 $"<a href='{HtmlEncoder.Default.Encode(url)}'> clicking here </a>.");

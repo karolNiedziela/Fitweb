@@ -23,6 +23,16 @@
             >Home</a
           >
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="products" routerLinkActive="active"
+            >Products</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="exercises" routerLinkActive="active"
+            >Exercises</a
+          >
+        </li>
         <li class="nav-item" *ngIf="!currentUser">
           <a
             class="nav-link"
@@ -32,13 +42,22 @@
             >Sign in</a
           >
         </li>
-        <li class="nav-item" *ngIf="currentUser">
-          <a class="nav-link" routerLink="" routerLinkActive="active"
+
+        <li class="nav-item dropdown" *ngIf="currentUser">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
             >Profile</a
           >
-        </li>
-        <li class="navi-item" *ngIf="currentUser">
-          <a class="nav-link" (click)="logout()">Logout</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" (click)="logout()">Logout</a>
+          </div>
         </li>
       </ul>
     </div>

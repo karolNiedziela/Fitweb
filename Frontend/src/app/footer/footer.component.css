@@ -60,6 +60,9 @@ i {
 }
 
 @media (max-width: 767px) {
+  .contacts {
+    width: 70%;
+  }
   h1 {
     font-size: 2rem;
   }

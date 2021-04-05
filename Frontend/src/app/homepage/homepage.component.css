@@ -149,7 +149,7 @@ i:hover {
 
 @media (max-width: 800px) {
   .caption {
-    top: 20%;
+    top: 15%;
   }
   .caption h1 {
     font-size: 2rem;
@@ -175,11 +175,16 @@ i:hover {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
+  .home-landing-img {
+    width: 100%;
+    max-width: 100vh;
+    height: auto;
+  }
   .caption h1 {
     font-size: 1.6rem;
     letter-spacing: 0.15rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.6rem;
   }
   .caption h3 {
     font-size: 1rem;

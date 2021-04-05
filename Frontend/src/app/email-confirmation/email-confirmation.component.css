@@ -1,0 +1,11 @@
+.card {
+  margin-top: 8rem;
+  width: 50%;
+  margin: 8rem auto 0;
+  background: none;
+  border: none;
+}
+
+a {
+  text-decoration: none;
+}

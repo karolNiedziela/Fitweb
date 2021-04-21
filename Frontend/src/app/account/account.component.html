@@ -1,0 +1,71 @@
+<div class="account-container">
+  <div class="panel-sidebar">
+    <div class="menu">
+      <div class="image panel-heading">
+        <div class="dropdown dropdown-sidebar-panel">
+          <button
+            class="btn dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Account
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropDownMenuButton">
+            <li
+              class="dropdown-item"
+              routerLink="overview"
+              routerLinkActive="side-bar-active"
+            >
+              <i class="fas fa-home"></i><span>Overview</span>
+            </li>
+            <li
+              class="dropdown-item"
+              routerLink="products"
+              routerLinkActive="side-bar-active"
+            >
+              <i class="fas fa-cookie-bite"></i><span>Products</span>
+            </li>
+            <li
+              class="dropdown-item"
+              routerLink="exercises"
+              routerLinkActive="side-bar-active"
+            >
+              <i class="fas fa-dumbbell"></i><span>Exercises</span>
+            </li>
+          </ul>
+        </div>
+
+        <img src="../../assets/images/avatar.jpg" alt="user_avatar" />
+      </div>
+      <ul class="menu-list">
+        <li
+          class="menu-item"
+          routerLink="overview"
+          routerLinkActive="side-bar-active"
+        >
+          <i class="fas fa-home"></i><span>Overview</span>
+        </li>
+        <li
+          class="menu-item"
+          routerLink="products"
+          routerLinkActive="side-bar-active"
+        >
+          <i class="fas fa-cookie-bite"></i><span>Products</span>
+        </li>
+        <li
+          class="menu-item"
+          routerLink="exercises"
+          routerLinkActive="side-bar-active"
+        >
+          <i class="fas fa-dumbbell"></i><span>Exercises</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

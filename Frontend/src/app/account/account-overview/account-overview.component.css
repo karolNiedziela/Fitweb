@@ -1,0 +1,78 @@
+.overview {
+  width: 90%;
+  margin: 1rem auto 0 auto;
+}
+
+h1 {
+  font-weight: 600;
+}
+
+h2 {
+  font-weight: 600;
+}
+
+.profile {
+  padding-top: 2rem;
+}
+
+.table {
+  padding-bottom: 2rem;
+}
+
+td {
+  padding-bottom: 1.5rem;
+  padding-top: 1.5rem;
+  border-bottom: 1px solid black;
+  width: 300px;
+}
+
+.btn-lg {
+  border-width: medium;
+  border-radius: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 1.1rem;
+  border-color: rgb(156, 150, 150);
+}
+
+.btn-lg:hover {
+  background: none;
+  color: black;
+  border-color: #1ebba3;
+}
+
+@media screen and (max-width: 1200px) {
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+  }
+
+  .table {
+    font-size: 2rem;
+    font-size: 500;
+  }
+  .btn-lg {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .table {
+    font-size: 1.7rem;
+    font-size: 500;
+  }
+
+  .btn-lg {
+    font-size: 1.7rem;
+  }
+}

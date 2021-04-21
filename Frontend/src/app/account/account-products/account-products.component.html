@@ -1,0 +1,44 @@
+<div class="account-products">
+  <app-calendar (click)="get()"></app-calendar>
+
+  <table class="table">
+    <thead class="text-center">
+      <th>Name</th>
+      <th>Weight</th>
+    </thead>
+    <tr *ngFor="let products of athleteProducts?.products">
+      <td>{{ products.product.name }}</td>
+      <td>{{ products.weight }}</td>
+    </tr>
+  </table>
+
+  <div class="spacer"></div>
+
+  <div class="nutrients">
+    <h3>
+      Total calories:
+      {{ athleteDietStats?.dietStats[0]?.dietStat?.totalCalories }}
+      <span *ngIf="athleteDietStats?.dietStats[0]?.dietStat == null">0</span>
+    </h3>
+
+    <h3>
+      Proteins:
+      {{ athleteDietStats?.dietStats[0]?.dietStat?.totalProteins }}
+      <span *ngIf="athleteDietStats?.dietStats[0]?.dietStat == null">0</span>
+    </h3>
+    <h3>
+      Carbohydrates:
+      {{ athleteDietStats?.dietStats[0]?.dietStat.totalCarbohydrates }}
+      <span
+        *ngIf="
+          athleteDietStats?.dietStats[0]?.dietStat?.totalCarbohydrates == null
+        "
+        >0</span
+      >
+    </h3>
+    <h3>
+      Fats: {{ athleteDietStats?.dietStats[0]?.dietStat.totalFats }}
+      <span *ngIf="athleteDietStats?.dietStats[0]?.dietStat == null">0</span>
+    </h3>
+  </div>
+</div>

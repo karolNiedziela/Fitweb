@@ -1,0 +1,69 @@
+.account-products {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding-top: 2rem;
+  position: relative;
+  flex-wrap: wrap;
+  height: 100%;
+}
+
+.table {
+  margin-top: 2rem;
+  align-self: center;
+  margin-left: 1rem;
+}
+
+th {
+  letter-spacing: 0.1rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+td {
+  font-size: 1.1rem;
+  letter-spacing: 0.1rem;
+}
+
+.spacer {
+  height: 80px;
+}
+
+.nutrients {
+  position: relative;
+  display: flex;
+  bottom: 0;
+  justify-content: space-around;
+  flex-direction: row;
+  width: 100%;
+  padding-top: 2rem;
+}
+
+.nutrients h3 {
+  font-size: 1.4rem;
+}
+
+@media screen and (max-width: 1200px) {
+  .nutrients {
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 2rem;
+    padding-left: 2rem;
+  }
+
+  .nutrients h3 {
+    font-size: 2.5rem;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .nutrients h3 {
+    font-size: 1.8rem;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .nutrients h3 {
+    font-size: 1.2rem;
+  }
+}

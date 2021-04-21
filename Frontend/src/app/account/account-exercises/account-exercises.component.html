@@ -1,0 +1,28 @@
+<div class="account-exercises">
+  <div class="row">
+    <div
+      class="col-xs"
+      *ngFor="let day of days"
+      (click)="filter(day.name)"
+      [ngClass]="{ selected: day.name == dayName }"
+    >
+      <div class="day">
+        <span class="underline">{{ day.name }}</span>
+      </div>
+    </div>
+  </div>
+  <table class="table">
+    <thead class="text-center">
+      <th>Name</th>
+      <th>Weight</th>
+      <th>Number of sets</th>
+      <th>Number of reps</th>
+    </thead>
+    <tr *ngFor="let exercises of athleteExercise?.exercises">
+      <td>{{ exercises.exercise.name }}</td>
+      <td>{{ exercises.weight }}</td>
+      <td>{{ exercises.numberOfSets }}</td>
+      <td>{{ exercises.numberOfReps }}</td>
+    </tr>
+  </table>
+</div>

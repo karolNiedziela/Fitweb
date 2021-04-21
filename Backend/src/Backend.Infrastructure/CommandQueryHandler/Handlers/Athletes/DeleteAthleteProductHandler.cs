@@ -18,7 +18,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Handlers
 
         public async Task HandleAsync(DeleteAthleteProduct command)
         {
-            await _athleteProductService.DeleteAsync(command.UserId, command.ProductId); 
+            await _athleteProductService.DeleteAsync(command.UserId, command.ProductId, command.AthleteProductId); 
         }
     }
 }

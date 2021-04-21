@@ -1,6 +1,6 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.CommandQueryHandler.Commands.Athletes;
-using Backend.Infrastructure.Services.AthleteCaloricDemand;
+using Backend.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

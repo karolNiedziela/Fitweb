@@ -18,10 +18,11 @@ namespace Backend.Infrastructure.Services.External
         private readonly IRefreshTokenFactory _refreshTokenFactory;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly UserManager<User> _userManager;
+        private readonly IAthleteService _athleteService;
 
         public ExternaLoginService(IFacebookAuthService facebookAuthService, IUserRepository userRepository,
             IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository,
-            UserManager<User> userManager)
+            UserManager<User> userManager, IAthleteService athleteService)
         {
             _facebookAuthService = facebookAuthService;
             _userRepository = userRepository;
@@ -29,6 +30,7 @@ namespace Backend.Infrastructure.Services.External
             _refreshTokenFactory = refreshTokenFactory;
             _refreshTokenRepository = refreshTokenRepository;
             _userManager = userManager;
+            _athleteService = athleteService;
         }
 
         public async Task<JwtDto> LoginWithFacebookAsync(string accessToken)
@@ -53,6 +55,8 @@ namespace Backend.Infrastructure.Services.External
                 await _userManager.CreateAsync(user);
 
                 await _userManager.AddToRoleAsync(user, RoleId.User.ToString());
+
+                await _athleteService.CreateAsync(user.Id);
             }
 
             var jwt = _jwtHandler.CreateToken(user.Id, user.UserName, RoleId.User.ToString());

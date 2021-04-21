@@ -26,10 +26,12 @@ namespace Backend.Infrastructure.Services.Account
         private readonly UserManager<User> _userManager;
         private readonly GeneralSettings _generalSettings;
         private readonly IEmailService _emailSender;
+        private readonly IAthleteService _athleteService;
 
         public AccountService(IUserRepository userRepository, IPasswordHandler passwordHandler,
             IJwtHandler jwtHandler, IRefreshTokenFactory refreshTokenFactory, IRefreshTokenRepository refreshTokenRepository,
-            UserManager<User> userManager, GeneralSettings generalSettings, IEmailService emailSender)
+            UserManager<User> userManager, GeneralSettings generalSettings, IEmailService emailSender, 
+            IAthleteService athleteService)
         {
             _userRepository = userRepository;
             _passwordHandler = passwordHandler;
@@ -39,6 +41,7 @@ namespace Backend.Infrastructure.Services.Account
             _generalSettings = generalSettings;
             _userManager = userManager;
             _emailSender = emailSender;
+            _athleteService = athleteService;
         }
 
         public async Task<int> SignUpAsync(string username, string email, string password, string role = "User")
@@ -55,6 +58,8 @@ namespace Backend.Infrastructure.Services.Account
             await _userManager.AddToRoleAsync(user, role);
 
             await GenerateEmailConfirmationTokenAsync(user);
+
+            await _athleteService.CreateAsync(user.Id);
 
             return user.Id;
         }

@@ -9,5 +9,7 @@ namespace Backend.Infrastructure.CommandQueryHandler.Commands
         public int UserId { get; set; }
 
         public int ProductId { get; set; }
+
+        public int AthleteProductId { get; set; }
     }
 }

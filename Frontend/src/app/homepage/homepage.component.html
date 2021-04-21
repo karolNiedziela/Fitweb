@@ -1,14 +1,14 @@
 <div class="home-landing">
   <img
-    class="home-landing-img"
+    class="image-fluid"
     src="assets/images/landing_page.jpg"
-    alt="Landing page"
+    alt="Landing image"
   />
-</div>
-
-<div class="caption text-center">
-  <h1>Welcome to Fitweb</h1>
-  <h3>Training and diet app</h3>
+  <div class="caption-wrapper">
+    <div class="caption">
+      <h2>Training and diet app</h2>
+    </div>
+  </div>
 </div>
 
 <div class="functionalities">
@@ -21,12 +21,16 @@
   <div class="flex-item">
     <i class="fa fa-dumbbell fa-4x"></i>
     <p>Choose exercises and have your training in one place</p>
-    <a class="btn btn-outline-dark btn-lg">Create training</a>
+    <a class="btn btn-outline-dark btn-lg" routerLink="products"
+      >Add exercise</a
+    >
   </div>
   <div class="flex-item">
-    <i class="fa fa-utensils fa-4x"></i>
+    <i class="fas fa-cookie-bite fa-4x"></i>
     <p>Choose products and have your diet in one place</p>
-    <a class="btn btn-outline-dark btn-lg">Create diet</a>
+    <a class="btn btn-outline-dark btn-lg" routerLink="exercises"
+      >Add product</a
+    >
   </div>
   <div class="flex-item">
     <i class="fa fa-sticky-note fa-4x"></i>

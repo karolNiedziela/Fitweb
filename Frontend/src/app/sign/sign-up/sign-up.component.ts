@@ -1,12 +1,7 @@
 import { AlertService } from './../../_services/alert.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from './../../_services/authentication.service';
-import {
-  FormControl,
-  FormGroup,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ComparePasswords } from '../../_validators/sign-up.validator';

@@ -44,24 +44,137 @@
             let i = index
           "
         >
-          <td>{{ exercise.name }}</td>
-          <td>{{ exercise.partOfBody }}</td>
+          <td (click)="open(content, exercise)">{{ exercise.name }}</td>
+          <td (click)="open(content, exercise)">{{ exercise.partOfBody }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="pagination">
-    <pagination-controls (pageChange)="onPageChange($event)">
-    </pagination-controls>
-  </div>
-
-  <div class="page-size">
-    <span class="mr-2">Item per page: </span>
-    <select (change)="onPageSizeChange($event)">
-      <option *ngFor="let size of sizes">
-        {{ size }}
-      </option>
-    </select>
+  <div class="pagination-container">
+    <div class="pagination">
+      <pagination-controls
+        class="my-pagination"
+        (pageChange)="onPageChange($event)"
+        responsive="true"
+        autoHide="true"
+      >
+      </pagination-controls>
+    </div>
+    <div class="page-size">
+      <span class="mr-2">Item per page: </span>
+      <select (change)="onPageSizeChange($event)">
+        <option *ngFor="let size of sizes">
+          {{ size }}
+        </option>
+      </select>
+    </div>
   </div>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{ modalExercise.name }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true"> × </span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="addExercise">
+      <input type="hidden" value="{{ modalExercise.id }}" />
+      <div class="row">
+        <div class="col">
+          <label> Weight in kg </label>
+          <input class="form-control" formControlName="weight" />
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.weight.touched &&
+              addExercise.controls.weight.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.weight.touched &&
+              addExercise.controls.weight.errors?.pattern
+            "
+            >It's not number</label
+          >
+        </div>
+        <div class="col">
+          <label> Number of sets </label>
+          <input class="form-control" formControlName="numberOfSets" />
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.numberOfSets.touched &&
+              addExercise.controls.numberOfSets.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.numberOfSets.touched &&
+              addExercise.controls.numberOfSets.errors?.pattern
+            "
+            >It's not number</label
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label> Number of reps </label>
+          <input class="form-control" formControlName="numberOfReps" />
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.numberOfReps.touched &&
+              addExercise.controls.numberOfReps.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              addExercise.controls.numberOfReps.touched &&
+              addExercise.controls.numberOfReps.errors?.pattern
+            "
+            >It's not number</label
+          >
+          <label class="text-danger" *ngIf="error">{{ error }}</label>
+        </div>
+        <div class="col">
+          <label>Day of training</label>
+          <select class="form-control" formControlName="day">
+            <option value="">Select day</option>
+            <option *ngFor="let day of days" [ngValue]="day">
+              {{ day.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      [disabled]="addExercise.invalid"
+      (click)="closeModal(modal)"
+      *ngIf="currentUser"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>

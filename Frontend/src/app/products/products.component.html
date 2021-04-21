@@ -1,6 +1,8 @@
 <div class="products">
   <h1 class="text-center">Products</h1>
 
+  <i class="fas fa-info"></i>
+
   <div class="search-bar">
     <div class="input-group mb-3">
       <input
@@ -48,35 +50,135 @@
             let i = index
           "
         >
-          <td>
+          <td (click)="open(content, product)">
             {{ product.name }}
           </td>
-          <td>
+          <td (click)="open(content, product)">
             {{ product.calories }}
           </td>
-          <td>
+          <td (click)="open(content, product)">
             {{ product.proteins }}
           </td>
-          <td>
+          <td (click)="open(content, product)">
             {{ product.carbohydrates }}
           </td>
-          <td>
+          <td (click)="open(content, product)">
             {{ product.fats }}
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="pagination">
-    <pagination-controls (pageChange)="onPageChange($event)">
-    </pagination-controls>
-  </div>
-  <div class="page-size">
-    <span class="mr-2">Item per page:</span>
-    <select (change)="onPageSizeChange($event)">
-      <option *ngFor="let size of sizes" [ngValue]="size">
-        {{ size }}
-      </option>
-    </select>
+  <div class="pagination-container">
+    <div class="pagination">
+      <pagination-controls
+        class="my-pagination"
+        (pageChange)="onPageChange($event)"
+        responsive="true"
+        autoHide="true"
+      >
+      </pagination-controls>
+    </div>
+    <div class="page-size">
+      <span class="mr-2">Item per page:</span>
+      <select (change)="onPageSizeChange($event)">
+        <option *ngFor="let size of sizes" [ngValue]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
   </div>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{ modalProduct.name }} - press enter to calculate
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true"> × </span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="addProduct">
+      <input type="hidden" value="{{ modalProduct.id }}" />
+      <div class="row">
+        <div class="col">
+          <label> Weight </label>
+          <input
+            class="form-control"
+            formControlName="weight"
+            (change)="calculate($event)"
+          />
+          <label
+            class="text-danger"
+            *ngIf="
+              addProduct.controls.weight.touched &&
+              addProduct.controls.weight.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              addProduct.controls.weight.touched &&
+              addProduct.controls.weight.errors?.pattern
+            "
+            >It's not number</label
+          >
+        </div>
+        <div class="col">
+          <label for="calories"> Kcal </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.calories }}"
+            disabled
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="fats"> Fats </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.fats }}"
+            disabled
+          />
+        </div>
+        <div class="col">
+          <label for="carbohydrates"> Carbohydrates </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.carbohydrates }}"
+            disabled
+          />
+        </div>
+        <div class="col">
+          <label for="proteins"> Proteins </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.proteins }}"
+            disabled
+          />
+        </div>
+      </div>
+      <div class="form-group"></div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      [disabled]="addProduct.invalid"
+      (click)="closeModal(modal)"
+      *ngIf="currentUser"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>

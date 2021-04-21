@@ -16,10 +16,18 @@
 
 */
 
-.home-landing-img {
+.home-landing {
+  position: relative;
+  text-align: center;
+  color: white;
   width: 100%;
-  max-height: 100vh;
+}
+
+.home-landing img {
+  width: 100%;
+
   height: auto;
+  max-height: 800px;
 }
 
 /* 
@@ -28,28 +36,32 @@
 
 */
 
-.caption {
+.caption-wrapper {
+  height: 50%;
   width: 100%;
-  max-width: 100%;
   position: absolute;
-  top: 38%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.caption {
+  color: white;
   z-index: 1;
   color: white;
   text-transform: uppercase;
+  letter-spacing: 0.5rem;
 }
 
-.caption h1 {
+.caption h2 {
   font-size: 3.8rem;
   font-weight: 700;
-  letter-spacing: 0.3rem;
   text-shadow: 0.1rem 0.1rem 0.8rem black;
   padding-bottom: 3rem;
-}
-
-.caption h3 {
-  font-size: 2rem;
-  text-shadow: 0.1rem 0.1rem 0.5rem black;
-  padding-bottom: 1rem;
 }
 
 /* 
@@ -75,10 +87,10 @@
 }
 
 .heading {
-  font-size: 2rem;
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 2rem;
+  font-size: 2rem;
   letter-spacing: 0.4rem;
 }
 
@@ -99,10 +111,12 @@
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-around;
+  margin-bottom: 2rem;
 }
 
 .flex-item {
   text-align: center;
+  padding-bottom: 2rem;
 }
 
 /* 
@@ -141,53 +155,142 @@ i:hover {
   -moz-transform: scale(1.1, 1.1);
 }
 
-@media (max-width: 1200px) {
-  .caption {
-    top: 25%;
+@media screen and (max-width: 1028px) {
+  .caption h2 {
+    font-size: 2.8rem;
+    letter-spacing: 0.15rem;
+    padding-bottom: 0.5rem;
+    padding-top: 3rem;
+  }
+
+  .heading {
+    font-size: 2.6rem;
+  }
+
+  .flex-item {
+    font-size: 1.7rem;
+  }
+
+  .flex-item i {
+    font-size: 4.5rem;
+  }
+
+  .btn-lg {
+    padding: 0.6rem 1.3rem;
+    font-size: 1.7rem;
+    font-weight: 700;
   }
 }
 
-@media (max-width: 800px) {
-  .caption {
-    top: 15%;
-  }
-  .caption h1 {
+@media screen and (max-width: 800px) {
+  .caption h2 {
     font-size: 2rem;
     letter-spacing: 0.15rem;
     padding-bottom: 0.5rem;
-  }
-  .caption h3 {
-    font-size: 1.2rem;
-    padding-bottom: 1.2rem;
-  }
-  .narrow h1 {
-    font-size: 1.5rem;
+    padding-top: 3rem;
   }
 
-  i {
+  .heading {
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .flex-item {
+    font-size: 1.3rem;
+    margin: 0 1rem;
+  }
+
+  .flex-item i {
     font-size: 3rem;
   }
+
   .btn-lg {
-    border-width: medium;
-    border-radius: 1.5rem;
     padding: 0.3rem 1rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 700;
   }
 }
 
-@media (max-width: 700px) {
-  .home-landing-img {
-    width: 100%;
-    max-width: 100vh;
-    height: auto;
+@media screen and (max-width: 640px) {
+  .caption h2 {
+    font-size: 2rem;
+    padding-top: 2rem;
   }
-  .caption h1 {
+
+  .heading {
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .flex-item {
+    font-size: 1.3rem;
+    margin: 0 1rem;
+  }
+
+  .flex-item i {
+    font-size: 3.2rem;
+  }
+
+  .btn-lg {
+    padding: 0.6rem 1.3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .caption h2 {
     font-size: 1.6rem;
-    letter-spacing: 0.15rem;
-    padding-bottom: 0.6rem;
+    padding-top: 2rem;
+    font-weight: 900;
   }
-  .caption h3 {
-    font-size: 1rem;
-    padding-bottom: 1.2rem;
+
+  .heading {
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+
+  .flex-item {
+    font-size: 1.1rem;
+    margin: 0 1rem;
+  }
+
+  .flex-item i {
+    font-size: 2.4rem;
+  }
+
+  .btn-lg {
+    padding: 0.4rem 1.1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .caption h2 {
+    font-size: 1.2rem;
+    padding-top: 2rem;
+    font-weight: 700;
+  }
+
+  .heading {
+    font-size: 1.2rem;
+    letter-spacing: 0.2rem;
+    font-weight: 900;
+  }
+
+  .flex-item {
+    font-size: 1.1rem;
+    margin: 0 1rem;
+  }
+
+  .flex-item i {
+    font-size: 2.5rem;
+  }
+
+  .btn-lg {
+    padding: 0.4rem 0.9rem;
+    font-size: 1.1rem;
+    font-weight: 900;
   }
 }

@@ -1,6 +1,8 @@
 .products {
-  padding-top: 5rem;
+  margin-top: 1rem;
 }
+
+.fa
 
 .search-bar {
   display: flex;
@@ -10,6 +12,10 @@
   flex-direction: row;
 }
 
+select {
+  cursor: pointer;
+}
+
 .input-group {
   padding: 0 1rem;
   width: 400px;
@@ -17,13 +23,16 @@
 
 .form-control {
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
 }
 
 .form-control:hover {
   border: 1px solid #1ebba3;
 }
 
-.form-control:focus {
+.form-control:focus,
+select:focus {
   border: 1px solid #1ebba3;
   box-shadow: 0px 0px 20px 6px rgba(30, 187, 163, 0.37);
 }
@@ -39,14 +48,79 @@ table th {
   text-align: center;
 }
 
+td {
+  cursor: pointer;
+}
+
+.pagination-container {
+  padding-bottom: 3rem;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
-  justify-items: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.my-pagination /deep/ .ngx-pagination a:hover {
+  color: #1ebba3;
+  background: none;
+}
+
+.my-pagination /deep/ .current {
+  background: #94f8e9;
+  color: black;
 }
 
 .page-size {
   position: absolute;
   right: 0;
-  margin-right: 3rem;
+  margin-right: 2rem;
+}
+
+@media screen and (max-width: 1028px) {
+  .form-control {
+    font-size: 1.5rem;
+  }
+
+  table th {
+    font-size: 1.8rem;
+  }
+
+  table td {
+    font-size: 1.5rem;
+  }
+
+  .pagination {
+    font-size: 1.5rem;
+  }
+  .page-size {
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .pagination {
+    margin-right: 2rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .my-pagination {
+    font-size: 0.9rem;
+  }
+
+  .pagination {
+    padding-right: 2.5rem;
+  }
+
+  .pagination {
+    width: 100%;
+  }
+
+  .page-size {
+    margin-right: 1rem;
+    font-size: 1rem;
+  }
 }

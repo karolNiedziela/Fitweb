@@ -1,6 +1,6 @@
 .exercises {
-  padding-top: 5rem;
   width: 100%;
+  margin-top: 1rem;
 }
 
 .search-bar {
@@ -40,6 +40,37 @@
   font-size: 1.3rem;
 }
 
+td {
+  cursor: pointer;
+}
+
+.pagination-container {
+  padding-bottom: 3rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.my-pagination /deep/ .ngx-pagination a:hover {
+  color: #1ebba3;
+  background: none;
+}
+
+.my-pagination /deep/ .current {
+  background: #94f8e9;
+  color: black;
+}
+
+.page-size {
+  position: absolute;
+  right: 0;
+  margin-right: 2rem;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -50,4 +81,73 @@
   position: absolute;
   right: 0;
   margin-right: 3rem;
+}
+
+@media screen and (max-width: 1028px) {
+  .form-control {
+    font-size: 1.7rem;
+  }
+
+  .content {
+    display: flex;
+    justify-content: center;
+    width: 75%;
+    margin: 0 auto;
+  }
+
+  table tr th {
+    font-size: 1.8rem;
+  }
+
+  table td {
+    font-size: 1.5rem;
+  }
+
+  .pagination {
+    font-size: 1.5rem;
+    margin-right: 4rem;
+  }
+  .page-size {
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .pagination {
+    margin-right: 3.5rem;
+  }
+
+  .content {
+    display: flex;
+    justify-content: center;
+    width: 75%;
+    margin: 0 auto;
+  }
+
+  table tr th {
+    font-size: 1.7rem;
+  }
+
+  table td {
+    font-size: 1.3rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .my-pagination {
+    font-size: 0.9rem;
+  }
+
+  .pagination {
+    padding-right: 2.5rem;
+  }
+
+  .pagination {
+    width: 100%;
+  }
+
+  .page-size {
+    margin-right: 1rem;
+    font-size: 1rem;
+  }
 }

@@ -12,5 +12,13 @@ export class HomepageComponent implements OnInit {
     this.titleService.setTitle('Fitweb');
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    let caption = document.querySelector<HTMLElement>('.caption');
+    let homeLanding = document.querySelector('img');
+    let navbar = document.querySelector<HTMLElement>('nav');
+
+    homeLanding.onload = () => {
+      caption.style.top = navbar.clientHeight + homeLanding.height * 0.5 + 'px';
+    };
+  }
 }

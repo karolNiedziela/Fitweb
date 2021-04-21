@@ -7,3 +7,9 @@
   color: #16caaf;
   cursor: pointer;
 }
+
+@media screen and (max-width: 1028px) {
+  .forgot-password {
+    font-size: 1.2rem;
+  }
+}

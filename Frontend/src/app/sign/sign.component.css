@@ -17,8 +17,8 @@
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
-  margin: 0 auto;
-  padding: 8rem 1rem 0 1rem;
+  margin: 0 auto 0 0;
+  padding: 3rem 1rem 0 1rem;
   align-items: center;
 }
 
@@ -31,7 +31,8 @@
 .manual {
   border-radius: 10px 10px 10px 10px;
   background: #2e3137;
-  padding: 30px 45px;
+  padding: 1.8rem 2.8rem;
+  margin-bottom: 2rem;
   box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
   height: auto;
   width: 500px;
@@ -59,13 +60,13 @@
 
 .tab-header h2 {
   text-align: center;
-  font-size: 18px;
+  font-size: 1.1rem;
   font-weight: 600;
   display: inline-block;
-  padding: 30px 40px 10px 40px;
+  padding: 1.8rem 2.5rem 0.6rem 2.5rem;
   cursor: pointer;
-  color: #545d6a;
-  border-bottom: 2px solid #545d6a;
+  color: #939daa;
+  border-bottom: 2px solid #939daa;
 }
 
 .tab-header h2:focus {
@@ -79,7 +80,7 @@
 */
 
 form {
-  margin: 0px 16px;
+  margin: 0px 1rem;
 }
 
 /*
@@ -165,4 +166,32 @@ div.form-group.required > label:first-child:after {
 
 .btn-google:hover {
   background: rgb(248, 239, 223);
+}
+
+@media screen and (max-width: 1024px) {
+  .tab-header h2 {
+    font-size: 1.8rem;
+  }
+
+  div.form-group label:first-child {
+    font-size: 1.2rem;
+  }
+
+  input.form-control {
+    font-size: 1.5rem;
+  }
+
+  .text-danger {
+    font-size: 1.4rem;
+  }
+
+  .external .btn {
+    font-size: 1.8rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .external .btn {
+    font-size: 1.2rem;
+  }
 }

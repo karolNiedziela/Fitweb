@@ -1,0 +1,33 @@
+<div class="calendar">
+  <div class="calendar-arrow">
+    <i
+      class="fas fa-chevron-left"
+      (click)="calendarService.changeDateByOneDay(-1)"
+    ></i>
+  </div>
+  <input type="hidden" name="dp" />
+  <button class="calendar-details" (click)="show()">
+    <div class="calendar-detail">
+      {{ calendar.dayNumber }}
+      {{ calendar.monthName }}
+    </div>
+    <div class="calendar-break"></div>
+    <div class="calendar-detail">
+      {{ calendar.year }}
+      {{ calendar.dayName }}
+    </div>
+  </button>
+  <div class="calendar-arrow">
+    <i
+      class="fas fa-chevron-right"
+      (click)="calendarService.changeDateByOneDay(1)"
+    ></i>
+  </div>
+</div>
+<div class="datepicker" hidden>
+  <ngb-datepicker
+    #dp
+    [(ngModel)]="model"
+    (dateSelect)="calendarService.changeDateEvent($event)"
+  ></ngb-datepicker>
+</div>

@@ -1,7 +1,7 @@
 import { Jwt } from './../_models/jwt';
 import { AuthenticationService } from './../_services/authentication.service';
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -10,6 +10,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
   currentUser: Jwt;
+
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService
@@ -19,8 +20,8 @@ export class HeaderComponent implements OnInit {
     this.authenticationService.jwt.subscribe((x) => (this.currentUser = x));
   }
 
-  redirect(): void {
-    this.router.navigate(['sign', 'in']);
+  public isActive(base: string): boolean {
+    return this.router.url.includes(`/${base}`);
   }
 
   logout(): void {

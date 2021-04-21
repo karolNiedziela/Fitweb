@@ -1,6 +1,6 @@
 .navbar {
   text-transform: uppercase;
-  padding: 10px 0;
+  padding: 10px 60px 10px 20px;
   font-size: 0.9rem;
   background: rgba(0, 0, 0, 0.7) !important;
 }
@@ -38,6 +38,10 @@
   cursor: pointer;
 }
 
+.navbar-toggler:hover {
+  border-color: #1ebba3;
+}
+
 .dropdown-menu.show {
   background-color: rgba(0, 0, 0, 0.7) !important;
   margin-top: 0.58rem;
@@ -58,13 +62,63 @@
   background: none;
 }
 
+.dropdown-item.active {
+  background-color: transparent;
+}
+
 .active {
   color: #1ebba3 !important;
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 1028px) {
+  .navbar-brand {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .navbar {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 1024px) {
   .dropdown-menu.show {
     background-color: rgba(0, 0, 0, 0) !important;
     border: none;
+  }
+  .navbar {
+    font-size: 1.1rem;
+  }
+
+  a {
+    font-size: 1.4rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  button {
+    margin-right: -1.5rem;
+  }
+
+  .toggler {
+    width: 20px;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  nav {
+    width: 100%;
+  }
+
+  button {
+    margin-right: -2rem;
+  }
+
+  a {
+    font-size: 1rem;
   }
 }

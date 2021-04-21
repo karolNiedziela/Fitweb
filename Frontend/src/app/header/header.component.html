@@ -1,5 +1,5 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" routerLink="">Fitweb</a>
     <button
       class="navbar-toggler"
@@ -36,9 +36,8 @@
         <li class="nav-item" *ngIf="!currentUser">
           <a
             class="nav-link"
-            routerLink="sign"
-            routerLinkActive="active"
-            (click)="redirect()"
+            routerLink="sign/in"
+            [class.active]="isActive('sign')"
             >Sign in</a
           >
         </li>
@@ -46,17 +45,23 @@
         <li class="nav-item dropdown" *ngIf="currentUser">
           <a
             class="nav-link dropdown-toggle"
-            href="#"
             id="navbarDropdown"
             role="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
+            [class.active]="isActive('account')"
             >Profile</a
           >
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
+            <a
+              href="#"
+              class="dropdown-item"
+              routerLink="account/overview"
+              routerLinkActive="active"
+              >Account</a
+            >
+            <a href="#" class="dropdown-item" (click)="logout()">Logout</a>
           </div>
         </li>
       </ul>

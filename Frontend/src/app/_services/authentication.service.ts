@@ -21,14 +21,17 @@ export class AuthenticationService {
   private refreshTokenTimeout;
 
   constructor(private router: Router, private http: HttpClient) {
-    this.jwtSubject = new BehaviorSubject<Jwt>( // necessity of initialization the BehaviourSubject
-      // Parse to the JWT object
+    this.jwtSubject = new BehaviorSubject<Jwt>(
       JSON.parse(localStorage.getItem('jwt'))
-    );
+    ); // necessity of initialization the BehaviourSubject
     // get an observable from BehaviourSubject
     // to prevent nexting values into to the subject
     // now can only listening, can't emit
     this.jwt = this.jwtSubject.asObservable();
+
+    if (this.jwtValue?.expires) {
+      this.startRefreshTokenTimer();
+    }
   }
 
   public get jwtValue(): Jwt {
@@ -98,8 +101,8 @@ export class AuthenticationService {
 
     // call revoke token to request the server to marked token as revoked
     this.revokeToken().subscribe(() => {
-      this.jwtSubject.next(null);
       this.stopRefreshTokenTimer();
+      this.jwtSubject.next(null);
       this.router.navigate(['/sign/in']);
     });
   }
@@ -111,6 +114,8 @@ export class AuthenticationService {
       })
       .pipe(
         map((jwt) => {
+          localStorage.removeItem('jwt');
+          localStorage.setItem('jwt', JSON.stringify(jwt));
           this.jwtSubject.next(jwt);
           this.startRefreshTokenTimer();
           return jwt;
@@ -127,7 +132,6 @@ export class AuthenticationService {
   // count when token will expire and refresh its one minute before expiration
   private startRefreshTokenTimer() {
     const expires = new Date(this.jwtValue.expires);
-
     const timeout = expires.getTime() - Date.now() - 60 * 1000;
 
     this.refreshTokenTimeout = setTimeout(

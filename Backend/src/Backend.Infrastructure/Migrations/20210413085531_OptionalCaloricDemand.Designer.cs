@@ -4,14 +4,16 @@ using Backend.Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(FitwebContext))]
-    partial class FitwebContextModelSnapshot : ModelSnapshot
+    [Migration("20210413085531_OptionalCaloricDemand")]
+    partial class OptionalCaloricDemand
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,34 +49,6 @@ namespace Backend.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Athletes");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.AthleteDietStats", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DietStatId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DietStatId");
-
-                    b.HasIndex("UserId", "DietStatId");
-
-                    b.ToTable("AthleteDietStats");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.AthleteExercise", b =>
@@ -114,12 +88,10 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.AthleteProduct", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
@@ -128,17 +100,12 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
-                    b.HasKey("Id");
+                    b.HasKey("AthleteId", "ProductId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("AthleteId", "ProductId");
 
                     b.ToTable("AthleteProducts");
                 });
@@ -170,7 +137,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CaloricDemands");
+                    b.ToTable("CaloricDemand");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.CategoryOfProduct", b =>
@@ -297,36 +264,6 @@ namespace Backend.Infrastructure.Migrations
                             Id = 7,
                             Name = "Sunday"
                         });
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.DietStat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("TotalCalories")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalCarbohydrates")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalFats")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalProteins")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DietStats");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Exercise", b =>
@@ -705,25 +642,6 @@ namespace Backend.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.AthleteDietStats", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.DietStat", "DietStat")
-                        .WithMany()
-                        .HasForeignKey("DietStatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Core.Entities.Athlete", "Athlete")
-                        .WithMany("AthleteDietStats")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Athlete");
-
-                    b.Navigation("DietStat");
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.AthleteExercise", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Athlete", "Athlete")
@@ -849,8 +767,6 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Athlete", b =>
                 {
-                    b.Navigation("AthleteDietStats");
-
                     b.Navigation("AthleteExercises");
 
                     b.Navigation("AthleteProducts");

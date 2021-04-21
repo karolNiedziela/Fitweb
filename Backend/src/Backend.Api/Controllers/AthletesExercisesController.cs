@@ -3,6 +3,7 @@ using Backend.Infrastructure.CommandQueryHandler.Commands;
 using Backend.Infrastructure.CommandQueryHandler.Queries.Athletes;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Services.Logger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace Backend.Api.Controllers
 {
-    [Route("athlete/exercises")]
+    [Route("api/athletes/exercises")]
+    [Authorize]
     [ApiController]
     public class AthletesExercisesController : ApiControllerBase
     {
@@ -59,6 +61,7 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Post([FromBody]AddAthleteExercise command)
         {
+            command.UserId = UserId;
             await DispatchAsync(command);
 
             _logger.LogInfo($"Exercise with id: {command.ExerciseId} added to athlete with user id: {command.UserId}.");

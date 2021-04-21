@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Backend.Api.Controllers
 {
     [ApiController]
-    [Route("athlete/products")]
+    [Route("api/athletes/products")]
     [Authorize]
     public class AthletesProductsController : ApiControllerBase
     {
@@ -61,6 +61,7 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody]AddAthleteProduct command)
         {
+            command.UserId = UserId;
             await DispatchAsync(command);
 
             _logger.LogInfo($"Product with id: {command.ProductId} added to athlete with user id: {command.UserId}.");

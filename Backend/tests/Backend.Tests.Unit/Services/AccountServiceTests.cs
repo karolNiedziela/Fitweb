@@ -8,6 +8,7 @@ using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.Account;
 using Backend.Infrastructure.Settings;
 using Backend.Tests.Unit.Fixtures;
@@ -39,6 +40,7 @@ namespace Backend.Tests.Unit.Services
         private readonly AccountService _sut;
         private readonly IFixture _fixture;
         private readonly GeneralSettings _generalSettings;
+        private readonly IAthleteService _athleteService;
 
         public AccountServiceTests()
         {
@@ -55,9 +57,10 @@ namespace Backend.Tests.Unit.Services
             _fakeUserManager = Substitute.For<FakeUserManager>();
             _emailService = Substitute.For<IEmailService>();
             _generalSettings = Substitute.For<GeneralSettings>();
+            _athleteService = Substitute.For<IAthleteService>();
 
             _sut = new AccountService(_userRepository, _passwordHandler, _jwtHandler, _refreshTokenFactory,
-                _refreshTokenRepository, _fakeUserManager, _generalSettings, _emailService);
+                _refreshTokenRepository, _fakeUserManager, _generalSettings, _emailService, _athleteService);
         }
 
         [Theory]

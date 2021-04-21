@@ -8,6 +8,7 @@ using Backend.Infrastructure.Auth;
 using Backend.Infrastructure.DTO;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.External;
+using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Services.External;
 using Backend.Tests.Unit.Fixtures;
 using NSubstitute;
@@ -28,6 +29,7 @@ namespace Backend.Tests.Unit.Services
         private readonly ExternaLoginService _sut;
         private readonly FakeUserManager _fakeUserManager;
         private readonly IFixture _fixture;
+        private readonly IAthleteService _athleteService;
 
         public ExternalLoginServiceTests()
         {
@@ -38,8 +40,9 @@ namespace Backend.Tests.Unit.Services
             _refreshTokenFactory = new RefreshTokenFactory(new Rng(), new DateTimeProvider());
             _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
             _fakeUserManager = Substitute.For<FakeUserManager>();
+            _athleteService = Substitute.For<IAthleteService>();
             _sut = new ExternaLoginService(_facebookAuthService, _userRepository, _jwtHandler,
-                _refreshTokenFactory, _refreshTokenRepository, _fakeUserManager);
+                _refreshTokenFactory, _refreshTokenRepository, _fakeUserManager, _athleteService);
         }
 
         [Fact]

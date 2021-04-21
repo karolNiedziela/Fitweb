@@ -4,7 +4,7 @@ using Backend.Core.Exceptions;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
 using Backend.Infrastructure.Extensions;
-using Backend.Infrastructure.Services.AthleteCaloricDemand;
+using Backend.Infrastructure.Services;
 using NSubstitute;
 using Shouldly;
 using System;

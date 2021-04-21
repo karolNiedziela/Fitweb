@@ -48,7 +48,7 @@ namespace Backend.Infrastructure.Repositories
         public async Task AddAsync(Athlete athlete)
         {
             await _context.Athletes.AddAsync(athlete);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();      
         }
 
         public async Task DeleteAsync(Athlete athlete)
@@ -60,6 +60,15 @@ namespace Backend.Infrastructure.Repositories
         public async Task UpdateAsync(Athlete athlete)
         {
             _context.Athletes.Update(athlete);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveProductAsync(Athlete athlete, AthleteProduct product)
+        {
+            _context.Athletes.Attach(athlete);
+
+            athlete.AthleteProducts.Remove(product);
+
             await _context.SaveChangesAsync();
         }
     }

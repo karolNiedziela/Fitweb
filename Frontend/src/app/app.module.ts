@@ -29,6 +29,12 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ExercisesComponent } from './exercises/exercises.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
+import { AccountComponent } from './account/account.component';
+import { AccountOverviewComponent } from './account/account-overview/account-overview.component';
+import { AccountProductsComponent } from './account/account-products/account-products.component';
+import { AccountExercisesComponent } from './account/account-exercises/account-exercises.component';
+import { CalendarComponent } from './calendar/calendar.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export function tokenGetter() {
   return localStorage.getItem('jwt');
@@ -49,6 +55,11 @@ export function tokenGetter() {
     ProductsComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
+    AccountComponent,
+    AccountOverviewComponent,
+    AccountProductsComponent,
+    AccountExercisesComponent,
+    CalendarComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +74,7 @@ export function tokenGetter() {
       },
     }),
     NgxPaginationModule,
+    NgbModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },

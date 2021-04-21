@@ -1,3 +1,7 @@
+import { CalendarComponent } from './calendar/calendar.component';
+import { AccountOverviewComponent } from './account/account-overview/account-overview.component';
+import { AccountProductsComponent } from './account/account-products/account-products.component';
+import { AccountComponent } from './account/account.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ExercisesComponent } from './exercises/exercises.component';
 import { ProductsComponent } from './products/products.component';
@@ -11,6 +15,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { SignUpComponent } from './sign/sign-up/sign-up.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
+import { AccountExercisesComponent } from './account/account-exercises/account-exercises.component';
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },
@@ -29,6 +34,17 @@ const routes: Routes = [
   { path: 'exercises', component: ExercisesComponent },
   { path: 'forgotpassword', component: ForgotPasswordComponent },
   { path: 'resetpassword', component: ResetPasswordComponent },
+  { path: 'calendar', component: CalendarComponent },
+  {
+    path: 'account',
+    component: AccountComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'overview', component: AccountOverviewComponent },
+      { path: 'products', component: AccountProductsComponent },
+      { path: 'exercises', component: AccountExercisesComponent },
+    ],
+  },
 ];
 
 @NgModule({

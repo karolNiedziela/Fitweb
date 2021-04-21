@@ -23,5 +23,7 @@ namespace Backend.Core.Repositories
         Task DeleteAsync(Athlete athlete);
 
         Task UpdateAsync(Athlete athlete);
+
+        Task RemoveProductAsync(Athlete athlete, AthleteProduct product);
     }
 }

@@ -107,8 +107,9 @@ namespace Backend.Infrastructure.Services
             }
 
             athlete = new Athlete(user);
-            await _athleteRepository.AddAsync(athlete);
 
+            await _athleteRepository.AddAsync(athlete);
+           
             return athlete.Id;
         }
 

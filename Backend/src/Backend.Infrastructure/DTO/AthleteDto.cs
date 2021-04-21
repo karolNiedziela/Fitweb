@@ -15,5 +15,7 @@ namespace Backend.Infrastructure.DTO
         public List<AthleteExerciseDto> Exercises { get; set; }
 
         public CaloricDemandDto CaloricDemand { get; set; }
+
+        public List<AthleteDietStatsDto> DietStats { get; set; }
     }
 }

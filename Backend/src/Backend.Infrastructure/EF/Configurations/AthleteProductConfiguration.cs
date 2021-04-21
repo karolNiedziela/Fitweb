@@ -11,15 +11,14 @@ namespace Backend.Infrastructure.EF.Configurations
     {
         public override void Configure(EntityTypeBuilder<AthleteProduct> builder)
         {
-            builder.HasKey(ap => new { ap.AthleteId, ap.ProductId });
-
             builder.HasOne(ap => ap.Athlete)
                    .WithMany(a => a.AthleteProducts)
                    .HasForeignKey(ap => ap.AthleteId);
 
-            builder.Ignore(ap => ap.Id);
-
             builder.Property(up => up.Weight).IsRequired().HasColumnType("float");
+
+            builder.HasIndex(ap => new { ap.AthleteId, ap.ProductId })
+                   .IsUnique(false);
         }
     }
 }

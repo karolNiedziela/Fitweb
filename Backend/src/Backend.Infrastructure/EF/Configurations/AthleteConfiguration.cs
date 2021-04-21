@@ -12,7 +12,9 @@ namespace Backend.Infrastructure.EF.Configurations
         {
             builder.HasOne(a => a.User);
 
-            builder.HasOne(a => a.CaloricDemand);
+            builder.HasOne(a => a.CaloricDemand)
+                   .WithOne(cd => cd.Athlete)
+                   .IsRequired(false);
         }
     }
 }

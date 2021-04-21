@@ -22,12 +22,13 @@ namespace Backend.Infrastructure.Mappers
                      {
                          Product = new Product
                          {
-                             Id = ap.Product.Id,                          
+                             Id = ap.Product.Id,
                              Name = ap.Product.Name,
                              Calories = ap.Product.Calories,
                              Proteins = ap.Product.Proteins,
                              Carbohydrates = ap.Product.Carbohydrates,
-                             Fats = ap.Product.Fats
+                             Fats = ap.Product.Fats,
+                             CategoryOfProduct = ap.Product.CategoryOfProduct
                          },
                          Weight = ap.Weight,
                          DateCreated = ap.DateCreated
@@ -35,17 +36,31 @@ namespace Backend.Infrastructure.Mappers
                    .ForMember(dest => dest.Exercises, opt => opt.MapFrom(x => x.AthleteExercises.Select(
                     ae => new AthleteExercise
                     {
-                         Exercise = new Exercise
-                         {
-                             Id = ae.Exercise.Id,
-                             PartOfBody = ae.Exercise.PartOfBody,
-                             Name = ae.Exercise.Name
-                         },
-                         Weight = ae.Weight,
-                         NumberOfSets = ae.NumberOfSets,
-                         NumberOfReps = ae.NumberOfReps,
-                         Day = ae.Day,
-                    }).ToList()));
+                        Exercise = new Exercise
+                        {
+                            Id = ae.Exercise.Id,
+                            PartOfBody = ae.Exercise.PartOfBody,
+                            Name = ae.Exercise.Name
+                        },
+                        Weight = ae.Weight,
+                        NumberOfSets = ae.NumberOfSets,
+                        NumberOfReps = ae.NumberOfReps,
+                        Day = ae.Day,
+                    }).ToList()))
+                   .ForMember(dest => dest.DietStats, opt => opt.MapFrom(x => x.AthleteDietStats.Select(
+                       ads => new AthleteDietStats
+                       {
+                           DietStat = new DietStat
+                           {
+                               Id = ads.Id,
+                               TotalCalories = ads.DietStat.TotalCalories,
+                               TotalProteins = ads.DietStat.TotalProteins,
+                               TotalCarbohydrates = ads.DietStat.TotalCarbohydrates,
+                               TotalFats = ads.DietStat.TotalFats,
+                               DateCreated = ads.DietStat.DateCreated
+                           },
+ 
+                       }).ToList()));
                 cfg.CreateMap<Product, ProductDto>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name.ToString().Replace("_", " ")));
                 cfg.CreateMap<AthleteProduct, AthleteProductDto>().ForMember(dest => dest.DateCreated, opt => opt.MapFrom(ap => ap.DateCreated.ToShortDateString()))
@@ -56,6 +71,8 @@ namespace Backend.Infrastructure.Mappers
                    .ForMember(dest => dest.Day, opt => opt.MapFrom(ae => ae.Day.Name));
                 cfg.CreateMap<CaloricDemand, CaloricDemandDto>();
                 cfg.CreateMap(typeof(PagedList<>), typeof(PageResultDto<>)).ConvertUsing(typeof(PagedListToPageResultDtoConverter<,>));
+                cfg.CreateMap<DietStat, DietStatDto>();
+                cfg.CreateMap<AthleteDietStats, AthleteDietStatsDto>();
             })
             .CreateMapper();
     }

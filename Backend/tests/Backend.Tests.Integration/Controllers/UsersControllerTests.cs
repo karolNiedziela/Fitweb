@@ -38,7 +38,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnNotFound_WhenUserDoesNotExist()
         {
-            // 1 is tesAdmin
+            // 1 is testAdmin
             // 2 is testUser
             var client = FreshClient();
             var userId = 3;

@@ -54,7 +54,9 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var response = await _client.GetAsync("/api/account/me");
+            var client = FreshClient();
+
+            var response = await client.GetAsync("/api/account/me");
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -125,6 +127,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task SignUp_ShouldReturnBadRequest_WhenSignUpDataIsInvalid()
         {
+            var client = FreshClient();
             var signUp = new SignUp
             {
                 Username = "use", // too short username
@@ -132,7 +135,7 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "123" // too short
             };
 
-            var response = await _client.PostAsJsonAsync("api/account/signup", signUp);
+            var response = await client.PostAsJsonAsync("api/account/signup", signUp);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }

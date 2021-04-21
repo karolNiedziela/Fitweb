@@ -18,6 +18,9 @@ namespace Backend.Tests.Integration.Helpers
 {
     public static class HttpClientExtensions
     {
+        private static HttpContent Serialize(object data) => new StringContent(JsonConvert.SerializeObject(data),
+            Encoding.UTF8, "application/json");
+
         public static async Task<HttpResponseMessage> DeleteAsJsonAsync<T>(this HttpClient httpClient, string requestUri, T data)
             => await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri)
             {
@@ -55,9 +58,7 @@ namespace Backend.Tests.Integration.Helpers
                 Password = "testAdminSecret"
             });
 
-            var resultLoginResponse = await loginResponse.Content.ReadAsStringAsync();
-
-            var model = JsonConvert.DeserializeObject<JwtDto>(resultLoginResponse);
+            var model = await loginResponse.ReadAsString<JwtDto>();
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);           
         }
@@ -70,14 +71,11 @@ namespace Backend.Tests.Integration.Helpers
                 Password = "testUserSecret"
             });
 
-            var resultLoginResponse = await loginResponse.Content.ReadAsStringAsync();
-
-            var model = JsonConvert.DeserializeObject<JwtDto>(resultLoginResponse);
+            var model = await loginResponse.ReadAsString<JwtDto>();
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);
         } 
 
-        private static HttpContent Serialize(object data) => new StringContent(JsonConvert.SerializeObject(data),
-            Encoding.UTF8, "application/json");
+
     }
 }

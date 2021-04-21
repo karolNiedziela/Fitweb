@@ -18,6 +18,8 @@ namespace Backend.Core.Entities
 
         public int? CaloricDemandId { get; set; }
 
+        public ICollection<AthleteDietStats> AthleteDietStats { get; set; } = new List<AthleteDietStats>();
+
         public Athlete()
         {
 

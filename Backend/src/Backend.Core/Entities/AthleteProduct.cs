@@ -17,6 +17,7 @@ namespace Backend.Core.Entities
 
         public double Weight { get; set; } // in grams
 
+
         public AthleteProduct()
         {
 
@@ -27,6 +28,7 @@ namespace Backend.Core.Entities
             Athlete = athlete;
             Product = product;
             SetWeight(weight);
+
         }
   
 

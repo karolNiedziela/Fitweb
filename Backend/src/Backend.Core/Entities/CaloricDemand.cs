@@ -17,6 +17,8 @@ namespace Backend.Core.Entities
 
         public double Fats { get; set; }
 
+        public Athlete Athlete { get; set; }
+
         public CaloricDemand()
         {
 

@@ -45,5 +45,11 @@ namespace Backend.Infrastructure.EF
         public DbSet<CategoryOfProduct> CategoriesOfProduct { get; set; }
 
         public DbSet<PartOfBody> PartOfBodies { get; set; }
+
+        public DbSet<CaloricDemand> CaloricDemands { get; set; }
+
+        public DbSet<AthleteDietStats> AthleteDietStats { get; set; }
+
+        public DbSet<DietStat> DietStats { get; set; }
     }
 }

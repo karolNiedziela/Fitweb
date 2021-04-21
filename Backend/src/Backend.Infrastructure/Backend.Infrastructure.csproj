@@ -44,4 +44,10 @@
     <ProjectReference Include="..\Backend.Core\Backend.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\AthleteCaloricDemand\" />
+    <Folder Include="Services\AthleteExercise\" />
+    <Folder Include="Services\AthleteProduct\" />
+  </ItemGroup>
+
 </Project>

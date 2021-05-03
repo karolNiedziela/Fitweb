@@ -45,37 +45,10 @@ namespace Backend.Tests.Integration.Helpers
         {
             var response = await httpClient.PostAsync(requestUri, Serialize(data));
 
-            var model = await response.ReadAsString<T>();
+            var model = await response.Content.ReadAsAsync<T>();
 
             return model;
-        }
-
-        public static async Task AuthenticateAsync(this HttpClient httpClient)
-        {
-            var loginResponse = await httpClient.PostAsJsonAsync("https://localhost:5001/api/account/signin", new SignIn
-            {
-                Username = "testAdmin",
-                Password = "testAdminSecret"
-            });
-
-            var model = await loginResponse.ReadAsString<JwtDto>();
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);           
-        }
-
-        public static async Task AuthenticateUserAsync(this HttpClient httpClient)
-        {
-            var loginResponse = await httpClient.PostAsJsonAsync("https://localhost:5001/api/account/signin", new SignIn
-            {
-                Username = "testUser",
-                Password = "testUserSecret"
-            });
-
-            var model = await loginResponse.ReadAsString<JwtDto>();
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.AccessToken);
-        } 
-
+        }   
 
     }
 }

@@ -20,32 +20,19 @@ using Xunit;
 
 namespace Backend.Tests.Integration.Controllers
 {
-    public class AccountControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class AccountControllerTests : BaseIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<Startup> _factory;
-
-        public AccountControllerTests(CustomWebApplicationFactory<Startup> factory)
-        {
-            _factory = factory;
-            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false
-            });
-        }
-
         [Fact]
         public async Task Get_ShouldReturnOk_WhenUserIsAuthorized()
         {
-            var client = FreshClient();
-            await client.AuthenticateUserAsync();
+            await AuthenticateUserAsync();
 
-            var response = await client.GetAsync("/api/account/me");
+            var response = await _client.GetAsync("/api/account/me");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var user = await response.ReadAsString<UserDto>();
+            var user = await response.Content.ReadAsAsync<UserDto>();
             user.Email.ShouldBe("testUserEmail@email.com");
             user.UserName.ShouldBe("testUser");
             user.Role.ShouldBe(RoleId.User.ToString());
@@ -54,9 +41,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var client = FreshClient();
-
-            var response = await client.GetAsync("/api/account/me");
+            var response = await _client.GetAsync("/api/account/me");
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -64,8 +49,6 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task SigIn_ShouldReturnOk_WhenSignInDataIsValid()
         {
-            var client = FreshClient();
-
             var user = new SignUp
             {
                 Username = "UserTest",
@@ -73,9 +56,9 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "Secret1="
             };
 
-            await client.PostAsJsonAsync("/api/account/signup", user);
+            await _client.PostAsJsonAsync("/api/account/signup", user);
 
-            var response = await client.PostAsJsonAsync("/api/account/signin", new SignIn
+            var response = await _client.PostAsJsonAsync("/api/account/signin", new SignIn
             {
                 Username = user.Username,
                 Password = user.Password
@@ -84,7 +67,7 @@ namespace Backend.Tests.Integration.Controllers
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var jwt = await response.ReadAsString<JwtDto>();
+            var jwt = await response.Content.ReadAsAsync<JwtDto>();
 
             jwt.Username.ShouldBe(user.Username);
             jwt.Role.ShouldBe(RoleId.User.ToString());     
@@ -93,14 +76,13 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task SignIn_ShouldReturnBadRequest_WhenSignInDataIsInvalid()
         {
-            var client = FreshClient();
             var signIn = new SignIn
             {
                 Username = "UserTest",
                 Password = "Secret1="
             };
 
-            var response = await client.PostAsJsonAsync("api/account/signin", signIn);
+            var response = await _client.PostAsJsonAsync("api/account/signin", signIn);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
@@ -108,7 +90,6 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task SignUp_ShouldReturnCreate_WhenSignUpDataIsValid()
         {
-            var client = FreshClient();
             var signUp = new SignUp
             {
                 Username = "UserTest",
@@ -116,18 +97,17 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "Secret1="
             };
 
-            var response = await client.PostAsJsonAsync("api/account/signup", signUp);
+            var response = await _client.PostAsJsonAsync("api/account/signup", signUp);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var result = await response.ReadAsString<SignUp>();
+            var result = await response.Content.ReadAsAsync<SignUp>();
         }
 
         [Fact]
         public async Task SignUp_ShouldReturnBadRequest_WhenSignUpDataIsInvalid()
         {
-            var client = FreshClient();
             var signUp = new SignUp
             {
                 Username = "use", // too short username
@@ -135,7 +115,7 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "123" // too short
             };
 
-            var response = await client.PostAsJsonAsync("api/account/signup", signUp);
+            var response = await _client.PostAsJsonAsync("api/account/signup", signUp);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
@@ -143,8 +123,6 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task ChangePassword_ShouldReturnNoContent_WhenUserIsAuthorized()
         {
-            var client = FreshClient();
-
             var signUp = new SignUp
             {
                 Username = "changeUser",
@@ -152,7 +130,7 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "change123"
             };
 
-            await client.PostAsJsonAsync("api/account/signup", signUp);
+            await _client.PostAsJsonAsync("api/account/signup", signUp);
 
             var signIn = new SignIn
             {
@@ -160,13 +138,13 @@ namespace Backend.Tests.Integration.Controllers
                 Password = "change123"
             };
 
-            var signInResponse = await client.PostAsJsonAsync("/api/account/signin", signIn);
+            var signInResponse = await _client.PostAsJsonAsync("/api/account/signin", signIn);
 
             var signInResult = await signInResponse.Content.ReadAsStringAsync();
 
             var jwt = JsonConvert.DeserializeObject<JwtDto>(signInResult);
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt.AccessToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt.AccessToken);
 
             var changePassword = new ChangePassword
             {
@@ -174,7 +152,7 @@ namespace Backend.Tests.Integration.Controllers
                 NewPassword = "newChange"
             };
 
-            var response = await client.PatchAsJsonAsync("api/account/changepassword", changePassword);
+            var response = await _client.PatchAsJsonAsync("api/account/changepassword", changePassword);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -183,14 +161,13 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task ChangePassword_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var client = FreshClient();
             var changePassword = new ChangePassword
             {
                 OldPassword = "Secret1",
                 NewPassword = "Secret2"
             };
 
-            var response = await client.PatchAsJsonAsync("api/account/changepassword", changePassword);
+            var response = await _client.PatchAsJsonAsync("api/account/changepassword", changePassword);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -198,9 +175,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task ChangePassword_ShouldReturnBadRequest_WhenPasswordInInvalid()
         {
-            var client = FreshClient();
-
-            await client.AuthenticateUserAsync();
+            await AuthenticateUserAsync();
 
             var changePassword = new ChangePassword
             {
@@ -208,7 +183,7 @@ namespace Backend.Tests.Integration.Controllers
                 NewPassword = "Secret2"
             };
 
-            var response = await client.PatchAsJsonAsync("api/account/changepassword", changePassword);
+            var response = await _client.PatchAsJsonAsync("api/account/changepassword", changePassword);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
@@ -216,14 +191,12 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task ForgotPassword_ShouldReturnNoContent_WhenEmailIsValid()
         {
-            var client = FreshClient();
-
             var forgotPassword = new ForgotPassword
             {
                 Email = "testUserEmail@email.com"
             };
 
-            var response = await client.PostAsJsonAsync("api/account/forgotpassword", forgotPassword);
+            var response = await _client.PostAsJsonAsync("api/account/forgotpassword", forgotPassword);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -232,39 +205,14 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task ForgotPassword_ShouldReturnBadRequest_WhenEmailIsNotValid()
         {
-            var client = FreshClient();
-
             var forgotPassword = new ForgotPassword
             {
                 Email = "nonExisting"
             };
 
-            var response = await client.PostAsJsonAsync("api/account/forgotpassword", forgotPassword);
+            var response = await _client.PostAsJsonAsync("api/account/forgotpassword", forgotPassword);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
-
-        private HttpClient FreshClient()
-        {
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-
-                        var db = scopedServices.GetRequiredService<FitwebContext>();
-                        db.Users.RemoveRange(db.Users.Where(u => u.UserName != "testAdmin" && u.UserName != "testUser"));
-                        db.SaveChanges();
-                    }
-                });
-            }).CreateClient();
-
-            return client;
-        }
-
     }
 }

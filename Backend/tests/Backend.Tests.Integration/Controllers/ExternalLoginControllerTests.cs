@@ -17,23 +17,9 @@ using Xunit;
 
 namespace Backend.Tests.Integration.Controllers
 {
-    public class ExternalLoginControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class ExternalLoginControllerTests : BaseIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<Startup> _factory;
         private IConfiguration _configuration;
-
-        public ExternalLoginControllerTests(CustomWebApplicationFactory<Startup> factory)
-        {
-            _factory = factory;
-            _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false
-            });
-            var builder = new ConfigurationBuilder()
-              .AddJsonFile("appsettings.Integration.json", optional: true, reloadOnChange: true);
-            _configuration = builder.Build();
-        }
 
         //[Fact]
         //public async Task Post_ShouldReturnOk_WhenTokenIsValid()
@@ -50,7 +36,7 @@ namespace Backend.Tests.Integration.Controllers
         //    response.EnsureSuccessStatusCode();
         //    response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        //    var jwt = await response.ReadAsString<JwtDto>();
+        //    var jwt = await response.Content.ReadAsAsync<JwtDto>();
         //    jwt.ShouldNotBeNull();
         //    jwt.Username.ShouldBe("fitweb_ogckbwt_tests@tfbnw.net");
         //}

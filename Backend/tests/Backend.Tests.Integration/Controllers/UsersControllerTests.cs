@@ -21,37 +21,25 @@ using Xunit;
 
 namespace Backend.Tests.Integration.Controllers
 {
-    public class UsersControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class UsersControllerTests : BaseIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<Startup> _factory;
-
-        public UsersControllerTests(CustomWebApplicationFactory<Startup> factory)
-        {
-            _factory = factory;
-            _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false
-            });
-        }
-
         [Fact]
         public async Task Get_ShouldReturnNotFound_WhenUserDoesNotExist()
         {
             // 1 is testAdmin
             // 2 is testUser
-            var client = FreshClient();
+            await AuthenticateAdminAsync();
             var userId = 3;
 
-            var response = await client.GetAsync($"/api/users/{userId}");
+            var response = await _client.GetAsync($"/api/users/{userId}");
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
         [Fact]
         public async Task Get_ShouldReturnUserDto_WhenUserExists()
         {
-            var client = FreshClient();
-            var user = await client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
+            await AuthenticateAdminAsync();
+            var user = await _client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
             {
                 Username = "test",
                 Email = "test@email.com",
@@ -59,7 +47,7 @@ namespace Backend.Tests.Integration.Controllers
                 Role = RoleId.User.ToString()
             });
 
-            var response = await client.GetAsync($"/api/users/{user.Id}");
+            var response = await _client.GetAsync($"/api/users/{user.Id}");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -71,11 +59,12 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task GetAll_ShouldReturnIEnumerableUserDto()
         {
+            await AuthenticateAdminAsync();
             var response = await _client.GetAsync("/api/users");
 
             response.EnsureSuccessStatusCode();
 
-            var dto = await response.ReadAsString<IEnumerable<UserDto>>();
+            var dto = await response.Content.ReadAsAsync<IEnumerable<UserDto>>();
             dto.ShouldNotBeNull();
             dto.Count().ShouldBeGreaterThan(0);
         }
@@ -83,23 +72,21 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNoContent_WhenUserIsAuthorizedAndUserIsAdmin()
         {
-            var client = FreshClient();
-
-            var user = await client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
+            var user = await _client.CreatePostAsync("https://localhost:5001/api/account/signup", new SignUp
             {
                 Username = "test",
                 Email = "test@email.com",
                 Password = "testSecret",
             });
 
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
 
             var deleteUser = new DeleteUser
             {
                 Id = user.Id
             };
 
-            var response = await client.DeleteAsJsonAsync("/api/users", deleteUser);
+            var response = await _client.DeleteAsJsonAsync("/api/users", deleteUser);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -108,13 +95,12 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var client = FreshClient();
             var deleteUser = new DeleteUser
             {
                 Id = 1
             };
 
-            var response = await client.DeleteAsJsonAsync("/api/users", deleteUser);
+            var response = await _client.DeleteAsJsonAsync("/api/users", deleteUser);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -122,11 +108,9 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnBadRequest_WhenUserIsAdminButDataIsNotValid()
         {
-            var client = FreshClient();
+            await AuthenticateAdminAsync();
 
-            await client.AuthenticateAsync();
-
-            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 0 });
+            var response = await _client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 0 });
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
@@ -134,35 +118,11 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnForbidden_WhenUserIsAuthorizedButIsNotAdmin()
         {
-            var client = FreshClient();
+            await AuthenticateUserAsync();
 
-            await client.AuthenticateUserAsync();
-
-            var response = await client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 3 });
+            var response = await _client.DeleteAsJsonAsync("/api/users", new DeleteUser { Id = 3 });
 
             response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-        }
-
-        private HttpClient FreshClient()
-        {
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-
-                        var db = scopedServices.GetRequiredService<FitwebContext>();
-                        db.Users.RemoveRange(db.Users.Where(u => u.UserName != "testAdmin" && u.UserName != "testUser"));
-                        db.SaveChanges();
-                    }
-                });
-            }).CreateClient();
-
-            return client;
         }
 
     }

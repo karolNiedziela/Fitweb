@@ -22,29 +22,15 @@ using Xunit;
 
 namespace Backend.Tests.Integration.Controllers
 {
-    public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class ProductsControllerTests : BaseIntegrationTest
     {
-        private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<Startup> _factory;
-
-        public ProductsControllerTests(CustomWebApplicationFactory<Startup> factory)
-        {
-            _factory = factory;
-            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false
-            });
-        }
-
         [Theory]
         [InlineData("testProduct1", 100, 10, 10, 10, "Meat")]
         [InlineData("testProduct2", 500, 25, 70, 5, "Meat")]
         public async Task Get_ShouldReturnOk_WhenProductExistsWithGivenId(string name, double calories,
             double proteins, double carbohydrates, double fats, string categoryName)
         {
-            var client = FreshClient();
-
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
             var addProduct = new AddProduct
             {
                 Name = name,
@@ -54,14 +40,14 @@ namespace Backend.Tests.Integration.Controllers
                 Fats = fats,
                 CategoryName = categoryName
             };
-            var createdProduct = await client.CreatePostAsync("/api/products", addProduct);
+            var createdProduct = await _client.CreatePostAsync("/api/products", addProduct);
 
-            var response = await client.GetAsync($"api/products/{createdProduct.Id}");
+            var response = await _client.GetAsync($"api/products/{createdProduct.Id}");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var returnedProduct = await response.ReadAsString<ProductDto>();
+            var returnedProduct = await response.Content.ReadAsAsync<ProductDto>();
 
             returnedProduct.Id.ShouldBe(createdProduct.Id);
             returnedProduct.Name.ShouldBe(createdProduct.Name);
@@ -70,8 +56,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Get_ShouldReturnNotFound_WhenProductDoesNotExistWithGivenId()
         {
-            var client = FreshClient();
-            var response = await client.GetAsync($"api/products/{1}");
+            var response = await _client.GetAsync($"api/products/{1}");
 
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
@@ -79,8 +64,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task GetByName_ShouldReturnOk_WhenProductExists()
         {
-            var client = FreshClient();
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
 
             var addProduct = new AddProduct
             {
@@ -92,14 +76,14 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = CategoryOfProductId.Meat.ToString()
             };
 
-            await client.PostAsJsonAsync("api/products", addProduct);
+            await _client.PostAsJsonAsync("api/products", addProduct);
 
-            var response = await client.GetAsync($"api/products/{addProduct.Name}");
+            var response = await _client.GetAsync($"api/products/{addProduct.Name}");
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var product = await response.ReadAsString<ProductDto>();
+            var product = await response.Content.ReadAsAsync<ProductDto>();
             product.Name.ShouldBe(addProduct.Name);
             product.Calories.ShouldBe(addProduct.Calories);
             product.Proteins.ShouldBe(addProduct.Proteins);
@@ -108,10 +92,9 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task GetByName_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
-            var client = FreshClient();
             var name = "random";
 
-            var response = await client.GetAsync($"api/products/{name}");
+            var response = await _client.GetAsync($"api/products/{name}");
 
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
@@ -122,9 +105,7 @@ namespace Backend.Tests.Integration.Controllers
         [InlineData("api/products?name=testProduct&category=Meat&pageNumber=1&pageSize=10")]
         public async Task GetAll_ShouldReturnIEnumerableProductDetailsDtoWithGivenPagination(string query)
         {
-            var client = FreshClient();
-
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
             var addProduct = new AddProduct
             {
                 Name = "testProduct",
@@ -134,22 +115,20 @@ namespace Backend.Tests.Integration.Controllers
                 Fats = 10,
                 CategoryName = "Meat"
             };
-            await client.CreatePostAsync("/api/products", addProduct);
+            await _client.CreatePostAsync("/api/products", addProduct);
 
-            var response = await client.GetAsync(query);
+            var response = await _client.GetAsync(query);
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            var products = await response.ReadAsString<PageResultDto<ProductDto>>();
+            var products = await response.Content.ReadAsAsync<PageResultDto<ProductDto>>();
             products.Items.Count().ShouldBe(1);
         }
 
         [Fact]
         public async Task Post_ShouldReturnCreatedResponse_WhenUserIsAdminAndDataIsValid()
         {
-            var client = FreshClient();
-
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
             var addProduct = new AddProduct
             {
                 Name = "testProduct",
@@ -159,12 +138,12 @@ namespace Backend.Tests.Integration.Controllers
                 Fats = 10,
                 CategoryName = "Meat"
             };
-            var response = await client.PostAsJsonAsync("/api/products", addProduct);
+            var response = await _client.PostAsJsonAsync("/api/products", addProduct);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-            var createdProduct = await response.ReadAsString<AddProduct>();
+            var createdProduct = await response.Content.ReadAsAsync<AddProduct>();
 
             createdProduct.Name.ShouldBe(addProduct.Name);
             createdProduct.Calories.ShouldBe(addProduct.Calories);
@@ -176,7 +155,6 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Post_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var client = FreshClient();
             var addProduct = new AddProduct
             {
                 Name = "testProduct",
@@ -187,7 +165,7 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = "Meat"
             };
 
-            var response = await client.PostAsJsonAsync("/api/products", addProduct);
+            var response = await _client.PostAsJsonAsync("/api/products", addProduct);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
@@ -195,8 +173,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Post_ShouldReturnBadRequest_WhenDataIsNotValidAndUserIsAdmin()
         {
-            var client = FreshClient();
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
 
             var addProduct = new AddProduct
             {
@@ -205,7 +182,7 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = CategoryOfProductId.Meat.ToString()
             };
 
-            var response = await client.PostAsJsonAsync("/api/products", addProduct);
+            var response = await _client.PostAsJsonAsync("/api/products", addProduct);
 
             response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
@@ -213,8 +190,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Post_ShouldReturnForbidden_WhenUserIsAuthorizedButIsNotAdmin()
         {
-            var client = FreshClient();
-            await client.AuthenticateUserAsync();
+            await AuthenticateUserAsync();
 
             var addProduct = new AddProduct
             {
@@ -223,7 +199,7 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = CategoryOfProductId.Meat.ToString()
             };
 
-            var response = await client.PostAsJsonAsync("api/products", addProduct);
+            var response = await _client.PostAsJsonAsync("api/products", addProduct);
 
             response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         }
@@ -232,9 +208,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNoContent_WhenProductExistsAndUserIsAdmin()
         {
-            var client = FreshClient();
-
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
             var addProduct = new AddProduct
             {
                 Name = "testProduct",
@@ -245,9 +219,9 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = "Meat"
             };
 
-            var createdProduct = await client.CreatePostAsync("/api/products", addProduct);
+            var createdProduct = await _client.CreatePostAsync("/api/products", addProduct);
 
-            var response = await client.DeleteAsJsonAsync("/api/products", new DeleteProduct
+            var response = await _client.DeleteAsJsonAsync("/api/products", new DeleteProduct
             {
                 ProductId = createdProduct.Id
             });
@@ -258,8 +232,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
         {
-            var client = FreshClient();
-            var response = await client.DeleteAsJsonAsync("/api/products", new DeleteProduct
+            var response = await _client.DeleteAsJsonAsync("/api/products", new DeleteProduct
             {
                 ProductId = 1
             });
@@ -270,9 +243,8 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnBadRequest_WhenUserIsAdminButDataIsNotValid()
         {
-            var client = FreshClient();
-            await client.AuthenticateAsync();
-            var response = await client.DeleteAsJsonAsync("/api/products", new DeleteProduct
+            await AuthenticateAdminAsync();
+            var response = await _client.DeleteAsJsonAsync("/api/products", new DeleteProduct
             {
                 ProductId = 10
             });
@@ -283,10 +255,9 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Delete_ShouldReturnForbidden_WhenUserIsAuthorizedButIsNotAdmin()
         {
-            var client = FreshClient();
-            await client.AuthenticateUserAsync();
+            await AuthenticateUserAsync();
 
-            var response = await client.DeleteAsJsonAsync("api/products", new DeleteProduct
+            var response = await _client.DeleteAsJsonAsync("api/products", new DeleteProduct
             {
                 ProductId = 10
             });
@@ -297,9 +268,7 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Put_ShouldReturnOk_WhenUserIsAdminAndDataIsValid()
         {
-            var client = FreshClient();
-
-            await client.AuthenticateAsync();
+            await AuthenticateAdminAsync();
             var addProduct = new AddProduct
             {
                 Name = "testProduct",
@@ -310,7 +279,7 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = "Meat"
             };
 
-            var createdProduct = await client.CreatePostAsync("/api/products", addProduct);
+            var createdProduct = await _client.CreatePostAsync("/api/products", addProduct);
 
             var updateProduct = new UpdateProduct
             {
@@ -323,7 +292,7 @@ namespace Backend.Tests.Integration.Controllers
                 CategoryName = createdProduct.CategoryName
             };
 
-            var response = await client.PutAsJsonAsync("/api/products", updateProduct);
+            var response = await _client.PutAsJsonAsync("/api/products", updateProduct);
 
             response.EnsureSuccessStatusCode();
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -331,9 +300,8 @@ namespace Backend.Tests.Integration.Controllers
 
         [Fact]
         public async Task Put_ShouldReturnUnauthorized_WhenUserIsNotAuthorized()
-        {
-            var client = FreshClient();
-            var response = await client.PutAsJsonAsync("/api/products", new UpdateProduct
+        {           
+            var response = await _client.PutAsJsonAsync("/api/products", new UpdateProduct
             {
                 ProductId = 10,
                 Name = "Fake",
@@ -350,9 +318,8 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Put_ShouldReturnBadRequest_WhenUserIsAdminButDataIsNotValid()
         {
-            var client = FreshClient();
-            await client.AuthenticateAsync();
-            var response = await client.DeleteAsJsonAsync("/api/products", new UpdateProduct
+            await AuthenticateAdminAsync();
+            var response = await _client.DeleteAsJsonAsync("/api/products", new UpdateProduct
             {
                 ProductId = 10,
                 Name = "Fake",
@@ -369,10 +336,9 @@ namespace Backend.Tests.Integration.Controllers
         [Fact]
         public async Task Put_ShouldReturnForbidden_WhenUserIsAuthorizedButIsNotAdmin()
         {
-            var client = FreshClient();
-            await client.AuthenticateUserAsync();
+            await AuthenticateUserAsync();
 
-            var response = await client.DeleteAsJsonAsync("api/products", new UpdateProduct
+            var response = await _client.DeleteAsJsonAsync("api/products", new UpdateProduct
             {
                 ProductId = 10,
                 Name = "Fake",
@@ -384,29 +350,6 @@ namespace Backend.Tests.Integration.Controllers
             });
 
             response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-        }
-
-
-        private HttpClient FreshClient()
-        {
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-
-                        var db = scopedServices.GetRequiredService<FitwebContext>();
-                        db.Products.RemoveRange(db.Products);
-                        db.SaveChanges();
-                    }
-                });
-            }).CreateClient();
-
-            return client;
         }
     }
 }

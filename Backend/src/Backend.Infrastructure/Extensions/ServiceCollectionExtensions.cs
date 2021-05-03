@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Backend.Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Backend.Infrastructure.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace Backend.Infrastructure.Extensions
 {
@@ -23,12 +24,13 @@ namespace Backend.Infrastructure.Extensions
                 configuration = serviceProvider.GetService<IConfiguration>();
             }
 
-            services.AddMemoryCache();
-            var sqlSettings = configuration.GetSettings<SqlSettings>();
             services.AddDbContext<FitwebContext>(options =>
             {
-                options.UseSqlServer(sqlSettings.ConnectionString);
+                options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddMemoryCache();
             services.AddAuth();
             services.AddHttpClient();
 

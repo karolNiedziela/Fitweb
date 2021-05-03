@@ -17,6 +17,7 @@ namespace Backend.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Policy = PolicyNames.AdminOnly)]
     public class UsersController : ApiControllerBase
     {
         private readonly ILoggerManager _logger;
@@ -52,7 +53,6 @@ namespace Backend.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Policy = PolicyNames.AdminOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

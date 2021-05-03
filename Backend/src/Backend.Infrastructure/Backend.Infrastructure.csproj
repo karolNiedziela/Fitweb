@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\AthleteCaloricDemand\**" />
+    <Compile Remove="Services\AthleteExercise\**" />
+    <Compile Remove="Services\AthleteProduct\**" />
+    <EmbeddedResource Remove="Services\AthleteCaloricDemand\**" />
+    <EmbeddedResource Remove="Services\AthleteExercise\**" />
+    <EmbeddedResource Remove="Services\AthleteProduct\**" />
+    <None Remove="Services\AthleteCaloricDemand\**" />
+    <None Remove="Services\AthleteExercise\**" />
+    <None Remove="Services\AthleteProduct\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="6.1.0" />
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="CsvHelper" Version="19.0.0" />
@@ -42,12 +54,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Backend.Core\Backend.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\AthleteCaloricDemand\" />
-    <Folder Include="Services\AthleteExercise\" />
-    <Folder Include="Services\AthleteProduct\" />
   </ItemGroup>
 
 </Project>

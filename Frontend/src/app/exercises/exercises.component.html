@@ -1,6 +1,15 @@
 <div class="exercises">
   <h1 class="text-center">Exercises</h1>
 
+  <div class="info-icon">
+    <i
+      class="fas fa-info-circle"
+      placement="top"
+      ngbTooltip="Click on row in table to show the window to add exercise. Remember to login"
+      tooltipClass="my-tooltip-class"
+    ></i>
+  </div>
+
   <div class="search-bar">
     <div class="input-group mb-3">
       <input
@@ -92,7 +101,7 @@
       <div class="row">
         <div class="col">
           <label> Weight in kg </label>
-          <input class="form-control" formControlName="weight" />
+          <input type="number" class="form-control" formControlName="weight" />
           <label
             class="text-danger"
             *ngIf="
@@ -107,12 +116,16 @@
               addExercise.controls.weight.touched &&
               addExercise.controls.weight.errors?.pattern
             "
-            >It's not number</label
+            >It's not positive number</label
           >
         </div>
         <div class="col">
           <label> Number of sets </label>
-          <input class="form-control" formControlName="numberOfSets" />
+          <input
+            type="number"
+            class="form-control"
+            formControlName="numberOfSets"
+          />
           <label
             class="text-danger"
             *ngIf="
@@ -127,7 +140,7 @@
               addExercise.controls.numberOfSets.touched &&
               addExercise.controls.numberOfSets.errors?.pattern
             "
-            >It's not number</label
+            >It's not positive number</label
           >
         </div>
       </div>
@@ -135,7 +148,11 @@
       <div class="row">
         <div class="col">
           <label> Number of reps </label>
-          <input class="form-control" formControlName="numberOfReps" />
+          <input
+            type="number"
+            class="form-control"
+            formControlName="numberOfReps"
+          />
           <label
             class="text-danger"
             *ngIf="
@@ -150,7 +167,7 @@
               addExercise.controls.numberOfReps.touched &&
               addExercise.controls.numberOfReps.errors?.pattern
             "
-            >It's not number</label
+            >It's not positive number</label
           >
           <label class="text-danger" *ngIf="error">{{ error }}</label>
         </div>

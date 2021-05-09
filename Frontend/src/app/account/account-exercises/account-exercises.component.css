@@ -1,7 +1,7 @@
 .account-exercises {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 2.5rem auto 0 auto;
   position: relative;
   flex-wrap: wrap;
   height: 100%;
@@ -9,9 +9,6 @@
 
 .row {
   margin-bottom: 2rem;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   width: 80%;
   justify-content: space-around;
   align-items: center;
@@ -35,14 +32,12 @@
 
 .selected .underline {
   display: inline-block;
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid #1ebba3;
   padding-bottom: 2px;
 }
 
 .table {
-  margin-top: 2rem;
-  align-self: center;
-  margin-left: 1rem;
+  margin: 2rem auto;
 }
 
 th {
@@ -54,4 +49,32 @@ th {
 td {
   font-size: 1.1rem;
   letter-spacing: 0.1rem;
+  cursor: pointer;
+}
+
+.input-group {
+  padding: 0 1rem;
+  width: 400px;
+}
+
+.form-control {
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+}
+
+.form-control:hover {
+  border: 1px solid #1ebba3;
+}
+
+.form-control:focus,
+select:focus {
+  border: 1px solid #1ebba3;
+  box-shadow: 0px 0px 20px 6px rgba(30, 187, 163, 0.37);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

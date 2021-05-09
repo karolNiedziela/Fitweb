@@ -11,18 +11,150 @@
       </div>
     </div>
   </div>
-  <table class="table">
-    <thead class="text-center">
-      <th>Name</th>
-      <th>Weight</th>
-      <th>Number of sets</th>
-      <th>Number of reps</th>
-    </thead>
-    <tr *ngFor="let exercises of athleteExercise?.exercises">
-      <td>{{ exercises.exercise.name }}</td>
-      <td>{{ exercises.weight }}</td>
-      <td>{{ exercises.numberOfSets }}</td>
-      <td>{{ exercises.numberOfReps }}</td>
-    </tr>
-  </table>
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="text-center">
+        <th>Name</th>
+        <th>Weight</th>
+        <th>Number of sets</th>
+        <th>Number of reps</th>
+      </thead>
+      <tr *ngFor="let exercises of athleteExercise?.exercises">
+        <td (click)="open(content, exercises)">
+          {{ exercises.exercise.name }}
+        </td>
+        <td (click)="open(content, exercises)">{{ exercises.weight }}</td>
+        <td (click)="open(content, exercises)">{{ exercises.numberOfSets }}</td>
+        <td (click)="open(content, exercises)">{{ exercises.numberOfReps }}</td>
+      </tr>
+    </table>
+  </div>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{ modalExercise.exercise.name }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true"> × </span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="updateExercise">
+      <input type="hidden" value="{{ modalExercise.exercise.id }}" />
+      <div class="row">
+        <div class="col">
+          <label> Weight in kg </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="weight"
+            value="{{ modalExercise.weight }}"
+          />
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.weight.touched &&
+              updateExercise.controls.weight.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.weight.touched &&
+              updateExercise.controls.weight.errors?.pattern
+            "
+            >It's not positive number</label
+          >
+        </div>
+        <div class="col">
+          <label> Number of sets </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="numberOfSets"
+            value="{{ modalExercise.numberOfSets }}"
+          />
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.numberOfSets.touched &&
+              updateExercise.controls.numberOfSets.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.numberOfSets.touched &&
+              updateExercise.controls.numberOfSets.errors?.pattern
+            "
+            >It's not positive number</label
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label> Number of reps </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="numberOfReps"
+            value="{{ modalExercise.numberOfReps }}"
+          />
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.numberOfReps.touched &&
+              updateExercise.controls.numberOfReps.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              updateExercise.controls.numberOfReps.touched &&
+              updateExercise.controls.numberOfReps.errors?.pattern
+            "
+            >It's not positive number</label
+          >
+          <label class="text-danger" *ngIf="error">{{ error }}</label>
+        </div>
+        <div class="col">
+          <label>Day of training</label>
+          <select class="form-control" formControlName="day">
+            <option [ngValue]="selectedDay">{{ selectedDay }}</option>
+            <option *ngFor="let day of days" [ngValue]="day">
+              {{ day.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="openConfirmDialog(modal)"
+    >
+      Delete
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      [disabled]="updateExercise.invalid"
+      (click)="closeModal(modal)"
+    >
+      Update
+    </button>
+  </div>
+</ng-template>

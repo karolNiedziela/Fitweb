@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AthleteProduct } from '../_models/athleteProduct';
@@ -21,5 +21,30 @@ export class AthleteProductsService {
       productId,
       weight,
     });
+  }
+
+  put(productId, athleteProductId, weight) {
+    return this.http.put<any>(`${environment.API_URL}/athletes/products`, {
+      productId,
+      athleteProductId,
+      weight,
+    });
+  }
+
+  delete(productId, athleteProductId) {
+    const options = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: {
+        productId,
+        athleteProductId,
+      },
+    };
+    return this.http.request<any>(
+      'delete',
+      `${environment.API_URL}/athletes/products`,
+      options
+    );
   }
 }

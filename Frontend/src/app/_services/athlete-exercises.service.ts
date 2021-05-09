@@ -1,6 +1,6 @@
 import { AthleteExercise } from './../_models/athleteExercise';
 import { environment } from './../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -30,5 +30,38 @@ export class AthleteExercisesService {
       numberOfReps,
       dayName,
     });
+  }
+
+  put(
+    exerciseId: number,
+    weight: number,
+    numberOfSets: number,
+    numberOfReps: number,
+    dayName: string
+  ) {
+    return this.http.put<any>(`${environment.API_URL}/athletes/exercises`, {
+      exerciseId,
+      weight,
+      numberOfSets,
+      numberOfReps,
+      dayName,
+    });
+  }
+
+  delete(exerciseId: number) {
+    const options = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: {
+        exerciseId,
+      },
+    };
+
+    return this.http.request(
+      'delete',
+      `${environment.API_URL}/athletes/exercises`,
+      options
+    );
   }
 }

@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
+using Backend.Infrastructure.EF;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
@@ -20,20 +23,26 @@ namespace Backend
             try
             {
                 logger.Debug("init main");
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+
+                using (var scope = host.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetService<FitwebContext>();
+                    db.Database.Migrate();
+                }
+
+                host.Run();
             }
             catch (Exception exception)
             {
-                logger.Error(exception, "Stoped progrma because of exception.");
+                logger.Error(exception, "Stoped program because of exception.");
                 throw;
             }
             finally
             {
                 // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
                 NLog.LogManager.Shutdown();
-            }
-
-            CreateHostBuilder(args).Build().Run();
+            }       
         } 
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

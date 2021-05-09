@@ -84,7 +84,7 @@ namespace Backend.Tests.Unit.Services
 
             var paginationQuery = new PaginationQuery();
             var page = new PagedList<Exercise>(exercises.ToList(), exercises.ToList().Count(), 1, 10);
-            _exerciseRepository.GetAllAsync(null, null, paginationQuery).Returns(page);
+            _exerciseRepository.GetAllAsync(Arg.Any<string>(), Arg.Any<string>(), paginationQuery).Returns(page);
 
 
             // Act

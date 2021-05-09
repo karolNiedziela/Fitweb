@@ -136,12 +136,18 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   calculate(event) {
     let weight = event.target.value;
+
+    if (weight < 0) {
+      return;
+    }
+
     this.modalProduct = JSON.parse(JSON.stringify(this.copyModalProduct));
 
     let currentCalories = this.modalProduct.calories;
     let currentProteins = this.modalProduct.proteins;
     let currentCarbohydrates = this.modalProduct.carbohydrates;
     let currentFats = this.modalProduct.fats;
+
     currentCalories = (currentCalories * weight) / 100;
     currentProteins = (currentProteins * weight) / 100;
     currentCarbohydrates = (currentCarbohydrates * weight) / 100;
@@ -154,8 +160,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   closeModal(modal) {
-    console.log(this.modalProduct.id);
-
     this.athleteProductService
       .post(this.modalProduct.id, this.addProduct.value.weight)
       .subscribe(

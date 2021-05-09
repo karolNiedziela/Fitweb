@@ -2,7 +2,26 @@
   margin-top: 1rem;
 }
 
-.fa
+.info-icon {
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.info-icon i {
+  font-size: 1.5rem;
+}
+
+.info-icon i:hover {
+  color: #1ebba3;
+  cursor: pointer;
+}
+
+::ng-deep .tooltip-inner {
+  background-color: #1ebba3;
+  color: black;
+  font-size: 1rem;
+}
 
 .search-bar {
   display: flex;
@@ -14,6 +33,12 @@
 
 select {
   cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .input-group {
@@ -63,12 +88,12 @@ td {
   margin: 0 auto;
 }
 
-.my-pagination /deep/ .ngx-pagination a:hover {
+.my-pagination ::ng-deep .ngx-pagination a:hover {
   color: #1ebba3;
   background: none;
 }
 
-.my-pagination /deep/ .current {
+.my-pagination ::ng-deep .current {
   background: #94f8e9;
   color: black;
 }
@@ -80,6 +105,13 @@ td {
 }
 
 @media screen and (max-width: 1028px) {
+  .info-icon {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
   .form-control {
     font-size: 1.5rem;
   }

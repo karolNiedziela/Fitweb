@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Infrastructure.EF.Configurations
 {
-    public class DietStatisticsConfiguration : BaseEntityConfiguration<DietStat>
+    public class DietStatsConfiguration : BaseEntityConfiguration<DietStat>
     {
         public override void Configure(EntityTypeBuilder<DietStat> builder)
         {

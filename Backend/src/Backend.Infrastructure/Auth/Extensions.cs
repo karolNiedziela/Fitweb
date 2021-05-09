@@ -44,7 +44,7 @@ namespace Backend.Infrastructure.Auth
                 options.Password.RequiredUniqueChars = 1;
 
                 // SigIn settings.
-                options.SignIn.RequireConfirmedEmail = true;                
+                options.SignIn.RequireConfirmedEmail = false;                
 
                 // User settings.
                 options.User.RequireUniqueEmail = true;

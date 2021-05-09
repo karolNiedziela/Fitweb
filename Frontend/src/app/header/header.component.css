@@ -85,6 +85,7 @@
   .dropdown-menu.show {
     background-color: rgba(0, 0, 0, 0) !important;
     border: none;
+    margin-top: -1rem;
   }
   .navbar {
     font-size: 1.1rem;

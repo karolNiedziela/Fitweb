@@ -20,6 +20,7 @@ namespace Backend.Infrastructure.Mappers
                    .ForMember(dest => dest.Products, opt => opt.MapFrom(a => a.AthleteProducts.Select(
                      ap => new AthleteProduct
                      {
+                         Id = ap.Id,
                          Product = new Product
                          {
                              Id = ap.Product.Id,
@@ -53,13 +54,13 @@ namespace Backend.Infrastructure.Mappers
                            DietStat = new DietStat
                            {
                                Id = ads.Id,
-                               TotalCalories = ads.DietStat.TotalCalories,
-                               TotalProteins = ads.DietStat.TotalProteins,
-                               TotalCarbohydrates = ads.DietStat.TotalCarbohydrates,
-                               TotalFats = ads.DietStat.TotalFats,
+                               TotalCalories = Math.Round(ads.DietStat.TotalCalories, 2),
+                               TotalProteins = Math.Round(ads.DietStat.TotalProteins, 2),
+                               TotalCarbohydrates = Math.Round(ads.DietStat.TotalCarbohydrates, 2),
+                               TotalFats = Math.Round(ads.DietStat.TotalFats, 2),
                                DateCreated = ads.DietStat.DateCreated
                            },
- 
+
                        }).ToList()));
                 cfg.CreateMap<Product, ProductDto>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(p => p.CategoryOfProduct.Name.ToString().Replace("_", " ")));

@@ -127,6 +127,7 @@
 
 i {
   margin-bottom: 0.5rem;
+  cursor: pointer;
 }
 i:hover {
   transform: scale(1.1);

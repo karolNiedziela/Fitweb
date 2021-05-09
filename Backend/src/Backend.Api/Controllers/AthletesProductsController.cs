@@ -75,11 +75,26 @@ namespace Backend.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromBody] DeleteAthleteProduct command)
         {
+            command.UserId = UserId;
             await DispatchAsync(command);
 
             _logger.LogInfo($"Product with id: {command.ProductId} removed from athlete with user id: {command.UserId}.");
 
             return NoContent();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update([FromBody] UpdateAthleteProduct command)
+        {
+            command.UserId = UserId;
+            await DispatchAsync(command);
+
+            _logger.LogInfo($"Product with id: {command.ProductId} updated by athlete with user id: {command.UserId}. " +
+                $"AthleteProductId: {command.AthleteProductId}");
+
+            return Ok();
         }
     }
 }

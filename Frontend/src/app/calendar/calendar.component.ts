@@ -47,7 +47,6 @@ export class CalendarComponent implements OnInit {
 
   // Decrease or increase date on click chevron
   changeDateByOneDay(number) {
-    console.log(number);
     this.calendarService.setCalendar(
       this.calendar.year,
       this.calendar.month,

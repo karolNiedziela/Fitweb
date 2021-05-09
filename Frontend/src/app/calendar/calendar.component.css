@@ -46,6 +46,44 @@ button {
   align-items: center;
 }
 
+@media screen and (max-width: 1024px) {
+  .calendar-detail {
+    font-size: 1.8rem;
+  }
+
+  .calendar-arrow i {
+    font-size: 2rem;
+    padding: 0 1.3rem;
+  }
+  ngb-datepicker ::ng-deep div.ngb-dp-content {
+    font-size: 2rem;
+    margin: 0 auto;
+    margin-right: 2rem;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-header .custom-select {
+    font-size: 2rem;
+    width: 100px;
+    height: 50px;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-month {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-week {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-day {
+    padding: 2rem;
+    outline: none;
+  }
+}
+
 @media screen and (max-width: 800px) {
   .calendar-detail {
     font-size: 1.8rem;
@@ -57,114 +95,117 @@ button {
   }
 
   ngb-datepicker {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
     border: none;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-content {
+  ngb-datepicker ::ng-deep div.ngb-dp-content {
     font-size: 1.5rem;
     margin: 0 auto;
     margin-right: 2rem;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-header .custom-select {
+  ngb-datepicker ::ng-deep div.ngb-dp-header .custom-select {
     font-size: 1.7rem;
     width: 100px;
     height: 50px;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-month {
+  ngb-datepicker ::ng-deep div.ngb-dp-month {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-week {
+  ngb-datepicker ::ng-deep div.ngb-dp-week {
     display: flex;
     justify-content: space-around;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-day {
+  ngb-datepicker ::ng-deep div.ngb-dp-day {
     padding: 2rem;
     outline: none;
   }
 }
 
 @media screen and (max-width: 600px) {
-  .calendar-details {
-    width: 150px;
+  ngb-datepicker ::ng-deep div.ngb-dp-content {
+    font-size: 1rem;
   }
 
-  ngb-datepicker {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  ngb-datepicker ::ng-deep div.ngb-dp-header .custom-select {
+    font-size: 1rem;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-content {
-    font-size: 1.4rem;
-  }
-
-  ngb-datepicker /deep/ div.ngb-dp-header .custom-select {
-    font-size: 1.4rem;
-    width: 100px;
-    height: 50px;
-  }
-
-  ngb-datepicker /deep/ div.ngb-dp-week {
+  ngb-datepicker ::ng-deep div.ngb-dp-week {
     display: flex;
     justify-content: space-around;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-day {
-    padding: 1.4rem;
+  ngb-datepicker ::ng-deep div.ngb-dp-day {
     outline: none;
+    padding: 0.5rem;
   }
 }
 
 @media screen and (max-width: 440px) {
+  .calendar-detail {
+    font-size: 1rem;
+  }
+
+  .calendar-arrow i {
+    font-size: 0.8rem;
+    padding: 0;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-content {
+    font-size: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .calendar {
+    width: 100%;
+  }
+
   .calendar-details {
     width: 100px;
   }
 
   .calendar-detail {
-    font-size: 1.2rem;
+    font-size: 0.7rem;
   }
 
   .calendar-arrow i {
     font-size: 0.8rem;
-    padding: 0 0.8rem;
+    padding: 0;
   }
 
   ngb-datepicker {
+    width: 200px;
+  }
+
+  ngb-datepicker ::ng-deep .btn-link {
+    display: none;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-month {
+    font-size: 0.8rem;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    margin-left: 1rem;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-content {
+  ngb-datepicker ::ng-deep div.ngb-dp-header .custom-select {
+    font-size: 0.8rem;
+    width: 25px;
+    height: 25px;
+  }
+
+  ngb-datepicker ::ng-deep div.ngb-dp-content {
     font-size: 0.8rem;
   }
 
-  ngb-datepicker /deep/ div.ngb-dp-header .custom-select {
-    font-size: 0.8rem;
-  }
-
-  ngb-datepicker /deep/ div.ngb-dp-week {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  ngb-datepicker /deep/ div.ngb-dp-day {
-    padding: 0.8rem;
+  ngb-datepicker ::ng-deep div.ngb-dp-day {
     outline: none;
+    padding: 0.2rem;
   }
 }

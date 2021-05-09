@@ -7,8 +7,8 @@
       <th>Weight</th>
     </thead>
     <tr *ngFor="let products of athleteProducts?.products">
-      <td>{{ products.product.name }}</td>
-      <td>{{ products.weight }}</td>
+      <td (click)="open(content, products)">{{ products.product.name }}</td>
+      <td (click)="open(content, products)">{{ products.weight }}</td>
     </tr>
   </table>
 
@@ -42,3 +42,102 @@
     </h3>
   </div>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{ modalProduct.product.name }}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true"> × </span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="updateProduct">
+      <div class="row">
+        <div class="col">
+          <label> Weight </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="weight"
+            (change)="calculateOnChange($event)"
+          />
+          <label
+            class="text-danger"
+            *ngIf="
+              updateProduct.controls.weight.touched &&
+              updateProduct.controls.weight.errors?.required
+            "
+            >This field is required</label
+          >
+          <label
+            class="text-danger"
+            *ngIf="
+              updateProduct.controls.weight.touched &&
+              updateProduct.controls.weight.errors?.pattern
+            "
+            >It's not positive number</label
+          >
+        </div>
+        <div class="col">
+          <label for="calories"> Kcal </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.product.calories }}"
+            disabled
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="fats"> Fats </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.product.fats }}"
+            disabled
+          />
+        </div>
+        <div class="col">
+          <label for="carbohydrates"> Carbohydrates </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.product.carbohydrates }}"
+            disabled
+          />
+        </div>
+        <div class="col">
+          <label for="proteins"> Proteins </label>
+          <input
+            class="form-control"
+            value="{{ modalProduct.product.proteins }}"
+            disabled
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="openConfirmDialog(modal)"
+    >
+      Delete
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      [disabled]="updateProduct.invalid"
+      (click)="closeModal(modal)"
+    >
+      Update
+    </button>
+  </div>
+</ng-template>

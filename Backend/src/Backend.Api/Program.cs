@@ -50,10 +50,12 @@ namespace Backend
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
-                     webHostBuilder
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseIISIntegration()
-                    .UseStartup<Startup>();
+                    webHostBuilder
+                   .UseKestrel()
+                   //.UseUrls("https://*:80")
+                   .UseContentRoot(Directory.GetCurrentDirectory())
+                   .UseStartup<Startup>()
+                   .UseIISIntegration();
                     
                 })
                 .UseNLog();

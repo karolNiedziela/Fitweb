@@ -71,5 +71,14 @@ namespace Backend.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task RemoveExerciseAsync(Athlete athlete, AthleteExercise exercise)
+        {
+            _context.Athletes.Attach(athlete);
+
+            athlete.AthleteExercises.Remove(exercise);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

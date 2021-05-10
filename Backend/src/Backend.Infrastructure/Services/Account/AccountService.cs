@@ -56,8 +56,14 @@ namespace Backend.Infrastructure.Services.Account
             }
             
             await _userManager.AddToRoleAsync(user, role);
-
-            await GenerateEmailConfirmationTokenAsync(user);
+            if (_userManager.Options.SignIn.RequireConfirmedEmail)
+            {
+                await GenerateEmailConfirmationTokenAsync(user);
+            }
+            else
+            {
+                user.EmailConfirmed = true;
+            }
 
             await _athleteService.CreateAsync(user.Id);
 

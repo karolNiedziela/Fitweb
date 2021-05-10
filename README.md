@@ -26,3 +26,5 @@ For macOS: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -
 For Linux: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p Your_password123`
 
 Be sure that .UseUrls("https://*:80") is uncommented in Backend/src/Backend.Api/Program.cs and change SQLConnection in appsettings.json Backend/src/Backend.Api/ to one with Server=db
+
+Finally open terminal and run: `docker-compose up --build`

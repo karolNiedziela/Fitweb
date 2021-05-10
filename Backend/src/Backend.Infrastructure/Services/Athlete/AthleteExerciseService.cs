@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities;
+using Backend.Core.Enums;
 using Backend.Core.Exceptions;
 using Backend.Core.Repositories;
 using Backend.Infrastructure.Exceptions;
@@ -67,7 +68,36 @@ namespace Backend.Infrastructure.Services
                 throw new ExerciseForAthleteNotFoundException(userId, exerciseId);
             }
 
-            athlete.AthleteExercises.Remove(exercise);
+            await _athleteRepository.RemoveExerciseAsync(athlete, exercise);
+           
+            await _athleteRepository.UpdateAsync(athlete);
+        }
+
+        public async Task UpdateAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps,
+            string dayName)
+        {
+            var athlete = await _athleteRepository.FindByCondition(condition: a => a.UserId == userId,
+               include: source => source.Include(a => a.AthleteExercises)
+                                                   .ThenInclude(ae => ae.Day)
+                                                 .Include(a => a.AthleteExercises)
+                                                   .ThenInclude(ae => ae.Exercise)
+                                                       .ThenInclude(e => e.PartOfBody));
+
+            if (athlete is null)
+            {
+                throw new AthleteNotFoundException(userId);
+            }
+
+            var exercise = athlete.AthleteExercises.SingleOrDefault(ae => ae.ExerciseId == exerciseId);
+            if (exercise is null)
+            {
+                throw new ExerciseForAthleteNotFoundException(userId, exerciseId);
+            }
+
+            exercise.SetWeight(weight);
+            exercise.SetNumberOfSets(numberOfSets);
+            exercise.SetNumberOfReps(numberOfReps);
+            exercise.Day = Day.GetDay(dayName);
 
             await _athleteRepository.UpdateAsync(athlete);
         }

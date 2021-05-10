@@ -37,22 +37,13 @@ namespace Backend.Infrastructure.Services
                     .Where(ads => ads.DateCreated >= start && ads.DateCreated <= end)).ThenInclude(ads => ads.DietStat));
 
 
-            try
-            {
-                return _mapper.Map<AthleteDto>(athlete);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            return new AthleteDto();
-                       
+            return _mapper.Map<AthleteDto>(athlete);                      
         }
 
-        public async Task<AthleteDietStats> AddDietStatsAsync(int userId, Product product, double weight, char sign)
+        public async Task<AthleteDietStats> AddDietStatsAsync(int userId, Product product, double weight, char sign,
+            DateTime dateCreated)
         {
-            var start = DateTime.Today;
+            var start = new DateTime(dateCreated.Year, dateCreated.Month, dateCreated.Day, 0, 0, 0);
             var end = start.AddDays(1);
             var athlete = await _athleteRepository.FindByCondition(a => a.UserId == userId,
                 include: source => source.Include(a => a.AthleteDietStats
@@ -72,7 +63,7 @@ namespace Backend.Infrastructure.Services
             return result;
         }
 
-        private void Calculate(ref DietStat dietStat, Product product, double weight, char sign)
+        private static void Calculate(ref DietStat dietStat, Product product, double weight, char sign)
         {
             if (sign == '+')
             {

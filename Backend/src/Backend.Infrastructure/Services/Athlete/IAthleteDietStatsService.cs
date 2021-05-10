@@ -12,6 +12,6 @@ namespace Backend.Infrastructure.Services
     {
         Task<AthleteDto> GetDietStatsAsync(int userId, DateTime? date);
 
-        Task<AthleteDietStats> AddDietStatsAsync(int userId, Product product, double weight, char sign);
+        Task<AthleteDietStats> AddDietStatsAsync(int userId, Product product, double weight, char sign, DateTime dateCreated);
     }
 }

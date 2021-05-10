@@ -10,5 +10,8 @@ namespace Backend.Infrastructure.Services
         Task AddAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps, string dayName);
 
         Task DeleteAsync(int userId, int exerciseId);
+
+        Task UpdateAsync(int userId, int exerciseId, double weight, int numberOfSets, int numberOfReps,
+           string dayName);
     }
 }

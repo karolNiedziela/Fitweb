@@ -20,10 +20,10 @@ To run application, it's necessary to install:
 6. Navigate to Frontend and run `ng serve -o`
 
 ## or use Docker
-To get Docker working, it's necessary to add a SSL cert
-For Windows: run `dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx -p Your_password123`, then `dotnet dev-certs https --trust`
-For macOS: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p Your_password123`, then  `dotnet dev-certs https --trust`
-For Linux: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p Your_password123`
+To get Docker working, it's necessary to add a SSL cert <br/>
+For Windows: run `dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx -p Your_password123`, then `dotnet dev-certs https --trust`<br/><br/>
+For macOS: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p Your_password123`, then  `dotnet dev-certs https --trust`<br/><br/>
+For Linux: run `dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p Your_password123`<br/>
 
 Be sure that .UseUrls("https://*:80") is uncommented in Backend/src/Backend.Api/Program.cs and change SQLConnection in appsettings.json Backend/src/Backend.Api/ to one with Server=db
 

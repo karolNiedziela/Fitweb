@@ -26,7 +26,7 @@ namespace Backend.Infrastructure.Extensions
 
             services.AddDbContext<FitwebContext>(options =>
             {
-                options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+                //options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
 

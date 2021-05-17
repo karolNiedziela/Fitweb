@@ -18,7 +18,7 @@ export class SignComponent implements OnInit {
   returnUrl: string;
 
   constructor(
-    private socialAuthService: SocialAuthService,
+    // private socialAuthService: SocialAuthService,
     private authService: AuthenticationService,
     private router: Router,
     private route: ActivatedRoute
@@ -30,22 +30,22 @@ export class SignComponent implements OnInit {
 
   signInWithFacebook() {
     this.loading = true;
-    this.socialAuthService
-      .signIn(FacebookLoginProvider.PROVIDER_ID)
-      .then((response) => {
-        console.log(this.platform + 'logged in user data is= ', response);
+    // this.socialAuthService
+    //   .signIn(FacebookLoginProvider.PROVIDER_ID)
+    //   .then((response) => {
+    //     console.log(this.platform + 'logged in user data is= ', response);
 
-        const token = response.authToken;
+    //     const token = response.authToken;
 
-        this.authService.signInWithFb(token).subscribe(
-          (data) => {
-            this.router.navigate([this.returnUrl]);
-          },
-          (error) => {
-            console.log(error);
-            this.loading = false;
-          }
-        );
-      });
+    //     this.authService.signInWithFb(token).subscribe(
+    //       (data) => {
+    //         this.router.navigate([this.returnUrl]);
+    //       },
+    //       (error) => {
+    //         console.log(error);
+    //         this.loading = false;
+    //       }
+    //     );
+    //   });
   }
 }

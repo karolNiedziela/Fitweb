@@ -25,19 +25,21 @@ namespace Backend.Infrastructure.Services
 
         public override async Task SeedAsync()
         {
-            if (await _context.Products.AnyAsync())
-            {
-                return;
-            }
+            //if (await _context.Products.AnyAsync())
+            //{
+            //    return;
+            //}
 
-            var stringPath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
-            stringPath += @"/Files/products.csv";
+            //var stringPath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
+            //stringPath += @"/Files/products.csv";
 
-            var products = _loader.LoadCsvAsync(stringPath);
-            
-            await _productRepository.AddRangeAsync(products);
+            //var products = _loader.LoadCsvAsync(stringPath);
 
-            _logger.LogInfo("Products added from products.csv");
+            //await _productRepository.AddRangeAsync(products);
+
+            //_logger.LogInfo("Products added from products.csv");
+
+            await Task.CompletedTask;
         }
 
     }

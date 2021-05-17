@@ -1,6 +1,18 @@
 version: '3.4'
 
 services:
+  ui: 
+    image: karolniedziela/fitweb-front
+    build: 
+      context: ../Frontend
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+    ports: 
+      - 8888:80
+    depends_on: 
+      - backend.api
+      - db
   backend.api:
     image: ${DOCKER_REGISTRY-}backendapi
     build:

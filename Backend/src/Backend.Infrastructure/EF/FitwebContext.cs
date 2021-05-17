@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Entities;
 using Backend.Infrastructure.EF.Configurations;
+using Backend.Infrastructure.EF.SeedData;
 using Backend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -26,6 +27,16 @@ namespace Backend.Infrastructure.EF
             builder.Entity<User>().ToTable("Users", "dbo");
             builder.Entity<Role>().ToTable("Roles", "dbo");
             builder.Entity<UserRole>().ToTable("UserRoles", "dbo");
+
+            foreach (var item in SeedExercises.Get())
+            {
+                builder.Entity<Exercise>().HasData(item);
+            }
+
+            foreach (var item in SeedProducts.Get())
+            {
+                builder.Entity<Product>().HasData(item);
+            }
         }
 
         public DbSet<Athlete> Athletes { get; set; }
